@@ -1,0 +1,1272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AuroraChecker</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+    :root {
+      color-scheme: dark;
+      --bg: #0f1218;
+      --panel: rgba(23, 27, 34, .76);
+      --panel-strong: rgba(18, 23, 30, .9);
+      --panel-soft: rgba(29, 35, 43, .72);
+      --line: rgba(112, 133, 154, .24);
+      --text: #edf2f7;
+      --muted: #8d98a7;
+      --green: #4fd19a;
+      --cyan: #5b8cff;
+      --blue: #4f7dff;
+      --blue-soft: rgba(79, 125, 255, .16);
+      --blue-line: rgba(105, 155, 255, .46);
+      --amber: #efb84c;
+      --red: #ef6262;
+      --shadow: 0 22px 70px rgba(0, 0, 0, .34);
+      --glow: 0 0 30px rgba(79, 125, 255, .1);
+      font-family: 'JetBrains Mono', 'Cascadia Code', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      text-transform: lowercase;
+
+      position: relative;
+      background:
+        linear-gradient(135deg, #0d1117 0%, #111820 46%, #15171d 100%);
+      color: var(--text);
+      letter-spacing: 0;
+      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 42px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 42px),
+        linear-gradient(120deg, rgba(79,125,255,.12), transparent 34%, rgba(79,209,154,.08) 68%, rgba(91,140,255,.1));
+      opacity: .52;
+      mask-image: linear-gradient(135deg, rgba(0,0,0,.92), rgba(0,0,0,.14));
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -30% -10%;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(118deg, transparent 18%, rgba(79,125,255,.1) 20%, transparent 24%),
+        linear-gradient(118deg, transparent 58%, rgba(91,140,255,.08) 61%, transparent 66%);
+      filter: blur(10px);
+      opacity: .68;
+      animation: backgroundShift 34s ease-in-out infinite alternate;
+    }
+    @keyframes backgroundShift {
+      from { transform: translate3d(-1.5%, -1%, 0); }
+      to { transform: translate3d(1.5%, 1%, 0); }
+    }
+
+    button, input { font: inherit; }
+    button {
+      border: 1px solid var(--line);
+      background: rgba(32, 38, 49, .78);
+      color: var(--text);
+      height: 40px;
+      padding: 0 18px;
+      border-radius: 7px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, .16);
+      backdrop-filter: blur(14px);
+      transition: background .28s ease, border-color .28s ease, transform .28s ease, box-shadow .28s ease;
+    }
+    button:hover {
+      background: rgba(41, 50, 62, .92);
+      border-color: rgba(105, 155, 255, .34);
+      transform: translateY(-1px);
+      box-shadow: 0 13px 24px rgba(0, 0, 0, .18);
+    }
+    button:active { transform: translateY(1px); }
+    button.primary {
+      background: linear-gradient(135deg, rgba(50, 88, 214, .98), rgba(79, 125, 255, .98));
+      border-color: var(--blue-line);
+      color: white;
+    }
+    button.primary:hover { background: linear-gradient(135deg, #3b64df, #5f91ff); }
+    button.danger {
+      color: #ffd8d8;
+      border-color: rgba(239, 98, 98, .55);
+      background: rgba(239, 98, 98, .12);
+    }
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    input {
+      height: 42px;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: rgba(13, 17, 24, .72);
+      color: var(--text);
+      outline: none;
+      padding: 0 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+      backdrop-filter: blur(12px);
+      transition: border-color .28s ease, box-shadow .28s ease, background .28s ease;
+    }
+    input:focus {
+      border-color: var(--blue-line);
+      background: rgba(15, 20, 28, .86);
+      box-shadow: 0 0 0 3px var(--blue-soft), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .app {
+      position: relative;
+      z-index: 2;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 242px 1fr;
+      animation: appIn .78s cubic-bezier(.2,.8,.2,1) both;
+    }
+    @keyframes appIn {
+      from { opacity: 0; transform: scale(.985); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(17, 23, 32, .82) 0%, rgba(14, 18, 24, .78) 100%);
+      padding: 28px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      box-shadow: 18px 0 60px rgba(0, 0, 0, .22);
+      backdrop-filter: blur(22px) saturate(1.2);
+      position: relative;
+      overflow: hidden;
+    }
+    .sidebar::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--green));
+      opacity: .75;
+    }
+
+    .brand {
+      position: relative;
+      padding: 5px 0 10px;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.05;
+      background: linear-gradient(135deg, #ffffff, #b8ccff 46%, #8fb4ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .brand span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 7px;
+      font-weight: 700;
+    }
+
+    .nav {
+      display: grid;
+      gap: 9px;
+    }
+    .nav button {
+      position: relative;
+      text-align: left;
+      width: 100%;
+      background: transparent;
+      border-color: transparent;
+      color: var(--muted);
+      box-shadow: none;
+      overflow: hidden;
+    }
+    .nav button:hover {
+      color: var(--text);
+      background: rgba(91,140,255,.055);
+      transform: translateX(2px);
+      box-shadow: none;
+    }
+    .nav button.active {
+      color: var(--text);
+      border-color: var(--line);
+      background: linear-gradient(135deg, rgba(79, 125, 255, .18), rgba(91, 140, 255, .09));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 12px 30px rgba(0,0,0,.16);
+    }
+    .nav button.active::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 10px;
+      bottom: 10px;
+      width: 3px;
+      border-radius: 2px;
+      background: var(--blue);
+    }
+
+    .footer { margin-top: auto; }
+
+    main {
+      position: relative;
+      min-width: 0;
+      height: 100vh;
+      overflow: hidden;
+      padding: 30px 34px;
+    }
+
+    .view { display: none; height: 100%; }
+    .view.active {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      animation: viewIn .52s cubic-bezier(.2,.8,.2,1) both;
+    }
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(10px); filter: blur(5px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+    }
+    .title h2 {
+      margin: 0;
+      font-size: 31px;
+      line-height: 1.1;
+      text-shadow: 0 12px 34px rgba(0,0,0,.34);
+    }
+    .title p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px) saturate(1.16);
+      position: relative;
+    }
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .choice {
+      position: relative;
+      padding: 28px;
+      min-height: 214px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      transition: border-color .34s ease, transform .34s ease, background .34s ease, box-shadow .34s ease;
+    }
+    .choice::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+    }
+    .choice:hover {
+      transform: translateY(-4px);
+      border-color: rgba(105, 155, 255, .38);
+      background: rgba(28, 34, 42, .84);
+      box-shadow: 0 24px 54px rgba(0,0,0,.28);
+    }
+    .choice h3 {
+      margin: 0;
+      font-size: 23px;
+    }
+    .choice p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 360px;
+    }
+
+    .scan-panel {
+      padding: 26px;
+      display: grid;
+      gap: 18px;
+      border-top: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .ghost-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 4px 0 4px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      border-radius: 7px;
+      padding: 13px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      color: #dfe7ef;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+      transition: border-color .32s ease, transform .32s ease, background .32s ease, color .32s ease;
+    }
+    .chip:hover {
+      transform: translateY(-2px);
+      border-color: var(--blue-line);
+      background: rgba(35, 43, 52, .82);
+      color: #ffffff;
+    }
+    .chip:nth-child(3n+1) { border-top-color: rgba(79,125,255,.42); }
+    .chip:nth-child(3n+2) { border-top-color: rgba(91,140,255,.42); }
+    .chip:nth-child(3n) { border-top-color: rgba(239,184,76,.42); }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .tabs {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .tabs button {
+      min-width: 112px;
+      color: var(--muted);
+      background: rgba(22, 28, 36, .62);
+    }
+    .tabs button.active-tab {
+      color: #ffffff;
+      border-color: var(--blue-line);
+      background: linear-gradient(135deg, rgba(79, 125, 255, .22), rgba(91, 140, 255, .12));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.045), 0 12px 26px rgba(0,0,0,.17);
+    }
+
+    .table-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+    .table-actions button {
+      width: 100%;
+      min-width: 0;
+      padding: 0 10px;
+    }
+    .table-actions .download {
+      color: #dff5ff;
+      border-color: var(--blue-line);
+      background: var(--blue-soft);
+    }
+    .table-actions .download:hover {
+      background: rgba(79, 125, 255, .24);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .metric {
+      background: var(--panel-soft);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 12px 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+      transition: border-color .32s ease, transform .32s ease, background .32s ease;
+    }
+    .metric:hover {
+      transform: translateY(-2px);
+      border-color: rgba(105, 155, 255, .34);
+      background: rgba(35, 42, 52, .8);
+    }
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .metric strong {
+      font-size: 18px;
+    }
+
+    .table-wrap {
+      min-height: 0;
+      flex: 1;
+      overflow: auto;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px) saturate(1.15);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 13px;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: rgba(18, 23, 32, .9);
+      color: var(--muted);
+      text-align: left;
+      height: 42px;
+      padding: 0 16px;
+      font-size: 11px;
+      backdrop-filter: blur(14px);
+    }
+    td {
+      height: 52px;
+      padding: 0 16px;
+      border-top: 1px solid rgba(48, 56, 66, .72);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background .26s ease, color .26s ease, box-shadow .26s ease;
+    }
+    tr:hover td { background: rgba(35, 43, 52, .72); }
+    tr.selected td {
+      background: var(--blue-soft);
+      box-shadow: inset 0 1px 0 rgba(79,125,255,.12), inset 0 -1px 0 rgba(79,125,255,.12);
+    }
+    .mono { font-family: Consolas, ui-monospace, monospace; }
+    .risk { color: var(--red); font-weight: 900; }
+    .clean, .trusted { color: var(--green); font-weight: 900; }
+    .unknown { color: var(--amber); font-weight: 900; }
+    .process { color: var(--cyan); font-weight: 900; }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .actions button.active-filter {
+      color: #ffffff;
+      border-color: var(--blue-line);
+      background: var(--blue-soft);
+      box-shadow: 0 10px 22px rgba(0,0,0,.16);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(6, 8, 12, .52);
+      backdrop-filter: blur(14px);
+      z-index: 10;
+    }
+    .overlay.active {
+      display: grid;
+      animation: fadeIn .3s ease both;
+    }
+    .loader {
+      width: 420px;
+      padding: 24px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px) saturate(1.18);
+      animation: dialogIn .44s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .bar {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 5px;
+      background: rgba(36, 43, 53, .9);
+      margin-top: 16px;
+    }
+    .bar::before {
+      content: "";
+      display: block;
+      height: 100%;
+      width: 46%;
+      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--green));
+      box-shadow: 0 0 16px rgba(79,125,255,.28);
+      animation: slide 1.9s infinite ease-in-out;
+    }
+    @keyframes slide {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(230%); }
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(6, 8, 12, .58);
+      backdrop-filter: blur(16px);
+      z-index: 20;
+    }
+    .modal.active {
+      display: grid;
+      animation: fadeIn .3s ease both;
+    }
+    .dialog {
+      width: min(860px, calc(100vw - 52px));
+      max-height: calc(100vh - 56px);
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(22px) saturate(1.18);
+      animation: dialogIn .44s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .dialog-head {
+      padding: 22px 26px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .dialog-head h3 { margin: 0; font-size: 22px; }
+    .dialog-body {
+      padding: 22px 26px;
+      overflow: auto;
+      display: grid;
+      gap: 16px;
+    }
+    .kv {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 14px;
+      font-size: 13px;
+    }
+    .kv span {
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 10px;
+    }
+    .log {
+      background: rgba(17, 21, 28, .78);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 14px;
+      font-family: Consolas, ui-monospace, monospace;
+      color: #cdd6e0;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      max-height: 260px;
+      overflow: auto;
+    }
+
+    .preserve-case { text-transform: none; }
+    .error {
+      display: none;
+      color: #ffdada;
+      background: rgba(239, 98, 98, .1);
+      border: 1px solid rgba(239, 98, 98, .35);
+      border-radius: 7px;
+      padding: 12px 14px;
+      font-weight: 700;
+      backdrop-filter: blur(12px);
+    }
+    .error.active {
+      display: block;
+      animation: viewIn .38s ease both;
+    }
+    .error.ok {
+      color: #d9ffe9;
+      background: rgba(79, 209, 154, .1);
+      border-color: rgba(79, 209, 154, .32);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes dialogIn {
+      from { opacity: 0; transform: translateY(14px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,.035); }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(142, 162, 181, .36);
+      border: 2px solid rgba(16, 20, 27, .9);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(142, 162, 181, .58); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>AuroraChecker</h1>
+        <span>by zentixctm</span>
+      </div>
+      <nav class="nav">
+        <button data-nav="home" class="active">home</button>
+        <button data-nav="mods">mods folder</button>
+        <button data-nav="ghosts">process scan</button>
+        <button data-nav="jardll">jar/dll scan</button>
+        <button data-nav="programs">tools</button>
+        <button data-nav="texts">texts</button>
+      </nav>
+      <div class="footer">
+        <button onclick="selfDestruct()" style="width:100%;color:var(--red);border-color:rgba(239,98,98,.35);background:rgba(239,98,98,.08);font-size:12px">self destruct</button>
+      </div>
+    </aside>
+
+    <main>
+      <section id="home" class="view active">
+        <div class="header">
+          <div class="title">
+            <h2>scan windows</h2>
+            <p>pick the checker surface.</p>
+          </div>
+        </div>
+        <div class="home-grid">
+          <div class="panel choice">
+            <div>
+              <h3>mods folder</h3>
+              <p>folder and jar analysis with online source check and heuristics.</p>
+            </div>
+            <div><button class="primary" onclick="showView('mods')">open</button></div>
+          </div>
+          <div class="panel choice">
+            <div>
+              <h3>process scan</h3>
+              <p>runtime checks for java agents, native modules, memory strings, and private executable regions.</p>
+            </div>
+            <div><button class="primary" onclick="showView('ghosts')">open</button></div>
+          </div>
+          <div class="panel choice">
+            <div>
+              <h3>jar | dll</h3>
+              <p>usn activity for jar/dll files and user-side dll checks.</p>
+            </div>
+            <div><button class="primary" onclick="showView('jardll')">open</button></div>
+          </div>
+          <div class="panel choice">
+            <div>
+              <h3>tools</h3>
+              <p>launch helper utilities during a check from one place.</p>
+            </div>
+            <div><button class="primary" onclick="loadProgramTools()">open</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="mods" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>mods folder</h2>
+            <p>scan a mods folder or one jar file.</p>
+          </div>
+        </div>
+        <div class="panel scan-panel">
+          <div class="input-row">
+            <input id="modsPath" placeholder="Path to mods folder or jar">
+            <button onclick="chooseFolder()">folder</button>
+            <button onclick="chooseJar()">jar</button>
+            <button class="primary" onclick="scanMods()">scan</button>
+          </div>
+          <div id="modsError" class="error"></div>
+        </div>
+      </section>
+
+      <section id="ghosts" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>process scan</h2>
+            <p>aurorachecker runtime scan</p>
+          </div>
+        </div>
+        <div class="panel scan-panel">
+          <div class="actions">
+            <button class="primary" onclick="scanGhostAuto()">auto scan</button>
+          </div>
+          <div id="ghostError" class="error"></div>
+        </div>
+        <div class="panel" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden">
+          <div style="padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;font-weight:800;text-transform:uppercase;color:var(--muted)">Scan console</div>
+          <pre style="flex:1;margin:0;padding:14px 16px;overflow:auto;font-family:'JetBrains Mono',Consolas,monospace;font-size:13px;line-height:1.6;color:#cdd6e0;background:rgba(6,8,12,.42);white-space:pre-wrap">Auto scan opens the scanner in a separate console window.</pre>
+        </div>
+      </section>
+
+      <section id="jardll" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>jar/dll scan</h2>
+            <p>scan jar/dll activity from usn journal and show user-side dll findings.</p>
+          </div>
+        </div>
+        <div class="panel scan-panel">
+          <div class="actions">
+            <button class="primary" onclick="scanJarDllActivity()">scan</button>
+            <button onclick="clearJarDllTables()">clear</button>
+          </div>
+          <div id="jardllError" class="error"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th colspan="4">JAR activity (journal + user dirs)</th></tr><tr><th style="width:170px">Date</th><th style="width:150px">Action</th><th style="width:240px">File</th><th>Path</th></tr></thead>
+            <tbody id="jarActivityRows"><tr><td colspan="4" class="unknown">Press Scan</td></tr></tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th colspan="4">DLL activity (journal + user dirs)</th></tr><tr><th style="width:170px">Date</th><th style="width:150px">Action</th><th style="width:240px">File</th><th>Path</th></tr></thead>
+            <tbody id="dllActivityRows"><tr><td colspan="4" class="unknown">Press Scan</td></tr></tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th colspan="4" style="color:var(--red)">Deleted JAR / DLL (USN journal)</th></tr><tr><th style="width:170px">Date</th><th style="width:150px">Action</th><th style="width:240px">File</th><th>Path</th></tr></thead>
+            <tbody id="deletedRows"><tr><td colspan="4" class="unknown">Press Scan</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="programs" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>tools</h2>
+          </div>
+        </div>
+        <div class="panel scan-panel">
+          <div class="actions">
+            <button class="primary" onclick="downloadMissingTools()">download missing</button>
+            <button class="danger" onclick="clearDownloadedTools()">clear downloaded</button>
+            <button onclick="loadProgramTools()">refresh tools</button>
+          </div>
+          <div class="tabs" style="margin-top:8px">
+            <button class="active-tab" data-tab="beta" onclick="switchToolTab('beta')">beta</button>
+            <button data-tab="alpha" onclick="switchToolTab('alpha')">alpha</button>
+            <button data-tab="other" onclick="switchToolTab('other')">other</button>
+          </div>
+          <div id="programsError" class="error"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:210px">Tool</th>
+                <th style="width:110px">Status</th>
+                <th>Path</th>
+                <th style="width:135px">Source</th>
+                <th style="width:240px">Action</th>
+              </tr>
+            </thead>
+            <tbody id="programRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="texts" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>texts</h2>
+            <p>predefined everything search queries — click to copy.</p>
+          </div>
+        </div>
+        <div class="panel scan-panel">
+          <div id="textsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">
+          </div>
+          <div id="textsError" class="error"></div>
+        </div>
+      </section>
+
+      <section id="results" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>Results</h2>
+            <p id="targetLabel">Scan target</p>
+          </div>
+          <button onclick="showView(lastBackView)">back</button>
+        </div>
+        <div class="stats">
+          <div class="metric"><span>Items</span><strong id="statItems">0</strong></div>
+          <div class="metric"><span>Risk</span><strong id="statRisk" class="risk">0</strong></div>
+          <div class="metric"><span id="statThirdName">Trusted</span><strong id="statTrusted" class="trusted">0</strong></div>
+        </div>
+        <div class="toolbar">
+          <input id="resultSearch" placeholder="Search name, path, source, verdict">
+          <div class="actions">
+            <button data-filter="" onclick="setResultFilter('')">all</button>
+            <button data-filter="Risk" onclick="setResultFilter('Risk')">risk</button>
+            <button data-filter="Clean" onclick="setResultFilter('Clean')">clean</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:250px">Name</th>
+                <th>Path</th>
+                <th style="width:105px">Size</th>
+                <th style="width:120px">Source</th>
+                <th style="width:105px">Verdict</th>
+              </tr>
+            </thead>
+            <tbody id="resultRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="loading" class="overlay">
+    <div class="loader">
+      <strong id="loadingText">Scanning...</strong>
+      <div class="bar"></div>
+    </div>
+  </div>
+
+  <div id="modal" class="modal" onclick="closeModal(event)">
+    <div class="dialog">
+      <div class="dialog-head">
+        <h3 id="modalTitle">Details</h3>
+        <button onclick="hideModal()">close</button>
+      </div>
+      <div class="dialog-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    let results = [];
+    let programTools = [];
+    let commandTools = [];  // unused, kept for compat
+    let resultFilter = "";
+    let activeToolTab = "beta";
+    let lastBackView = "home";
+
+    function api() {
+      return window.pywebview && window.pywebview.api;
+    }
+
+    function showView(id) {
+      document.querySelectorAll(".view").forEach(view => view.classList.toggle("active", view.id === id));
+      document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.nav === id));
+    }
+
+    function setLoading(active, text = "Scanning...") {
+      document.getElementById("loadingText").textContent = text;
+      document.getElementById("loading").classList.toggle("active", active);
+    }
+
+    function showError(id, message) {
+      const box = document.getElementById(id);
+      box.textContent = message || "";
+      box.classList.toggle("active", Boolean(message));
+    }
+
+    async function init() {
+      if (!api()) {
+        showError("modsError", "pywebview API is not available. Start this app through main.py.");
+        return;
+      }
+      document.getElementById("modsPath").value = await api().default_mods_path();
+      document.getElementById("resultSearch").addEventListener("input", renderResults);
+      document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => {
+        if (btn.dataset.nav === "programs") loadProgramTools();
+        else if (btn.dataset.nav === "texts") loadTexts();
+        else showView(btn.dataset.nav);
+      }));
+    }
+
+    async function chooseFolder() {
+      const path = await api().choose_folder();
+      if (path) document.getElementById("modsPath").value = path;
+    }
+
+    async function chooseJar() {
+      const path = await api().choose_jar();
+      if (path) document.getElementById("modsPath").value = path;
+    }
+
+    async function scanMods() {
+      showError("modsError", "");
+      setLoading(true, "Scanning mods...");
+      try {
+        const payload = await api().scan_path(document.getElementById("modsPath").value);
+        if (!payload.ok) {
+          showError("modsError", payload.error);
+          return;
+        }
+        showResults(payload, "mods");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function scanGhostAuto() {
+      showError("ghostError", "");
+      setLoading(true, "Scanning...");
+      try {
+        const started = await api().launch_injgen_console();
+        if (!started.ok) showError("ghostError", started.error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function triggerAutoScan() {
+      showView("ghosts");
+      setTimeout(() => scanGhostAuto(), 300);
+    }
+
+    async function scanJarDllActivity() {
+      showError("jardllError", "");
+      setLoading(true, "Scanning JAR | DLL activity...");
+      try {
+        const payload = await api().scan_jar_dll_activity();
+        if (!payload.ok) {
+          showError("jardllError", payload.error);
+          return;
+        }
+        renderActivityRows("jarActivityRows", payload.jarActivity || []);
+        renderActivityRows("dllActivityRows", payload.dllActivity || []);
+        renderActivityRows("deletedRows", payload.deletedActivity || [], true);
+        if (payload.note) {
+          showError("jardllError", payload.note);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function clearJarDllTables() {
+      document.getElementById("jarActivityRows").innerHTML = `<tr><td colspan="4" class="unknown">Press Scan</td></tr>`;
+      document.getElementById("dllActivityRows").innerHTML = `<tr><td colspan="4" class="unknown">Press Scan</td></tr>`;
+      document.getElementById("deletedRows").innerHTML = `<tr><td colspan="4" class="unknown">Press Scan</td></tr>`;
+      showError("jardllError", "");
+    }
+
+    function renderActivityRows(targetId, rows, isDeleted) {
+      const body = document.getElementById(targetId);
+      body.innerHTML = rows.map(row => {
+        const cls = isDeleted || String(row.action || "").includes("unsigned") || String(row.action || "").includes("deleted") ? "risk" : "unknown";
+        return `
+        <tr>
+          <td class="mono">${escapeHtml(row.date || "-")}</td>
+          <td class="${cls}">${escapeHtml(row.action || "activity")}</td>
+          <td>${escapeHtml(row.name || row.className || "-")}</td>
+          <td class="mono preserve-case">${escapeHtml(row.path || row.detail || "")}</td>
+        </tr>`;
+      }).join("") || `<tr><td colspan="4" class="unknown">No rows</td></tr>`;
+    }
+
+    async function loadProgramTools() {
+      showError("programsError", "");
+      showView("programs");
+      setLoading(true, "Loading tools...");
+      try {
+        const payload = await api().list_program_tools();
+        if (!payload.ok) {
+          showError("programsError", payload.error);
+          return;
+        }
+        programTools = payload.tools || [];
+        renderProgramTools();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderProgramTools() {
+      const rows = document.getElementById("programRows");
+      const filtered = programTools.filter(tool => (tool.group || "alpha") === activeToolTab);
+      rows.innerHTML = filtered.map(tool => {
+        const index = programTools.indexOf(tool);
+        return `<tr>
+          <td class="preserve-case">${escapeHtml(tool.name)}</td>
+          <td class="${tool.status === "Found" ? "trusted" : "unknown"}">${escapeHtml(tool.status)}</td>
+          <td class="mono preserve-case">${escapeHtml(tool.path || tool.note)}</td>
+          <td>${escapeHtml(tool.source)}</td>
+          <td>
+            <div class="table-actions">
+              <button ${tool.status === "Found" ? "" : "disabled"} onclick="openProgramTool(${index})">open</button>
+              <button class="download" ${tool.downloadAvailable ? "" : "disabled"} onclick="downloadProgramTool(${index})">${tool.downloadAvailable ? (tool.status === "Found" ? "update" : "download") : "manual"}</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join("") || `<tr><td colspan="5" class="unknown">No tools configured</td></tr>`;
+    }
+
+    async function openProgramTool(index) {
+      const tool = programTools[index];
+      if (!tool || !tool.path) return;
+      setLoading(true, "Opening tool...");
+      try {
+        const payload = await api().open_program_tool(tool.path);
+        if (!payload.ok) showError("programsError", payload.error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function downloadProgramTool(index) {
+      const tool = programTools[index];
+      if (!tool) return;
+      showError("programsError", "");
+      setLoading(true, `Downloading ${tool.name}...`);
+      try {
+        const payload = await downloadToolWithProgress(tool.name);
+        if (!payload.ok) {
+          showError("programsError", payload.error);
+          return;
+        }
+        await loadProgramTools();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function downloadToolWithProgress(name) {
+      const start = await api().start_program_download(name);
+      if (!start.ok) return start;
+      let status;
+      do {
+        status = await api().download_status(start.id);
+        if (!status.ok) return status;
+        setLoading(true, `Downloading ${name}${status.percent >= 0 ? `: ${status.percent}%` : "..."}`);
+        if (status.running) await new Promise(resolve => setTimeout(resolve, 180));
+      } while (status.running);
+      return status.result || { ok: false, error: "Download ended without a result" };
+    }
+
+    function switchToolTab(tab) {
+      activeToolTab = tab;
+      document.querySelectorAll("[data-tab]").forEach(btn => {
+        btn.classList.toggle("active-tab", btn.dataset.tab === tab);
+      });
+      renderProgramTools();
+    }
+
+    async function selfDestruct() {
+      if (!confirm("Delete AuroraChecker and all its traces permanently?")) return;
+      await api().self_destruct();
+    }
+
+    async function clearDownloadedTools() {
+      if (!confirm("Delete all downloaded tools?")) return;
+      showError("programsError", "");
+      setLoading(true, "Clearing downloaded tools...");
+      try {
+        const payload = await api().clear_downloaded_tools();
+        if (!payload.ok) {
+          showError("programsError", payload.error);
+          return;
+        }
+        showError("programsError", payload.message + " (" + payload.deleted + " items)");
+        document.getElementById("programsError").classList.add("ok");
+        await loadProgramTools();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    const textsData = [
+      { name: "size by name", text: "wild | expensive | baritone | killaura | ventos | neoware | viafriend | viaforge | blackberry | viamcp | viaversion | neat | pivo | sight | itemscroller | external | sigma | violetta | jigsaw | autofish | rasty | niobiom | liquidbounce | legion | kamiblue | matix | salhack | aristois | rockstar | autobuy | hitbox | sevenmyst | bloodymyst | boberware | legacylauncher | ezz | nursultan | aura | velocity | cheatengine | exloader | elysium | silentclient | voxelmap | celestial | celka | nur | akrien | akr | plusinv | armorhotswap | winstore | elytra | fabritone | ponos | nova | nextgen | moonhack | forgehax | expa | wexside | zeta | topka | freecam | sigma | future | hack | wurst | minced | inertia | pyro | bleach | deadcode | meteor | basefinder | flux | shit | kion | rich | wisend | blazehack | nightmare | sonar | wintware | delta | aboba | fluger | nullhack | develor | tools | excellent | sapwhire | kazah | bypass | recode | avalone |  miner | neverhook | zamorozka | stardust | norule | oxygen | aimbot | dreampool | impact | topkamods | keaz | konas  | goprone | airplace | gishcode | eternity | noslow | caballeta | clowdy | cetramoon | duper | extra | scritps | nodus | gothaj | easyfrags | easyanticheat | celestialrecode | wex | autotool | newlauncher | deltaloader" },
+      { name: "size by name 2", text: "impact | wurst | bleachhack | aristois | huzuni | skillclient | inertia | ares | sigma | meteor | liquidbounce | nurik | nursultan | celestial | calestial | celka | expensive | neverhook | excellent | wexside | wildclient | minced | deadcode | akrien | jigsaw | future | jessica | dreampool | norules | konas | richclient | rusherhack | thunderhack | moonhack | doomsday | nightware | ricardo | extazyy | troxill | antileak | arbuz | .akr | .wex | dauntiblyat | rename_me_please | editme | takker | fuzeclient | wisefolder| flauncher | vec.dll | usboblivion.exe | feather | delta | venus | baritone | spambot | cleancut | spam_bot | inventory_walk | player_highlighter | aimbot | freecam | bedrock_breaker_mode | viaversion | double_hotbar | elytra_swap | armor_hotswap | smart_moving | chest | savesearcher | topkautobuy | topkaautobuy | tweakeroo | mob_hitbox | librarian_trade_finder | sacurachorusfind | autoattack | entity_outliner | invmove | viabackwards | viarewind | viafabric | viaforge | viaproxy | vialoader | viamcp | hitbox | elytrahack | diamondsim | forgehax | clientcommands | control-tweaks | swingthroughgrass | cutthrough | haruka |  newlauncher | blade | hachclient | inertia | fluger | exloader | catlean" },
+      { name: "size by weight", text: "size:9951744|size:24536064|size:15438336|size:6229504|size:6573056|size:7187456|size:7969792|size:1562249|size:1672329|size:1677449|size:1680521|size:147329|size:138351|size:202720|size:7788032|size:22885|size:23810|size:138351|size:147329|size:7988736|size:3711166|size:3697285|size:3712014|size:5641728|size:4413440|size:114974|size:111866|size:274865|size:1820884|size:5007380|size:6944256|size:5934592|size:2545664|size:2108662|size:1961742|size:3684385|size:5143837|size:4413440|size:116689|size:1968128|size:8011776|size:1883602|size:5918208|size:1897269|size:31445308|size:24390144|size:25158656|size:2023236|size:16836288|size:88065933|size:197933122|size:2258533|size:2305645|size:2372788|size:18764384|size:9400174|size:2363704|size:15445581|size:2373676|size:138351|size:7788032|size:22885|size:23810|size:7988736|size:3711166|size:3697285|size:3712014|size:5641728|size:4413440|size:111866|size:1820884|size:5007380|size:6944256|size:5934592|size:2545664|size:2108662|size:1961742|size:3684385|size:5143837|size:1968128|size:8011776|size:1883602|size:6533121|size:16629226|size:28107997|size:8249687|size:5524900|size:140200|size:132133|size:110439|size:6244043|size:6867367|size:43883|size:514855|size:479296|size:9530356|size:355527744|size:1819289|size:1897269|size:16855568|size:16964112|size:2023236|size:5918208|ssize:31445308|size:24390144|size:10657176|size:460288|size:19521024|size:15076480|size:7204864|size:1613824|size:1499136|size:1488896|size:9332326|size:9400174|size:10071288|size:9400174|size:10071288|baritone|nursultan" },
+      { name: "jar sizes", text: "size:2263|size:5266|size:6515|size:6770|size:6778|size:7016|size:7218|size:7803|size:7891|size:9327|size:10283|size:10605|size:10958|size:11554|size:16541|size:17308|size:17339|size:18180|size:18527|size:18587|size:18734|size:19266|size:20578|size:20583|size:20639|size:20883|size:21161|size:21234|size:21664|size:22036|size:22861|size:26247|size:27546|size:27809|size:28084|size:28439|size:29304|size:29567|size:30279|size:31549|size:31607|size:34449|size:34669|size:35971|size:35993|size:38149|size:39017|size:39321|size:40142|size:42782|size:47159|size:48242|size:50828|size:51212|size:52426|size:54088|size:59381|size:62782|size:65316|size:65486|size:65765|size:66659|size:67491|size:68794|size:69757|size:72334|size:74105|size:80751|size:88896|size:95530|size:98811|size:100523|size:100799|size:101297|size:101571|size:101703|size:102297|size:102733|size:103761|size:104954|size:105623|size:105672|size:112386|size:120640|size:138417|size:143006|size:143597|size:143600|size:147329|size:147873|size:151762|size:153937|size:156722|size:156779|size:166677|size:169718|size:173698|size:183634|size:183651|size:192156|size:202720|size:257482|size:263070|size:267746|size:274865|size:300286|size:334588|size:343169|size:350629|size:409616|size:410358|size:517248|size:519731|size:532826|size:539151|size:556494|size:597406|size:636621|size:640838|size:878781|size:925493|size:1077149|size:1165063|size:1181556|size:1444714|size:1471429|size:1569093|size:1822841|size:3113569|size:3425801|size:3541075|size:3541138|size:3642292|size:3684385|size:4642998|size:5630483|size:7052171|size:7059952|size:22258750|size:25704986|size:26179274|size:26691896 *.jar" },
+      { name: "size vec.dll", text: "size:30720 utf8content:net/minecraft/client/entity/player/clientplayerentity|net/minecraft/util/math/axisalignedbb" },
+      { name: "size by doomsday", text: "ext:jar size:21kb-10mb content:\"l.png\" content:\"mcmod.info\" everything ext:txt;cmd;bat  content:\"java -jar\"" },
+      { name: "size .exe", text: ".exe size:12mb-25mb" },
+      { name: "doomsday setup size", text: "ext:txt;cmd;bat  content:\"java -jar\"" },
+      { name: "mods size", text: "*.jar size:10mb..15mb" },
+      { name: "doomsday log (win+r)", text: "%USERLOCALAPPDATA%\\Temp\\JavaLauncher.log" },
+    ];
+
+    function loadTexts() {
+      showError("textsError", "");
+      showView("texts");
+      const grid = document.getElementById("textsGrid");
+      grid.innerHTML = textsData.map((entry, idx) => `
+        <div class="panel" style="padding:16px;cursor:pointer;transition:border-color .3s" onclick="copyText(${idx})" title="Click to copy">
+          <div class="preserve-case" style="font-size:14px;font-weight:800;margin-bottom:8px;color:var(--cyan)">${escapeHtml(entry.name)}</div>
+          <div style="font-size:11px;color:var(--muted);word-break:break-all;line-height:1.5;max-height:60px;overflow:hidden">${escapeHtml(entry.text)}</div>
+        </div>
+      `).join("");
+    }
+
+    function copyText(idx) {
+      const text = textsData[idx].text;
+      navigator.clipboard.writeText(text).then(() => {
+        const cards = document.getElementById("textsGrid").children;
+        const el = cards[idx];
+        el.style.borderColor = "var(--green)";
+        el.style.background = "rgba(79,209,154,.12)";
+        setTimeout(() => {
+          el.style.borderColor = "";
+          el.style.background = "";
+        }, 800);
+      }).catch(() => {
+        showError("textsError", "Failed to copy to clipboard");
+      });
+    }
+
+    async function downloadMissingTools() {
+      showError("programsError", "");
+      if (!programTools.length) {
+        await loadProgramTools();
+      }
+
+      const missing = programTools.filter(tool => tool.status !== "Found" && tool.downloadAvailable);
+      const manual = programTools
+        .filter(tool => tool.status !== "Found" && !tool.downloadAvailable)
+        .map(tool => tool.name);
+
+      if (!missing.length) {
+        const manualText = manual.length ? ` Manual only: ${manual.join(", ")}.` : "";
+        showError("programsError", `All downloadable tools are already found.${manualText}`);
+        return;
+      }
+
+      const failed = [];
+      try {
+        for (const tool of missing) {
+          setLoading(true, `Downloading ${tool.name}...`);
+          const payload = await downloadToolWithProgress(tool.name);
+          if (!payload.ok) {
+            failed.push(`${tool.name}: ${payload.error}`);
+          }
+        }
+      } finally {
+        setLoading(false);
+      }
+
+      await loadProgramTools();
+      if (failed.length) {
+        showError("programsError", failed.join(" | "));
+      }
+    }
+
+    function showResults(payload, backView) {
+      results = payload.items || [];
+      lastBackView = backView;
+      document.getElementById("targetLabel").textContent = payload.target || "Scan target";
+      document.getElementById("statItems").textContent = payload.stats.items;
+      document.getElementById("statRisk").textContent = payload.stats.risks;
+      const thirdIsClean = payload.target === "Tools" || String(payload.target || "").startsWith("Process scan");
+      document.getElementById("statThirdName").textContent = thirdIsClean ? "Clean" : "Trusted";
+      document.getElementById("statTrusted").textContent = thirdIsClean ? payload.stats.clean : payload.stats.trusted;
+      document.getElementById("resultSearch").value = "";
+      setResultFilter("");
+      showView("results");
+    }
+
+    function setResultFilter(filter) {
+      resultFilter = filter;
+      document.querySelectorAll("[data-filter]").forEach(button => {
+        button.classList.toggle("active-filter", button.dataset.filter === filter);
+      });
+      renderResults();
+    }
+
+    function renderResults() {
+      const query = document.getElementById("resultSearch").value.toLowerCase();
+      const rows = document.getElementById("resultRows");
+      const filtered = results.filter(item => {
+        const text = `${item.name} ${item.path} ${item.source} ${item.verdict}`.toLowerCase();
+        return text.includes(query) && (!resultFilter || item.verdict === resultFilter);
+      });
+      rows.innerHTML = filtered.map((item, index) => `
+        <tr ondblclick="showDetails(${index})">
+          <td>${escapeHtml(item.name)}</td>
+          <td class="mono preserve-case">${escapeHtml(item.path)}</td>
+          <td class="mono">${escapeHtml(item.size)}</td>
+          <td class="${sourceClass(item.source)}">${escapeHtml(item.source)}</td>
+          <td class="${item.suspicious ? "risk" : "clean"}">${escapeHtml(item.verdict)}</td>
+        </tr>
+      `).join("") || `<tr><td colspan="5" class="unknown">No rows</td></tr>`;
+    }
+
+    function showDetails(index) {
+      const item = results[index];
+      if (!item) return;
+      document.getElementById("modalTitle").textContent = item.name;
+      const logs = (item.analysisResults || []).map(log => `[${log.type}] ${log.className} -> ${log.detail}`).join("\\n") || "No heuristic hits.";
+      document.getElementById("modalBody").innerHTML = `
+        <div class="kv"><span>Verdict</span><strong class="${item.suspicious ? "risk" : "clean"}">${escapeHtml(item.verdict)}</strong></div>
+        <div class="kv"><span>Path</span><div class="mono preserve-case">${escapeHtml(item.path)}</div></div>
+        <div class="kv"><span>Size</span><div class="mono">${escapeHtml(item.size)}</div></div>
+        <div class="kv"><span>Source</span><div class="${sourceClass(item.source)}">${escapeHtml(item.source)}</div></div>
+        <div class="log">${escapeHtml(logs)}</div>
+      `;
+      document.getElementById("modal").classList.add("active");
+    }
+
+    function hideModal() {
+      document.getElementById("modal").classList.remove("active");
+    }
+
+    function closeModal(event) {
+      if (event.target.id === "modal") hideModal();
+    }
+
+    function sourceClass(source) {
+      if (source === "Trusted") return "trusted";
+      if (source === "Process") return "process";
+      if (source === "Program") return "process";
+      return "unknown";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      }[char]));
+    }
+
+    window.addEventListener("pywebviewready", init);
+    window.addEventListener("DOMContentLoaded", () => setTimeout(() => {
+      if (!api()) showError("modsError", "Start this app through Python webview.");
+    }, 800));
+  </script>
+</body>
+</html>
