@@ -16,24 +16,26 @@ echo Starting AuroraChecker... > "%LOG_FILE%"
 echo App dir: %APP_DIR% >> "%LOG_FILE%"
 
 if exist "%CODEX_PY%" (
-  echo Python: %CODEX_PY% >> "%LOG_FILE%"
-  "%CODEX_PY%" "%APP_DIR%main.py" >> "%LOG_FILE%" 2>&1
-  goto finished
+  set "PYEXE=%CODEX_PY%"
+) else (
+  where pythonw >nul 2>nul
+  if %errorlevel%==0 (
+    set "PYEXE=pythonw"
+  ) else (
+    where python >nul 2>nul
+    if %errorlevel%==0 (
+      set "PYEXE=python"
+    ) else (
+      echo Python was not found. Install Python 3.10+ and run:
+      echo pip install -r requirements.txt
+      pause
+      exit /b 1
+    )
+  )
 )
 
-where py >nul 2>nul
-if %errorlevel%==0 (
-  echo Python: py launcher >> "%LOG_FILE%"
-  py "%APP_DIR%main.py" >> "%LOG_FILE%" 2>&1
-  goto finished
-)
-
-where python >nul 2>nul
-if %errorlevel%==0 (
-  echo Python: PATH python >> "%LOG_FILE%"
-  python "%APP_DIR%main.py" >> "%LOG_FILE%" 2>&1
-  goto finished
-)
+echo Python: %PYEXE% >> "%LOG_FILE%"
+start "" /B "%PYEXE%" "%APP_DIR%AuroraChecker.pyw"
 
 echo Python was not found. Install Python 3.10+ and run:
 echo pip install -r requirements.txt

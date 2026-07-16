@@ -70,6 +70,17 @@ WHITELISTED_MODS = {
     "immediatelyfast",
 }
 
+BANNED_MODS = {
+    "xray", "player spotlight", "auchelper", "chesttracker",
+    "friend highlighter", "donut auctions", "diamondgen", "freecam",
+    "basefinder", "truesight", "neat", "chunkanimator", "mobhealthbar",
+    "litematica", "schematica", "block-entity-tooltip", "worldedit",
+    "better pvp", "worlddownloader", "removeblindness",
+    "dont heat teammates", "don't hit teammates", "cleancut",
+    "autoattack", "autoaim", "autofish", "kill aura", "reach",
+    "fly hacks", "auto clicker",
+}
+
 GHOST_SIGNATURES = [
     ("Vape Lite Client", ("vape lite", "vapelite", "vape_lite", "vape-lite", "vape lite client")),
     ("Vape V4 Client", ("vape v4", "vapev4", "vape_v4", "vape-v4", "vape v4 client")),
@@ -228,6 +239,30 @@ PROGRAM_SIGNATURES = [
         "download_url": "https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jdk/hotspot/normal/eclipse",
         "download_type": "zip",
     },
+    {
+        "name": "AnyDesk",
+        "process": ("anydesk.exe",),
+        "exe": ("anydesk.exe",),
+        "keywords": ("anydesk", "any desk", "any-desk"),
+        "download_url": "https://anydesk.com/en/downloads/thank-you?dv=win_exe",
+        "download_type": "file",
+    },
+    {
+        "name": "RuDesk",
+        "process": ("rudesk.exe",),
+        "exe": ("rudesk.exe",),
+        "keywords": ("rudesk", "ru desk", "ru-desk"),
+        "download_url": None,
+        "download_type": None,
+    },
+    {
+        "name": "RustDesk",
+        "process": ("rustdesk.exe",),
+        "exe": ("rustdesk.exe",),
+        "keywords": ("rustdesk", "rust desk", "rust-desk"),
+        "download_url": "https://github.com/rustdesk/rustdesk/releases/latest/download/RustDesk-1.3.8-x86_64.exe",
+        "download_type": "file",
+    },
 ]
 
 BETA_TOOL_NAMES = {
@@ -242,6 +277,9 @@ OTHER_TOOL_NAMES = {
     "InjGen",
     "WarpVersionChecker",
     "Java",
+    "AnyDesk",
+    "RuDesk",
+    "RustDesk",
 }
 
 COMMAND_SIGNATURES = []
@@ -367,16 +405,24 @@ def entry(class_name: str, entry_type: str, detail: str) -> dict:
     return {"className": class_name or "archive", "type": entry_type, "detail": detail}
 
 
+def is_banned_mod(name: str) -> bool:
+    lower = name.lower().replace(".jar", "").replace(" ", "")
+    direct = {b.replace(" ", "") for b in BANNED_MODS}
+    return lower in direct or any(b in lower for b in BANNED_MODS)
+
+
 def result_item(name: str, path: str, size: int, modrinth: bool, suspicious: bool, source: str | None, logs: list[dict]) -> dict:
+    banned = is_banned_mod(name)
     return {
         "name": name,
         "path": path,
         "sizeBytes": size,
         "size": format_bytes(size),
         "modrinthFound": modrinth,
-        "suspicious": suspicious,
-        "source": "Trusted" if modrinth else (source or "Unknown"),
-        "verdict": "Risk" if suspicious else "Clean",
+        "suspicious": suspicious or banned,
+        "banned": banned,
+        "source": "Trusted" if modrinth else (source or "Local file"),
+        "verdict": "Banned" if banned else ("Risk" if suspicious else "Clean"),
         "analysisResults": logs,
     }
 
@@ -536,7 +582,12 @@ def scan_path(path_text: str) -> dict:
     else:
         jars = sorted(p for p in path.rglob("*.jar") if p.is_file())
     if not jars:
-        return error(f"No .jar files found in: {path}")
+        return {
+            "ok": True,
+            "target": str(path.resolve()),
+            "items": [],
+            "stats": {"items": 0, "risks": 0, "trusted": 0, "clean": 0, "banned": 0},
+        }
 
     items = []
     for jar in jars:
@@ -1620,8 +1671,9 @@ def ok(target: str, items: list[dict]) -> dict:
         "stats": {
             "items": len(items),
             "risks": sum(1 for item in items if item.get("suspicious")),
+            "banned": sum(1 for item in items if item.get("banned")),
             "trusted": sum(1 for item in items if item.get("modrinthFound")),
-            "clean": sum(1 for item in items if not item.get("suspicious")),
+            "clean": sum(1 for item in items if not item.get("suspicious") and not item.get("banned")),
         },
     }
 
@@ -2327,6 +2379,27 @@ class AuroraApi:
     def scan_path(self, path: str) -> dict:
         return scan_path(path)
 
+    def scan_jar_jarka(self, jar_path: str) -> dict:
+        try:
+            from jarka_scanner.scanner import scan_jar
+            path = Path(jar_path.strip().strip('"'))
+            if not path.exists():
+                return error(f"File not found: {path}")
+            if not path.suffix.lower() == ".jar":
+                return error("Not a .jar file")
+            results = scan_jar(str(path), path.stat().st_size if path.exists() else 0)
+            if results.get('error'):
+                return error(results['error'])
+            return {
+                "ok": True,
+                "target": str(path),
+                "results": results,
+            }
+        except ImportError:
+            return error("JarkaScanner module not available")
+        except Exception as exc:
+            return error(str(exc))
+
     def list_processes(self) -> list[dict]:
         return java_processes()
 
@@ -2546,11 +2619,8 @@ class AuroraApi:
 
     def self_destruct(self) -> dict:
         try:
-            clear_downloaded_tools()
-            log = APP_ROOT / "aurorachecker.log"
-            if log.exists():
-                log.unlink()
             pid = os.getpid()
+            root = APP_ROOT.resolve()
             bat_path = Path(tempfile.gettempdir()) / f"cleanup_{pid}.bat"
             bat_content = f"""@echo off
 title AuroraChecker Cleanup
@@ -2561,7 +2631,7 @@ if not errorlevel 1 (
     goto loop
 )
 ping -n 1 127.0.0.1 >nul
-rd /s /q "{APP_ROOT}"
+rd /s /q "{root}"
 del "%~f0"
 """
             bat_path.write_text(bat_content, encoding="utf-8")

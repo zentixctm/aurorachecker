@@ -8,22 +8,28 @@
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
     :root {
       color-scheme: dark;
-      --bg: #0f1218;
-      --panel: rgba(23, 27, 34, .76);
-      --panel-strong: rgba(18, 23, 30, .9);
-      --panel-soft: rgba(29, 35, 43, .72);
-      --line: rgba(112, 133, 154, .24);
-      --text: #edf2f7;
-      --muted: #8d98a7;
+      --bg: #060308;
+      --panel: rgba(16, 6, 18, .85);
+      --panel-strong: rgba(10, 4, 14, .95);
+      --panel-soft: rgba(20, 8, 22, .80);
+      --line: rgba(140, 60, 110, .18);
+      --text: #e0d6de;
+      --muted: #907080;
       --green: #4fd19a;
-      --cyan: #5b8cff;
-      --blue: #4f7dff;
-      --blue-soft: rgba(79, 125, 255, .16);
-      --blue-line: rgba(105, 155, 255, .46);
+      --cyan: #d46ab8;
+      --blue: #b05bcc;
+      --blue-soft: rgba(176, 91, 204, .16);
+      --blue-line: rgba(200, 100, 180, .46);
       --amber: #efb84c;
       --red: #ef6262;
-      --shadow: 0 22px 70px rgba(0, 0, 0, .34);
-      --glow: 0 0 30px rgba(79, 125, 255, .1);
+      --banned: #d44070;
+      --banned-soft: rgba(212, 64, 112, .18);
+      --banned-line: rgba(212, 64, 112, .46);
+      --purple-dark: #1a0a1e;
+      --crimson: #701a38;
+      --rose: #d44070;
+      --shadow: 0 22px 70px rgba(0, 0, 0, .5);
+      --glow: 0 0 30px rgba(176, 91, 204, .1);
       font-family: 'JetBrains Mono', 'Cascadia Code', 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
@@ -35,7 +41,7 @@
 
       position: relative;
       background:
-        linear-gradient(135deg, #0d1117 0%, #111820 46%, #15171d 100%);
+        linear-gradient(170deg, #0a0510 0%, #0f0618 30%, #180a14 55%, #200a14 75%, #0e040a 100%);
       color: var(--text);
       letter-spacing: 0;
       overflow: hidden;
@@ -47,9 +53,9 @@
       z-index: 0;
       pointer-events: none;
       background:
-        repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 42px),
-        repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 42px),
-        linear-gradient(120deg, rgba(79,125,255,.12), transparent 34%, rgba(79,209,154,.08) 68%, rgba(91,140,255,.1));
+        repeating-linear-gradient(90deg, rgba(200,100,180,.025) 0 1px, transparent 1px 42px),
+        repeating-linear-gradient(0deg, rgba(212,64,112,.02) 0 1px, transparent 1px 42px),
+        linear-gradient(120deg, rgba(176,91,204,.12), transparent 34%, rgba(212,64,112,.08) 68%, rgba(200,100,180,.1));
       opacity: .52;
       mask-image: linear-gradient(135deg, rgba(0,0,0,.92), rgba(0,0,0,.14));
     }
@@ -60,8 +66,8 @@
       z-index: 0;
       pointer-events: none;
       background:
-        linear-gradient(118deg, transparent 18%, rgba(79,125,255,.1) 20%, transparent 24%),
-        linear-gradient(118deg, transparent 58%, rgba(91,140,255,.08) 61%, transparent 66%);
+        linear-gradient(118deg, transparent 18%, rgba(212,64,112,.1) 20%, transparent 24%),
+        linear-gradient(118deg, transparent 58%, rgba(176,91,204,.08) 61%, transparent 66%);
       filter: blur(10px);
       opacity: .68;
       animation: backgroundShift 34s ease-in-out infinite alternate;
@@ -93,11 +99,11 @@
     }
     button:active { transform: translateY(1px); }
     button.primary {
-      background: linear-gradient(135deg, rgba(50, 88, 214, .98), rgba(79, 125, 255, .98));
-      border-color: var(--blue-line);
+      background: linear-gradient(135deg, rgba(140, 50, 180, .98), rgba(212, 64, 112, .98));
+      border-color: var(--banned-line);
       color: white;
     }
-    button.primary:hover { background: linear-gradient(135deg, #3b64df, #5f91ff); }
+    button.primary:hover { background: linear-gradient(135deg, #9e3bcc, #d44070); }
     button.danger {
       color: #ffd8d8;
       border-color: rgba(239, 98, 98, .55);
@@ -143,7 +149,7 @@
 
     .sidebar {
       border-right: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(17, 23, 32, .82) 0%, rgba(14, 18, 24, .78) 100%);
+      background: linear-gradient(180deg, rgba(26, 10, 30, .92) 0%, rgba(40, 14, 28, .86) 60%, rgba(20, 8, 16, .82) 100%);
       padding: 28px 22px;
       display: flex;
       flex-direction: column;
@@ -158,7 +164,7 @@
       position: absolute;
       inset: 0 0 auto;
       height: 1px;
-      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--green));
+      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--rose));
       opacity: .75;
     }
 
@@ -170,7 +176,7 @@
       margin: 0;
       font-size: 25px;
       line-height: 1.05;
-      background: linear-gradient(135deg, #ffffff, #b8ccff 46%, #8fb4ff);
+      background: linear-gradient(135deg, #f0e6ee, #d46ab8 46%, #b05bcc);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
@@ -199,14 +205,14 @@
     }
     .nav button:hover {
       color: var(--text);
-      background: rgba(91,140,255,.055);
+      background: rgba(212,100,180,.055);
       transform: translateX(2px);
       box-shadow: none;
     }
     .nav button.active {
       color: var(--text);
       border-color: var(--line);
-      background: linear-gradient(135deg, rgba(79, 125, 255, .18), rgba(91, 140, 255, .09));
+      background: linear-gradient(135deg, rgba(176, 91, 204, .18), rgba(212, 64, 112, .12));
       box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 12px 30px rgba(0,0,0,.16);
     }
     .nav button.active::before {
@@ -217,7 +223,7 @@
       bottom: 10px;
       width: 3px;
       border-radius: 2px;
-      background: var(--blue);
+      background: var(--cyan);
     }
 
     .footer { margin-top: auto; }
@@ -294,8 +300,8 @@
     }
     .choice:hover {
       transform: translateY(-4px);
-      border-color: rgba(105, 155, 255, .38);
-      background: rgba(28, 34, 42, .84);
+      border-color: rgba(200, 100, 180, .38);
+      background: rgba(40, 14, 28, .84);
       box-shadow: 0 24px 54px rgba(0,0,0,.28);
     }
     .choice h3 {
@@ -348,8 +354,8 @@
       background: rgba(35, 43, 52, .82);
       color: #ffffff;
     }
-    .chip:nth-child(3n+1) { border-top-color: rgba(79,125,255,.42); }
-    .chip:nth-child(3n+2) { border-top-color: rgba(91,140,255,.42); }
+    .chip:nth-child(3n+1) { border-top-color: rgba(176,91,204,.42); }
+    .chip:nth-child(3n+2) { border-top-color: rgba(212,64,112,.42); }
     .chip:nth-child(3n) { border-top-color: rgba(239,184,76,.42); }
 
     .actions {
@@ -371,8 +377,8 @@
     }
     .tabs button.active-tab {
       color: #ffffff;
-      border-color: var(--blue-line);
-      background: linear-gradient(135deg, rgba(79, 125, 255, .22), rgba(91, 140, 255, .12));
+      border-color: var(--banned-line);
+      background: linear-gradient(135deg, rgba(176, 91, 204, .22), rgba(212, 64, 112, .12));
       box-shadow: inset 0 1px 0 rgba(255,255,255,.045), 0 12px 26px rgba(0,0,0,.17);
     }
 
@@ -388,12 +394,12 @@
       padding: 0 10px;
     }
     .table-actions .download {
-      color: #dff5ff;
-      border-color: var(--blue-line);
-      background: var(--blue-soft);
+      color: #f0d6ee;
+      border-color: var(--banned-line);
+      background: var(--banned-soft);
     }
     .table-actions .download:hover {
-      background: rgba(79, 125, 255, .24);
+      background: rgba(212, 64, 112, .24);
     }
 
     .stats {
@@ -411,8 +417,8 @@
     }
     .metric:hover {
       transform: translateY(-2px);
-      border-color: rgba(105, 155, 255, .34);
-      background: rgba(35, 42, 52, .8);
+      border-color: rgba(200, 100, 180, .34);
+      background: rgba(40, 14, 28, .8);
     }
     .metric span {
       display: block;
@@ -472,6 +478,7 @@
     .clean, .trusted { color: var(--green); font-weight: 900; }
     .unknown { color: var(--amber); font-weight: 900; }
     .process { color: var(--cyan); font-weight: 900; }
+    .banned { color: var(--rose); font-weight: 900; text-shadow: 0 0 12px rgba(212,64,112,.4); }
 
     .toolbar {
       display: grid;
@@ -481,8 +488,8 @@
     }
     .actions button.active-filter {
       color: #ffffff;
-      border-color: var(--blue-line);
-      background: var(--blue-soft);
+      border-color: var(--banned-line);
+      background: var(--banned-soft);
       box-shadow: 0 10px 22px rgba(0,0,0,.16);
     }
 
@@ -521,8 +528,8 @@
       display: block;
       height: 100%;
       width: 46%;
-      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--green));
-      box-shadow: 0 0 16px rgba(79,125,255,.28);
+      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--rose));
+      box-shadow: 0 0 16px rgba(212,64,112,.28);
       animation: slide 1.9s infinite ease-in-out;
     }
     @keyframes slide {
@@ -656,7 +663,7 @@
         <button data-nav="texts">texts</button>
       </nav>
       <div class="footer">
-        <button onclick="selfDestruct()" style="width:100%;color:var(--red);border-color:rgba(239,98,98,.35);background:rgba(239,98,98,.08);font-size:12px">self destruct</button>
+        <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(212,64,112,.35);background:rgba(212,64,112,.08);font-size:12px">self destruct</button>
       </div>
     </aside>
 
@@ -715,6 +722,16 @@
             <button class="primary" onclick="scanMods()">scan</button>
           </div>
           <div id="modsError" class="error"></div>
+        </div>
+        <div class="panel" style="padding:28px;text-align:center;border-style:dashed;border-color:var(--banned-line);background:var(--banned-soft);cursor:pointer;transition:border-color .3s,background .3s" id="jarkaDropZone"
+             ondragover="event.preventDefault();this.style.borderColor='var(--rose)';this.style.background='rgba(212,64,112,.2)'"
+             ondragleave="this.style.borderColor='var(--banned-line)';this.style.background='var(--banned-soft)'"
+             ondrop="event.preventDefault();handleJarkaDrop(event)"
+             onclick="document.getElementById('jarkaFilePicker').click()">
+          <div style="font-size:15px;font-weight:700;color:var(--rose)">drop .jar here</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">or click to select jar(s)</div>
+          <input type="file" id="jarkaFilePicker" accept=".jar" multiple style="display:none" onchange="handleJarkaFiles(this.files)">
+          <div id="jarkaResult" style="margin-top:14px;display:none;text-align:left;width:100%"></div>
         </div>
       </section>
 
@@ -813,10 +830,10 @@
             <p>predefined everything search queries — click to copy.</p>
           </div>
         </div>
-        <div class="panel scan-panel">
-          <div id="textsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">
+        <div style="flex:1;min-height:0;overflow:auto;margin-top:4px">
+          <div id="textsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;padding:2px">
           </div>
-          <div id="textsError" class="error"></div>
+          <div id="textsError" class="error" style="margin-top:10px"></div>
         </div>
       </section>
 
@@ -828,8 +845,9 @@
           </div>
           <button onclick="showView(lastBackView)">back</button>
         </div>
-        <div class="stats">
+        <div class="stats" style="grid-template-columns:repeat(4,1fr)">
           <div class="metric"><span>Items</span><strong id="statItems">0</strong></div>
+          <div class="metric"><span>Banned</span><strong id="statBanned" class="banned">0</strong></div>
           <div class="metric"><span>Risk</span><strong id="statRisk" class="risk">0</strong></div>
           <div class="metric"><span id="statThirdName">Trusted</span><strong id="statTrusted" class="trusted">0</strong></div>
         </div>
@@ -837,6 +855,7 @@
           <input id="resultSearch" placeholder="Search name, path, source, verdict">
           <div class="actions">
             <button data-filter="" onclick="setResultFilter('')">all</button>
+            <button data-filter="Banned" onclick="setResultFilter('Banned')" style="color:var(--rose)">banned</button>
             <button data-filter="Risk" onclick="setResultFilter('Risk')">risk</button>
             <button data-filter="Clean" onclick="setResultFilter('Clean')">clean</button>
           </div>
@@ -913,7 +932,7 @@
       document.getElementById("resultSearch").addEventListener("input", renderResults);
       document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => {
         if (btn.dataset.nav === "programs") loadProgramTools();
-        else if (btn.dataset.nav === "texts") loadTexts();
+        else if (btn.dataset.nav === "texts") { showView("texts"); loadTexts(); }
         else showView(btn.dataset.nav);
       }));
     }
@@ -1022,16 +1041,19 @@
       const filtered = programTools.filter(tool => (tool.group || "alpha") === activeToolTab);
       rows.innerHTML = filtered.map(tool => {
         const index = programTools.indexOf(tool);
+        const isFound = tool.status === "Found";
+        const detailInfo = isFound ? `found at ${escapeHtml(tool.source)}` : (tool.downloadAvailable ? "available for download" : "manual installation required");
         return `<tr>
-          <td class="preserve-case">${escapeHtml(tool.name)}</td>
-          <td class="${tool.status === "Found" ? "trusted" : "unknown"}">${escapeHtml(tool.status)}</td>
-          <td class="mono preserve-case">${escapeHtml(tool.path || tool.note)}</td>
-          <td>${escapeHtml(tool.source)}</td>
+          <td class="preserve-case" style="font-weight:700">${escapeHtml(tool.name)}</td>
+          <td class="${isFound ? "trusted" : "unknown"}">${isFound ? "found" : "missing"}</td>
+          <td class="mono preserve-case" style="font-size:11px">${escapeHtml(tool.path || tool.note)}</td>
+          <td style="font-size:11px;color:var(--muted)">${escapeHtml(tool.source)}</td>
           <td>
             <div class="table-actions">
-              <button ${tool.status === "Found" ? "" : "disabled"} onclick="openProgramTool(${index})">open</button>
-              <button class="download" ${tool.downloadAvailable ? "" : "disabled"} onclick="downloadProgramTool(${index})">${tool.downloadAvailable ? (tool.status === "Found" ? "update" : "download") : "manual"}</button>
+              <button ${isFound ? "" : "disabled"} onclick="openProgramTool(${index})" title="Launch ${escapeHtml(tool.name)}">open</button>
+              <button class="download" ${tool.downloadAvailable && !isFound ? "" : "disabled"} onclick="downloadProgramTool(${index})">${tool.downloadAvailable ? (isFound ? "installed" : "download") : "manual"}</button>
             </div>
+            <div style="font-size:9px;color:var(--muted);margin-top:4px;text-align:center">${detailInfo}</div>
           </td>
         </tr>`;
       }).join("") || `<tr><td colspan="5" class="unknown">No tools configured</td></tr>`;
@@ -1121,6 +1143,10 @@
       { name: "doomsday setup size", text: "ext:txt;cmd;bat  content:\"java -jar\"" },
       { name: "mods size", text: "*.jar size:10mb..15mb" },
       { name: "doomsday log (win+r)", text: "%USERLOCALAPPDATA%\\Temp\\JavaLauncher.log" },
+      { name: "liminar setup size", text: "ext:txt;cmd;bat;ps1 content:\"ExecutionPolicy Bypass -Command\" content:\"ProcessStartInfo\" content:\"UseShellExecute\"" },
+      { name: "size by liminar inj", text: "ext:lmr;bin;dat;tmp;cache;pak;res;cfg;dll;scr;drv;lib;node;addon;plugin;client;x64;upd;exe;bat;cmd size:17.5mb..20mb" },
+      { name: "size by liminar 2", text: "ext:jar size:15mb..18mb" },
+      { name: "liminar free cfg (win+r)", text: "%LOCALAPPDATA%\\uTorrent\\configs" },
     ];
 
     function loadTexts() {
@@ -1128,7 +1154,7 @@
       showView("texts");
       const grid = document.getElementById("textsGrid");
       grid.innerHTML = textsData.map((entry, idx) => `
-        <div class="panel" style="padding:16px;cursor:pointer;transition:border-color .3s" onclick="copyText(${idx})" title="Click to copy">
+        <div class="panel" style="padding:16px;cursor:pointer;transition:border-color .3s;border-color:rgba(212,64,112,.12)" onclick="copyText(${idx})" title="Click to copy">
           <div class="preserve-case" style="font-size:14px;font-weight:800;margin-bottom:8px;color:var(--cyan)">${escapeHtml(entry.name)}</div>
           <div style="font-size:11px;color:var(--muted);word-break:break-all;line-height:1.5;max-height:60px;overflow:hidden">${escapeHtml(entry.text)}</div>
         </div>
@@ -1149,6 +1175,58 @@
       }).catch(() => {
         showError("textsError", "Failed to copy to clipboard");
       });
+    }
+
+    async function handleJarkaFiles(files) {
+      const jars = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.jar'));
+      if (!jars.length) { showError('modsError', 'No .jar files selected'); return; }
+      await runJarkaScans(jars);
+    }
+
+    async function handleJarkaDrop(event) {
+      const files = Array.from(event.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith('.jar'));
+      if (!files.length) { showError('modsError', 'Drop .jar files only'); return; }
+      await runJarkaScans(files);
+    }
+
+    async function runJarkaScans(files) {
+      showError('modsError', '');
+      setLoading(true, `JarkaScanner: analyzing ${files.length} jar(s)...`);
+      const results = [];
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          setLoading(true, `JarkaScanner: ${i+1}/${files.length} - ${file.name}`);
+          const payload = await api().scan_jar_jarka(file.path || file.name);
+          results.push({ name: file.name, ok: payload.ok, data: payload.ok ? payload.results : payload.error });
+        }
+        const div = document.getElementById('jarkaResult');
+        div.style.display = 'block';
+        div.innerHTML = results.map(r => {
+          if (!r.ok) return `<div style="padding:10px;margin-top:8px;border-radius:7px;background:rgba(239,98,98,.1)"><strong style="color:var(--red)">${escapeHtml(r.name)}</strong><div style="font-size:12px;color:var(--muted)">error: ${escapeHtml(r.data)}</div></div>`;
+          const riskScore = r.data.risk_score || 0;
+          const riskLevel = r.data.risk_level || 'N/A';
+          const isMalware = riskLevel === 'MALWARE';
+          const logs = [];
+          if (r.data.telegram_token) logs.push('telegram token');
+          if (r.data.discord_webhook) logs.push('discord webhook');
+          if (r.data.command_execution) logs.push('command exec');
+          if (r.data.cheats && Object.keys(r.data.cheats).length) logs.push('cheats: ' + Object.keys(r.data.cheats).join(', '));
+          if (r.data.obfuscation) logs.push('obfuscation');
+          if (r.data.native_libs) logs.push('native libs: ' + (r.data.native_libs_paths || []).length);
+          if (r.data.suspicious_urls && r.data.suspicious_urls.length) logs.push('suspicious urls: ' + r.data.suspicious_urls.length);
+          const ai = r.data.ai || {};
+          return `<div style="padding:10px;margin-top:8px;border-radius:7px;background:rgba(0,0,0,.3);border-left:3px solid ${isMalware ? 'var(--rose)' : (riskScore > 20 ? 'var(--amber)' : 'var(--green)')}">
+            <div style="font-weight:800;font-size:14px;color:${isMalware ? 'var(--rose)' : (riskScore > 20 ? 'var(--amber)' : 'var(--green)')}">${escapeHtml(r.name)} — ${riskScore}/100 (${riskLevel})</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:4px">${logs.length ? logs.map(l => '<span style="margin-right:8px">• ' + escapeHtml(l) + '</span>').join('') : '<span>no significant findings</span>'}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">ai malware: ${ai.malware_probability || 0}%</div>
+          </div>`;
+        }).join('');
+      } finally {
+        setLoading(false);
+        document.getElementById('jarkaDropZone').style.borderColor = 'var(--banned-line)';
+        document.getElementById('jarkaDropZone').style.background = 'var(--banned-soft)';
+      }
     }
 
     async function downloadMissingTools() {
@@ -1191,8 +1269,9 @@
       results = payload.items || [];
       lastBackView = backView;
       document.getElementById("targetLabel").textContent = payload.target || "Scan target";
-      document.getElementById("statItems").textContent = payload.stats.items;
-      document.getElementById("statRisk").textContent = payload.stats.risks;
+      document.getElementById("statItems").textContent = payload.stats.items || 0;
+      document.getElementById("statBanned").textContent = payload.stats.banned || 0;
+      document.getElementById("statRisk").textContent = payload.stats.risks || 0;
       const thirdIsClean = payload.target === "Tools" || String(payload.target || "").startsWith("Process scan");
       document.getElementById("statThirdName").textContent = thirdIsClean ? "Clean" : "Trusted";
       document.getElementById("statTrusted").textContent = thirdIsClean ? payload.stats.clean : payload.stats.trusted;
@@ -1222,7 +1301,7 @@
           <td class="mono preserve-case">${escapeHtml(item.path)}</td>
           <td class="mono">${escapeHtml(item.size)}</td>
           <td class="${sourceClass(item.source)}">${escapeHtml(item.source)}</td>
-          <td class="${item.suspicious ? "risk" : "clean"}">${escapeHtml(item.verdict)}</td>
+          <td class="${item.banned ? "banned" : (item.suspicious ? "risk" : "clean")}">${escapeHtml(item.verdict)}</td>
         </tr>
       `).join("") || `<tr><td colspan="5" class="unknown">No rows</td></tr>`;
     }
@@ -1233,7 +1312,7 @@
       document.getElementById("modalTitle").textContent = item.name;
       const logs = (item.analysisResults || []).map(log => `[${log.type}] ${log.className} -> ${log.detail}`).join("\\n") || "No heuristic hits.";
       document.getElementById("modalBody").innerHTML = `
-        <div class="kv"><span>Verdict</span><strong class="${item.suspicious ? "risk" : "clean"}">${escapeHtml(item.verdict)}</strong></div>
+        <div class="kv"><span>Verdict</span><strong class="${item.banned ? "banned" : (item.suspicious ? "risk" : "clean")}">${escapeHtml(item.verdict)}</strong></div>
         <div class="kv"><span>Path</span><div class="mono preserve-case">${escapeHtml(item.path)}</div></div>
         <div class="kv"><span>Size</span><div class="mono">${escapeHtml(item.size)}</div></div>
         <div class="kv"><span>Source</span><div class="${sourceClass(item.source)}">${escapeHtml(item.source)}</div></div>

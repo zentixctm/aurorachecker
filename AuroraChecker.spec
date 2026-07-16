@@ -2,11 +2,11 @@
 
 
 a = Analysis(
-    ['main.py'],
+    ['AuroraChecker.pyw'],
     pathex=[],
     binaries=[],
-    datas=[('ui', 'ui'), ('assets', 'assets')],
-    hiddenimports=['aurora_core', 'jar_search', 'ctypes', 'csv', 'hashlib', 'io', 'json', 'os', 'pathlib', 're', 'shutil', 'shlex', 'subprocess', 'sys', 'tempfile', 'threading', 'time', 'urllib.request', 'uuid', 'urllib.parse', 'zipfile', 'traceback', 'winreg', 'datetime'],
+    datas=[('ui', 'ui'), ('assets', 'assets'), ('tools\\InjGen\\InjGen.exe', 'tools\\InjGen'), ('tools\\ShellBagAnalyzer\\shellbag_analyzer_cleaner.exe', 'tools\\ShellBagAnalyzer'), ('tools\\WarpVersionChecker\\WarpVersionChecker.exe', 'tools\\WarpVersionChecker'), ('jarka_scanner', 'jarka_scanner')],
+    hiddenimports=['aurora_core', 'ctypes', 'csv', 'hashlib', 'io', 'json', 'os', 'pathlib', 're', 'shutil', 'shlex', 'subprocess', 'sys', 'tempfile', 'threading', 'time', 'urllib.request', 'uuid', 'urllib.parse', 'zipfile', 'traceback', 'winreg', 'datetime', 'jarka_scanner', 'jarka_scanner.scanner', 'jarka_scanner.jar_extractor', 'jarka_scanner.string_extractor', 'jarka_scanner.detectors', 'jarka_scanner.detectors.network_detector', 'jarka_scanner.detectors.stealer_detector', 'jarka_scanner.detectors.command_detector', 'jarka_scanner.detectors.cheat_detector', 'jarka_scanner.detectors.obfuscation_detector', 'jarka_scanner.utils', 'jarka_scanner.utils.helpers', 'jarka_scanner.ai', 'jarka_scanner.ai.ai_classifier'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['assets\\default_exe.ico'],
+    icon=['assets\\app.ico'],
 )

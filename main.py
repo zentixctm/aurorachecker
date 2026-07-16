@@ -55,7 +55,7 @@ def main() -> int:
     try:
         auto_scan = "--auto-scan" in sys.argv
         html = RESOURCE_ROOT / "ui" / "index.html"
-        icon = RESOURCE_ROOT / "assets" / "default_exe.ico"
+        icon = RESOURCE_ROOT / "assets" / "app.ico"
         api = AuroraApi()
         window = webview.create_window(
             "AuroraChecker",
