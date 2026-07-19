@@ -3076,61 +3076,14 @@ class AuroraApi:
 
             def is_cheat_match(text: str) -> bool:
                 t = text.lower()
-                
-                # 1. Highly specific cheat indicators (always match)
-                specific_keywords = [
-                    "celestial", "sunrise", "akrien", "zamorozka", "deadcode", "exore", "byster", 
-                    "fluger", "liquidbounce", "aristois", "meteorclient", "wurstplus", "wurst+",
-                    "fdpclient", "augustus", "exhibition", "dortware", "zeroday", "forgehax", 
-                    "seppuku", "earthhack", "weepcraft", "skillclient", "autoclicker", "cheatengine", 
-                    "processhacker", "systeminformer", "extremeinjector", "hackedclient"
+                patterns = [
+                    r'(?:^|[^a-zA-Z])(?:vape|drip|entropy|whiteout|juul|skilled|itami|koid|wurst|impact|sigma|liquidbounce|meteor|aristois|salhack|future|rusherhack|phobos|pyro|bleachhack|inertia|huzuni|celestial|sunrise|akrien|zamorozka|hono|nurik|excellent|expensive|fluger|deadcode|exore|byster|spook|rudo|boze|fdpclient|nightx|augustus|exhibition|remix|novoline|tenacity|dortware|azura|lime|zeroday|meteorclient|forgehax|seppuku|lambda|earthhack|catalyst|kami|wurstplus|wurstplusthree|wurstplustwo|weepcraft|wolfram|nodus|metro|kronos|saint|xenon|obsidian|skillclient|icarus|lucid|matmos|darklight|pandora|jigsaw|flux|moon|astolfo|rise|phantom|kangaroo|keystrokes|hitbox|velocity|doubleclick|doubleclicker|fastplace|safewalk|freecam|autoarmor|bowaimbot|fastbow|antiafk|autorespawn|autodisconnect|autoleave|antibot|nametags|tracers|xray|fullbright|breadcrumbs)(?:$|[^a-zA-Z])',
+                    r'(?:^|\b|_)(?:crypt|rich|mint|ares|reach|fly|fdp)(?:\b|_|$)',
+                    r'(?:autoclicker|cheatengine|processhacker|systeminformer|extremeinjector|extreme[-_\s]injector|hackedclient|hacked[-_\s]client|cheat[-_\s]mod|cheat[-_\s]client|cheat[-_\s]pack|cheat[-_\s]launcher|cheatlauncher|cheatpack|reallyworld[-_\s]cheat|holyworld[-_\s]cheat|vime[-_\s]cheat|vimeworld[-_\s]cheat|wellmore[-_\s]cheat)'
                 ]
-                if any(k in t for k in specific_keywords):
-                    return True
-                    
-                # 2. Contextual cheat indicators
-                # These are only matched if accompanied by a gaming/cheat context word
-                ambiguous_keywords = [
-                    "vape", "drip", "entropy", "whiteout", "juul", "crypt", "skilled", "itami", 
-                    "koid", "wurst", "impact", "sigma", "meteor", "salhack", "future", "rusherhack", 
-                    "phobos", "pyro", "bleachhack", "inertia", "huzuni", "ares", "hono", "nurik", 
-                    "excellent", "expensive", "spook", "rudo", "boze", "mint", "fdp", "nightx", 
-                    "remix", "novoline", "tenacity", "azura", "lime", "rise", "phantom", "kangaroo", 
-                    "keystrokes", "reach", "hitbox", "velocity", "doubleclick", "fastplace", 
-                    "safewalk", "freecam", "autoarmor", "bowaimbot", "fastbow", "antiafk", 
-                    "autorespawn", "autodisconnect", "autoleave", "antibot", "nametags", "tracers", 
-                    "xray", "fullbright", "breadcrumbs", "rich", "fly"
-                ]
-                
-                context_words = [
-                    "minecraft", "mods", "mod", "client", "launcher", "reallyworld", "holyworld", 
-                    "vimeworld", "wellmore", "cheat", "hack", "exploit", "utility", "fabric", 
-                    "forge", "jar", "zip", "exe", "download", "скачать", "чит", "купить", 
-                    "кряк", "crack", "free", "бесплатно", "инжект", "inject", "bypass", "обход", 
-                    "config", "кфг", "cfg", "play", "server", "сервер", "game", "игра", "версия", 
-                    "version", "hax", "client", "launcher", "soft"
-                ]
-                
-                matched_ambiguous = False
-                for k in ambiguous_keywords:
-                    pattern = rf'(?:^|[^a-zA-Z]){k}(?:$|[^a-zA-Z])'
-                    if re.search(pattern, t):
-                        matched_ambiguous = True
-                        break
-                        
-                if matched_ambiguous:
-                    if any(cw in t for cw in context_words):
+                for p in patterns:
+                    if re.search(p, t):
                         return True
-                        
-                # 3. Direct cheat context combinations
-                direct_patterns = [
-                    r'cheat[-_\s]mod', r'cheat[-_\s]client', r'cheat[-_\s]pack', r'cheat[-_\s]launcher',
-                    r'reallyworld[-_\s]cheat', r'holyworld[-_\s]cheat', r'vime[-_\s]cheat', 
-                    r'vimeworld[-_\s]cheat', r'wellmore[-_\s]cheat'
-                ]
-                if any(re.search(p, t) for p in direct_patterns):
-                    return True
-                    
                 return False
 
             def from_webkit_time(timestamp):
