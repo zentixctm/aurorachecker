@@ -1800,7 +1800,11 @@ def replace_file(source: Path, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists():
         destination.unlink()
-    source.replace(destination)
+    try:
+        source.replace(destination)
+    except OSError:
+        import shutil
+        shutil.move(str(source), str(destination))
 
 
 def find_launchable_in_dir(signature: dict, root: Path) -> Path | None:
