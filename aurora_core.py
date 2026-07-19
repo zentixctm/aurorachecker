@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -61,7 +62,43 @@ CHEAT_STRINGS = {
     "doomsday", "doomsdayclient", "Slinky Client", "slinky", "slinkyclient",
     "Sunset Client", "sunsetclient", "Karma Client", "karmaclient",
     "InjGen", "injgen", "injectgen", "Lunar Client", "lunarclient",
-    "com/lunarclient", "com/lunar",
+    "com/lunarclient", "com/lunar", "AnchorTweaks", "AutoDoubleHand",
+    "AutoHitCrystal", "JumpReset", "LegitTotem", "ShieldBreaker", "AxeSpam",
+    "WebMacro", "FastPlace", "WalskyOptimizer", "WalksyOptimizer",
+    "WalksyCrystalOptimizerMod", "ShieldDisabler", "SilentAim", "Totem Hit",
+    "AntiMissClick", "LagReach", "PopSwitch", "SprintReset", "ChestSteal",
+    "AntiBot", "ElytraSwap", "FastXP", "FastExp", "Refill", "NoJumpDelay",
+    "AirAnchor", "FakeInv", "PackSpoof", "Antiknockback", "catlean", "Argon",
+    "AuthBypass", "Asteria", "Prestige", "AutoEat", "AutoMine", "MaceSwap",
+    "DoubleAnchor", "AutoTPA", "Xenon", "gypsy", "AutoMace", "dontPlaceCrystal",
+    "dontBreakCrystal", "canPlaceCrystalServer", "healPotSlot", "speedPotSlot",
+    "strengthPotSlot", "hasGlowstone", "HasAnchor", "preventSwordBlockBreaking",
+    "preventSwordBlockAttack", "swapBackToOriginalSlot", "autoCrystalPlaceClock",
+    "setBlockBreakingCooldown", "getBlockBreakingCooldown", "blockBreakingCooldown",
+    "onBlockBreaking", "setItemUseCooldown", "setSelectedSlot", "invokeDoAttack",
+    "invokeDoItemUse", "invokeOnMouseButton", "onTickMovement", "onPushOutOfBlocks",
+    "onIsGlowing", "FutureClient", "Future Client", "MeteorClient", "Meteor Client",
+    "ImpactClient", "Impact Client", "WurstClient", "Wurst Client", "Phobos", "Freecam",
+    "Nuker", "Chams", "Wallhack", "NoRender", "WTap", "STap", "FastBow", "Offhand",
+    "Crystalaura", "Crystal Aura", "AnchorAura", "Anchor Aura", "BedAura", "Bed Aura",
+    "Surround", "AutoObby", "AutoTrap", "SelfTrap", "AutoWalk", "InventoryWalk", "InvMove",
+    "InvWalk", "FastFall", "Glide", "Blink", "Phase", "Clip", "VClip", "HClip", "PacketFly",
+    "pfly", "BoatFly", "EntitySpeed", "Entity Speed", "ElytraFly", "Elytra Fly", "Parkour",
+    "NoPush", "NoColli", "AutoTool", "Auto Tool", "InvClean", "InvCleaner", "Inventory Cleaner",
+    "AutoLog", "AutoDisconnect", "FastUse", "AntiAFK", "Anti AFK", "Derp", "SpinBot", "Timer",
+    "PortalGodMode", "Portal God Mode", "FakePlayer", "Fake Player", "AutoReconnect",
+    "AutoRespawn", "AntiVanish", "Anti Vanish", "XCarry", "MoreInventory", "NoEntityTrace",
+    "NoEntityTrees", "PacketCrasher", "ServerCrasher", "CommandSpam", "Spammer", "SignCrash",
+    "BookCrash", "CoordExploit", "Coord Finder", "Nursultan", "Expensive", "ExpensiveClient",
+    "Neverhook", "Celestia", "Akrien", "Excellent", "ExcellentClient", "Wexside", "Minced",
+    "WildClient", "Wild Client", "Fluger", "Envy", "RiseClient", "Rise Client",
+    "Elysium", "Gamble", "Phantom", "Booster", "FDPClient", "Salhack", "KamiBlue",
+    "Aristois", "Pyro", "Rhack", "Gamesense", "Konas", "Seppuku", "Xulu", "Deadcode",
+    "Ares", "Huzuni", "ZeroDay", "ArmorHUD", "Breadcrumbs", "Trajectories", "NoFog",
+    "AntiOverlay", "AntiBlind", "AutoShield", "AntiKB", "BedAura", "ObbyBypass",
+    "OffhandTotem", "AutoSneak", "AirJump", "FastLadder", "WaterSpeed", "IceSpeed",
+    "SlimeJump", "AutoSell", "LootYeeter", "ItemScroller", "HWID", "AntiLeak",
+    "Cracked"
 }
 
 WHITELISTED_MODS = {
@@ -208,6 +245,14 @@ PROGRAM_SIGNATURES = [
         "download_type": "zip",
     },
     {
+        "name": "ExecutedProgramsList",
+        "process": ("executedprogramslist.exe",),
+        "exe": ("executedprogramslist.exe",),
+        "keywords": ("executedprogramslist", "executed programs list"),
+        "download_url": "https://www.nirsoft.net/utils/executedprogramslist.zip",
+        "download_type": "zip",
+    },
+    {
         "name": "BAM Parser",
         "process": ("bamparser.exe", "bam parser.exe"),
         "exe": ("bamparser.exe", "bam parser.exe"),
@@ -242,25 +287,25 @@ PROGRAM_SIGNATURES = [
     {
         "name": "AnyDesk",
         "process": ("anydesk.exe",),
-        "exe": ("anydesk.exe",),
+        "exe": ("anydesk.exe", "AnyDesk.exe"),
         "keywords": ("anydesk", "any desk", "any-desk"),
-        "download_url": "https://anydesk.com/en/downloads/thank-you?dv=win_exe",
+        "download_url": "https://download.anydesk.com/AnyDesk.exe",
         "download_type": "file",
     },
     {
         "name": "RuDesk",
-        "process": ("rudesk.exe",),
-        "exe": ("rudesk.exe",),
-        "keywords": ("rudesk", "ru desk", "ru-desk"),
-        "download_url": None,
-        "download_type": None,
+        "process": ("rudesk.exe", "rudesktop.exe", "rudesktop-2.9.1069-x64.msi"),
+        "exe": ("rudesk.exe", "rudesktop.exe", "rudesktop-2.9.1069-x64.msi"),
+        "keywords": ("rudesk", "ru desk", "ru-desk", "rudesktop"),
+        "download_url": "https://storage.rudesktop.ru/download/rudesktop-2.9.1069-x64.msi",
+        "download_type": "file",
     },
     {
         "name": "RustDesk",
         "process": ("rustdesk.exe",),
-        "exe": ("rustdesk.exe",),
+        "exe": ("rustdesk.exe", "rustdesk-1.4.9-x86_64.exe"),
         "keywords": ("rustdesk", "rust desk", "rust-desk"),
-        "download_url": "https://github.com/rustdesk/rustdesk/releases/latest/download/RustDesk-1.3.8-x86_64.exe",
+        "download_url": "https://github.com/rustdesk/rustdesk/releases/download/1.4.9/rustdesk-1.4.9-x86_64.exe",
         "download_type": "file",
     },
 ]
@@ -273,7 +318,6 @@ BETA_TOOL_NAMES = {
 
 OTHER_TOOL_NAMES = {
     "BAM Parser",
-    "WinDefLogView",
     "InjGen",
     "WarpVersionChecker",
     "Java",
@@ -296,6 +340,10 @@ ALLOWED_DOWNLOAD_HOSTS = {
     "ccleaner.com",
     "api.adoptium.net",
     "privazer.com",
+    "storage.rudesktop.ru",
+    "download.anydesk.com",
+    "www.softportal.com",
+    "softportal.com",
 }
 
 KNOWN_BENIGN_NATIVE_NAMES = (
@@ -468,11 +516,211 @@ def download_source(path: Path) -> str | None:
         return None
 
 
-def heuristic_results(path: Path) -> list[dict]:
+def calculate_entropy(data: bytes) -> float:
+    if not data:
+        return 0.0
+    frequencies = [0] * 256
+    for byte in data:
+        frequencies[byte] += 1
+    
+    entropy = 0.0
+    length = len(data)
+    for count in frequencies:
+        if count > 0:
+            p = count / length
+            entropy -= p * math.log2(p)
+    return entropy
+
+
+def parse_constant_pool_strings(data: bytes) -> list[str]:
+    strings = []
     try:
-        return process_jar_bytes(path.read_bytes(), "", True)
+        if len(data) < 10 or data[:4] != b'\xca\xfe\xba\xbe':
+            return []
+        constant_pool_count = int.from_bytes(data[8:10], "big")
+        offset = 10
+        i = 1
+        while i < constant_pool_count:
+            if offset >= len(data):
+                break
+            tag = data[offset]
+            if tag == 1: # CONSTANT_Utf8
+                if offset + 3 > len(data):
+                    break
+                length = int.from_bytes(data[offset+1:offset+3], "big")
+                if offset + 3 + length > len(data):
+                    break
+                val = data[offset+3:offset+3+length].decode("utf-8", errors="ignore")
+                strings.append(val)
+                offset += 3 + length
+            elif tag in (3, 4, 9, 10, 11, 12, 18): # Integer, Float, Fieldref, Methodref, InterfaceMethodref, NameAndType, InvokeDynamic
+                offset += 5
+            elif tag in (5, 6): # Long, Double
+                offset += 9
+                i += 1
+            elif tag in (7, 8, 16, 19, 20): # Class, String, MethodType, Module, Package
+                offset += 3
+            elif tag == 15: # MethodHandle
+                offset += 4
+            else:
+                break
+            i += 1
     except Exception:
-        return []
+        pass
+    return strings
+
+
+def analyze_jar_entropy_and_bytecode(path: Path) -> list[dict]:
+    logs = []
+    try:
+        with zipfile.ZipFile(path, 'r') as zf:
+            for info in zf.infolist():
+                if info.is_dir():
+                    continue
+                name = info.filename
+                if name.endswith(".class"):
+                    class_bytes = zf.read(info)
+                    
+                    # 1. Entropy Scan
+                    entropy = calculate_entropy(class_bytes)
+                    if len(class_bytes) > 2048 and entropy > 6.9:
+                        logs.append(entry(name, "Obfuscation", f"High file entropy: {entropy:.2f} (possible encryption/packing)"))
+                        
+                    # 2. Constant Pool Bytecode Analysis
+                    pool_strings = parse_constant_pool_strings(class_bytes)
+                    has_class_loader = any("java/lang/ClassLoader" in s for s in pool_strings)
+                    has_define_class = any("defineClass" in s for s in pool_strings)
+                    if has_class_loader and has_define_class:
+                        logs.append(entry(name, "ClassLoader Hijack", "Class dynamically loads bytecode (ClassLoader.defineClass)"))
+                    if any("sun/misc/Unsafe" in s for s in pool_strings):
+                        logs.append(entry(name, "Unsafe Usage", "Direct memory access reference (sun/misc/Unsafe)"))
+    except Exception:
+        pass
+    return logs
+
+
+def check_dns_cache() -> list[dict]:
+    logs = []
+    if os.name != "nt":
+        return logs
+    try:
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = 0
+        proc = subprocess.run(
+            ["ipconfig.exe", "/displaydns"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            timeout=5,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            startupinfo=startupinfo,
+        )
+        output = proc.stdout or ""
+        
+        domains = set()
+        for line in output.splitlines():
+            if "Record Name" in line or "Имя записи" in line:
+                parts = line.split(":")
+                if len(parts) >= 2:
+                    domain = parts[1].strip().lower()
+                    if domain:
+                        domains.add(domain)
+                        
+        cheat_domains = {
+            "doomsdayclient.com", "prestigeclient.vip", "dqrkis.xyz", "sunsetclient.com",
+            "karmaclient.co", "slinkyclient.com", "vape.gg", "intent.store", "neverlose.cc",
+            "liquidbounce.net", "wurstclient.net"
+        }
+        
+        for domain in domains:
+            for cheat in cheat_domains:
+                if cheat in domain:
+                    logs.append(entry("DNS Cache", "Network Signature", f"Cheat domain found in DNS cache: {domain}"))
+    except Exception:
+        pass
+    return logs
+
+
+def check_drivers() -> list[dict]:
+    logs = []
+    if os.name != "nt":
+        return logs
+    try:
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = 0
+        proc = subprocess.run(
+            ["sc.exe", "query", "type=", "driver"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="ignore",
+            timeout=5,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+            startupinfo=startupinfo
+        )
+        output = proc.stdout or ""
+        
+        suspicious_drivers = ["kprocesshacker", "kph2", "dbk64", "dbk32", "cheatengine"]
+        for line in output.splitlines():
+            if "SERVICE_NAME" in line or "DISPLAY_NAME" in line:
+                lower = line.lower()
+                for driver in suspicious_drivers:
+                    if driver in lower:
+                        logs.append(entry("System Drivers", "Security Bypass", f"Suspicious kernel driver active: {driver}"))
+    except Exception:
+        pass
+    return logs
+
+
+def heuristic_results(path: Path) -> list[dict]:
+    logs = []
+    # 1. Run original scanning method (process_jar_bytes)
+    try:
+        logs.extend(process_jar_bytes(path.read_bytes(), "", True))
+    except Exception:
+        pass
+
+    # 2. Run jarka_scanner method
+    try:
+        from jarka_scanner.scanner import scan_jar
+        results = scan_jar(str(path), path.stat().st_size if path.exists() else 0)
+        if not results.get('error'):
+            # telegram
+            if results.get('telegram_token'):
+                logs.append(entry("Telegram Stealer", "CRITICAL", "Telegram bot token found in class strings"))
+            # discord
+            if results.get('discord_webhook'):
+                logs.append(entry("Discord Stealer", "CRITICAL", "Discord webhook URL found in class strings"))
+            # password logger
+            if results.get('password_logger'):
+                logs.append(entry("Password Logger", "CRITICAL", "Suspicious authentication / password logger strings found"))
+            # cheats
+            cheats = results.get('cheats', {})
+            for name, detected in cheats.items():
+                if detected:
+                    logs.append(entry("Cheat Pattern", "Cheat String", f"Detected cheat/hack keyword: {name}"))
+            # evidence
+            for item in results.get('evidence', []):
+                filename = item.get('file', '')
+                matched = item.get('matched', '')
+                logs.append(entry(filename, "Detection", f"Matched signature: {matched}"))
+            # suspicious urls
+            urls = results.get('suspicious_urls', [])
+            for url in urls:
+                logs.append(entry("Suspicious Connection", "Dangerous Behavior", f"Suspicious URL found: {url}"))
+    except Exception:
+        pass
+
+    # 3. Run new Entropy Scan & Constant Pool Bytecode Analysis
+    try:
+        logs.extend(analyze_jar_entropy_and_bytecode(path))
+    except Exception:
+        pass
+        
+    return logs
 
 
 def process_jar_bytes(data: bytes, prefix: str, is_root: bool) -> list[dict]:
@@ -567,6 +815,7 @@ def high_confidence(entries: list[dict]) -> bool:
     risky = {
         "critical", "cheat string", "ghost client", "runtime signature",
         "suspicious path", "dangerous behavior", "native injection", "jvm agent",
+        "detection",
     }
     return any((item.get("type") or "").lower() in risky for item in entries)
 
@@ -894,9 +1143,22 @@ def scan_ghost_process(process: dict) -> dict | None:
     logs.extend(memory_scan_entries(pid, seen))
     if not logs:
         return None
+
+    # Simplify process representation details
+    cmd_line = command or process.get('command', '')
+    desc = "Minecraft Java Process"
+    if "fabric-loader" in cmd_line: desc = "Fabric Minecraft"
+    elif "forge" in cmd_line: desc = "Forge Minecraft"
+    elif "quilt-loader" in cmd_line: desc = "Quilt Minecraft"
+    elif "lunar" in cmd_line: desc = "Lunar Client"
+    elif "feather" in cmd_line: desc = "Feather Client"
+    
+    version_match = re.search(r'--version\s+([^\s]+)', cmd_line)
+    version = f" ({version_match.group(1)})" if version_match else ""
+
     return result_item(
-        f"Process PID {pid} runtime signal",
-        f"PID {pid} / {process.get('name', 'java')} / {process.get('command', '')}",
+        f"Minecraft (PID {pid})",
+        f"{desc}{version}",
         0,
         False,
         True,
@@ -1072,6 +1334,29 @@ def read_memory_chunk(read_process_memory, handle, address: int, size: int) -> b
 
 JVM_MODIFICATION_DWORDS = {0x00080006, 0xFCE01E99}
 
+def get_memory_protection_desc(protect: int) -> str:
+    mapping = {
+        0x01: "NOACCESS",
+        0x02: "READONLY",
+        0x04: "READWRITE",
+        0x08: "WRITECOPY",
+        0x10: "EXECUTE",
+        0x20: "EXECUTE_READ",
+        0x40: "EXECUTE_READWRITE",
+        0x80: "EXECUTE_WRITECOPY",
+    }
+    desc = mapping.get(protect & 0xFF, "UNKNOWN")
+    if protect & 0x100: desc += "+GUARD"
+    if protect & 0x200: desc += "+NOCACHE"
+    if protect & 0x400: desc += "+WRITECOMBINE"
+    return desc
+
+def get_memory_type_desc(mem_type: int) -> str:
+    if mem_type == 0x20000: return "Private Heap/Stack"
+    if mem_type == 0x1000000: return "Image (DLL/EXE)"
+    if mem_type == 0x40000: return "Mapped File"
+    return f"Type 0x{mem_type:X}"
+
 def inspect_memory_chunk(data: bytes, address: int, region_type: int, protect: int, logs: list[dict], seen: set[str]) -> None:
     lower = data.lower()
 
@@ -1107,21 +1392,61 @@ def inspect_memory_chunk(data: bytes, address: int, region_type: int, protect: i
                 "PE image bytes in executable private memory at 0x" + format(address, "X"),
             )
 
-        check_jvm_modification_dwords(data, address, logs, seen)
+        # 3. Detect zero-wipe string clearing (memory wiping)
+        if b'\x00' * 32 in data:
+            idx = data.find(b'\x00' * 32)
+            before = data[max(0, idx - 100):idx]
+            after = data[idx + 32:min(len(data), idx + 132)]
+            readable_before = sum(1 for b in before if 32 <= b <= 126)
+            readable_after = sum(1 for b in after if 32 <= b <= 126)
+            if readable_before > 15 and readable_after > 15:
+                # Check for Java structures to avoid false positive metadata noise
+                context_text = (before + after).decode('ascii', errors='ignore').lower()
+                is_java_structure = (
+                    "lcom/" in context_text or
+                    "lorg/" in context_text or
+                    "java/" in context_text or
+                    "net/minecraft" in context_text or
+                    "minecraft" in context_text or
+                    "client" in context_text or
+                    "()" in context_text or
+                    "class" in context_text or
+                    "loader" in context_text or
+                    "/" in context_text
+                )
+                if is_java_structure:
+                    context_before = before.decode('ascii', errors='ignore')[-40:].strip()
+                    context_after = after.decode('ascii', errors='ignore')[:40].strip()
+                    context_before = re.sub(r'[^\w./$_;-]', '', context_before)
+                    context_after = re.sub(r'[^\w./$_;-]', '', context_after)
+                    context_str = f"... {context_before} [WIPED DATA] {context_after} ..."
+                    prot_desc = get_memory_protection_desc(protect)
+                    type_desc = get_memory_type_desc(region_type)
+                    add_unique_entry(
+                        logs,
+                        seen,
+                        "Process memory",
+                        "String Wiping",
+                        f"Memory zero-wipe (erased string) at 0x{address + idx:X} [{type_desc}, {prot_desc}] near: {context_str}"
+                    )
+
+        check_jvm_modification_dwords(data, address, protect, region_type, logs, seen)
 
 
-def check_jvm_modification_dwords(data: bytes, address: int, logs: list[dict], seen: set[str]) -> None:
+def check_jvm_modification_dwords(data: bytes, address: int, protect: int, region_type: int, logs: list[dict], seen: set[str]) -> None:
     if len(logs) >= MAX_MEMORY_FINDINGS:
         return
     for i in range(0, len(data) - 3, 4):
         dword = int.from_bytes(data[i:i+4], "little")
         if dword in JVM_MODIFICATION_DWORDS:
+            prot_desc = get_memory_protection_desc(protect)
+            type_desc = get_memory_type_desc(region_type)
             add_unique_entry(
                 logs,
                 seen,
                 "Process memory",
                 "JVM Modification",
-                f"InjGen JVM bytecode modification marker at 0x{address + i:X}",
+                f"InjGen JVM bytecode modification marker at 0x{address + i:X} [{type_desc}, {prot_desc}]",
             )
             if len(logs) >= MAX_MEMORY_FINDINGS:
                 return
@@ -1165,9 +1490,26 @@ def scan_ghost(pid: int | None = None) -> dict:
     else:
         processes = [find_process(pid)]
         target = f"Process scan: PID {pid}"
-    if not processes:
-        return ok(target, [summary("No Minecraft-like Java processes found.", target)])
+        
     findings = [item for item in (scan_ghost_process(process) for process in processes) if item]
+    
+    # Run DNS Cache check and Driver check on process scan!
+    dns_logs = check_dns_cache()
+    driver_logs = check_drivers()
+    combined_system_logs = dns_logs + driver_logs
+    if combined_system_logs:
+        findings.append(result_item(
+            "System Forensics",
+            target,
+            0,
+            False,
+            True,
+            "Process",
+            combined_system_logs
+        ))
+        
+    if not processes and not combined_system_logs:
+        return ok(target, [summary("No Minecraft-like Java processes found.", target)])
     if not findings:
         return ok(target, [summary(f"Checked {len(processes)} process(es). No runtime signatures found.", target)])
     return ok(target, findings)
@@ -1258,6 +1600,77 @@ def list_launchable_tools(signatures: list[dict]) -> list[dict]:
     return tools
 
 
+def download_via_softportal(name: str, temp_path: Path, progress=None) -> bool:
+    """Attempts to search for the tool on SoftPortal and download it."""
+    import http.cookiejar
+    import urllib.parse
+    import urllib.request
+    import re
+
+    try:
+        cj = http.cookiejar.CookieJar()
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj), urllib.request.ProxyHandler({}))
+        opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')]
+
+        # Step 1: Search SoftPortal
+        search_query = urllib.parse.quote(name)
+        search_url = f"https://www.softportal.com/search.html?str={search_query}&go=1"
+        req = urllib.request.Request(search_url)
+        with opener.open(req, timeout=30) as resp:
+            html = resp.read().decode('cp1251', errors='ignore')
+
+        # Find software page links like software-XXXX-YYYY.html
+        links = re.findall(r'href=\x22(https://www.softportal.com/software-\d+-[^\x22]+)\x22', html)
+        if not links:
+            links = re.findall(r'href=\x22(https://www.softportal.com/software-\d+-[a-zA-Z0-9_-]+)\x22', html)
+            if not links:
+                return False
+
+        soft_url = links[0]
+
+        # Step 2: Load software main page (initializes session/cookies)
+        req_soft = urllib.request.Request(soft_url)
+        with opener.open(req_soft, timeout=30) as resp_soft:
+            resp_soft.read()
+
+        # Step 3: Load the intermediate "/get-" page
+        get_url = soft_url.replace('/software-', '/get-')
+        req_get = urllib.request.Request(get_url, headers={'Referer': soft_url})
+        with opener.open(req_get, timeout=30) as resp_get:
+            get_html = resp_get.read().decode('cp1251', errors='ignore')
+
+        # Find direct mirror links like getsoft-XXXX-YYYY-Z.html
+        dl_links = re.findall(r'href=\x22(https://www.softportal.com/getsoft-\d+-[^\x22]+)\x22', get_html)
+        if not dl_links:
+            return False
+
+        dl_url = dl_links[0]
+
+        # Step 4: Download the actual file from getsoft link with Referer set to get_url
+        req_dl = urllib.request.Request(dl_url, headers={'Referer': get_url})
+        with opener.open(req_dl, timeout=45) as response:
+            final_host = urlparse(response.geturl()).netloc.lower()
+            if final_host not in ALLOWED_DOWNLOAD_HOSTS:
+                raise RuntimeError(f"Redirected to non-official host: {final_host}")
+            
+            total = int(response.headers.get("Content-Length", "0") or 0)
+            received = 0
+            if progress:
+                progress(0, total)
+            with temp_path.open("wb") as out:
+                while True:
+                    chunk = response.read(1024 * 256)
+                    if not chunk:
+                        break
+                    out.write(chunk)
+                    received += len(chunk)
+                    if progress:
+                        progress(received, total)
+        return True
+    except Exception:
+        return False
+
+
 def download_program_tool(name: str, progress=None) -> dict:
     signature = find_program_signature(name)
     if not signature:
@@ -1277,8 +1690,14 @@ def download_program_tool(name: str, progress=None) -> dict:
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             temp_path = Path(tmp.name)
         try:
-            download_file(str(url), temp_path, progress)
-            if signature.get("download_type") == "zip" or temp_path.suffix.lower() == ".zip":
+            try:
+                download_file(str(url), temp_path, progress)
+            except Exception as primary_exc:
+                # Fallback to SoftPortal
+                if not download_via_softportal(signature["name"], temp_path, progress):
+                    raise primary_exc
+
+            if signature.get("download_type") == "zip" or temp_path.suffix.lower() == ".zip" or zipfile.is_zipfile(temp_path):
                 extract_zip_safe(temp_path, target_dir)
             else:
                 final_path = target_dir / Path(str(urlparse(str(url)).path)).name
@@ -1453,7 +1872,7 @@ def is_launchable_path(path: str) -> bool:
         return False
     try:
         p = Path(path)
-        return p.exists() and p.is_file() and p.suffix.lower() in (".exe", ".lnk", ".bat", ".cmd")
+        return p.exists() and p.is_file() and p.suffix.lower() in (".exe", ".lnk", ".bat", ".cmd", ".msi")
     except OSError:
         return False
 
@@ -2356,6 +2775,456 @@ class AuroraApi:
     def default_mods_path(self) -> str:
         return default_mods_path()
 
+    def get_usb_and_drive_footprints(self) -> dict:
+        try:
+            import winreg
+            import string
+            import re
+            import os
+
+            # 1. USB Storage History from USBSTOR
+            usb_devices = []
+            try:
+                usbstor = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Enum\USBSTOR")
+                num_devices = winreg.QueryInfoKey(usbstor)[0]
+                for i in range(num_devices):
+                    try:
+                        device_id = winreg.EnumKey(usbstor, i)
+                        device_key = winreg.OpenKey(usbstor, device_id)
+                        num_serials = winreg.QueryInfoKey(device_key)[0]
+                        for j in range(num_serials):
+                            try:
+                                serial = winreg.EnumKey(device_key, j)
+                                serial_key = winreg.OpenKey(device_key, serial)
+                                try:
+                                    friendly_name, _ = winreg.QueryValueEx(serial_key, "FriendlyName")
+                                except Exception:
+                                    try:
+                                        friendly_name, _ = winreg.QueryValueEx(serial_key, "DeviceDesc")
+                                        if ";" in friendly_name:
+                                            friendly_name = friendly_name.split(";")[-1]
+                                    except Exception:
+                                        friendly_name = device_id
+                                usb_devices.append({
+                                    "name": friendly_name,
+                                    "serial": serial,
+                                    "device_id": device_id
+                                })
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+            # 2. Get Mounted Drive Letters
+            mounted_drives = set()
+            for letter in string.ascii_uppercase:
+                if os.path.exists(f"{letter}:\\"):
+                    mounted_drives.add(letter)
+
+            # 3. Parse ShellBags recursively to find drive footprints
+            shellbag_paths = []
+            
+            def decode_shell_item(data):
+                strings = []
+                i = 0
+                while i < len(data) - 1:
+                    val = int.from_bytes(data[i:i+2], byteorder='little')
+                    if (0x20 <= val <= 0x7E) or (0x400 <= val <= 0x4FF) or val in (0x5f, 0x2d, 0x2e, 0x5c, 0x2f, 0x3a):
+                        s = ""
+                        while i < len(data) - 1:
+                            val = int.from_bytes(data[i:i+2], byteorder='little')
+                            if val == 0:
+                                i += 2
+                                break
+                            if (0x20 <= val <= 0x7E) or (0x400 <= val <= 0x4FF) or val in (0x5f, 0x2d, 0x2e, 0x5c, 0x2f, 0x3a):
+                                s += chr(val)
+                                i += 2
+                            else:
+                                i += 2
+                                break
+                        if len(s) >= 2:
+                            strings.append(s)
+                    else:
+                        i += 1
+                for a in re.findall(b'[a-zA-Z0-9_.-]{3,}', data):
+                    try:
+                        strings.append(a.decode('ascii'))
+                    except Exception:
+                        pass
+                cleaned = []
+                for s in strings:
+                    s = s.strip()
+                    if not s or s.lower() in ('autolist', 'autolistcachetime', 'autolistcachekey', 'nodecode', 'nodeslot', 'item', 'sps', 'shell'):
+                        continue
+                    cleaned.append(s)
+                if cleaned:
+                    candidates = [s for s in cleaned if not (s.startswith('{') and s.endswith('}'))]
+                    if candidates:
+                        return max(candidates, key=len)
+                    return max(cleaned, key=len)
+                return None
+
+            def traverse(key_path, current_path):
+                try:
+                    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path)
+                except Exception:
+                    return
+                num_values = winreg.QueryInfoKey(key)[1]
+                values_dict = {}
+                for idx_val in range(num_values):
+                    try:
+                        name, data, val_type = winreg.EnumValue(key, idx_val)
+                        if name.isdigit() and val_type == winreg.REG_BINARY:
+                            decoded = decode_shell_item(data)
+                            if decoded:
+                                values_dict[int(name)] = decoded
+                    except Exception:
+                        pass
+                num_subkeys = winreg.QueryInfoKey(key)[0]
+                for idx_sub in range(num_subkeys):
+                    try:
+                        subkey_name = winreg.EnumKey(key, idx_sub)
+                        if subkey_name.isdigit():
+                            idx = int(subkey_name)
+                            item_name = values_dict.get(idx, subkey_name)
+                            if current_path:
+                                if current_path.endswith('\\'):
+                                    next_path = current_path + item_name
+                                else:
+                                    next_path = current_path + '\\' + item_name
+                            else:
+                                next_path = item_name
+                            shellbag_paths.append(next_path)
+                            traverse(f"{key_path}\\{subkey_name}", next_path)
+                    except Exception:
+                        pass
+
+            traverse(r"Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\BagMRU", "")
+
+            # 4. Parse OpenSavePidlMRU for files opened/saved
+            mru_files = []
+            try:
+                mru_path = r"Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU"
+                mru_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, mru_path)
+                num_subkeys = winreg.QueryInfoKey(mru_key)[0]
+                for i in range(num_subkeys):
+                    try:
+                        ext = winreg.EnumKey(mru_key, i)
+                        ext_key = winreg.OpenKey(mru_key, ext)
+                        num_values = winreg.QueryInfoKey(ext_key)[1]
+                        for j in range(num_values):
+                            try:
+                                name, data, val_type = winreg.EnumValue(ext_key, j)
+                                if name.isdigit() and val_type == winreg.REG_BINARY:
+                                    decoded = decode_shell_item(data)
+                                    if decoded:
+                                        mru_files.append(decoded)
+                            except Exception:
+                                pass
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+            # Combine all footprints
+            drive_footprints = []
+            
+            # Folders from ShellBags
+            for path in shellbag_paths:
+                if len(path) >= 2 and path[0].isalpha() and path[1] == ':':
+                    drive_letter = path[0].upper()
+                    if "windows" in path.lower() or "program files" in path.lower():
+                        continue
+                    is_exists = os.path.exists(path)
+                    parts = path.split('\\')
+                    name = parts[-1] if parts else path
+                    drive_footprints.append({
+                        "name": name,
+                        "path": path,
+                        "status": "connected" if is_exists else "disconnected"
+                    })
+                    
+            # Files from OpenSavePidlMRU
+            for path in mru_files:
+                # If it's a full path
+                if len(path) >= 2 and path[0].isalpha() and path[1] == ':':
+                    drive_letter = path[0].upper()
+                    if "windows" in path.lower() or "program files" in path.lower():
+                        continue
+                    is_exists = os.path.exists(path)
+                    parts = path.split('\\')
+                    name = parts[-1] if parts else path
+                    drive_footprints.append({
+                        "name": name,
+                        "path": path,
+                        "status": "connected" if is_exists else "disconnected"
+                    })
+                # If it's just a filename
+                elif any(path.lower().endswith(ext) for ext in ('.jar', '.exe', '.zip', '.dll', '.rar', '.7z')):
+                    if "windows" in path.lower() or "program files" in path.lower():
+                        continue
+                    drive_footprints.append({
+                        "name": path,
+                        "path": f"(filename only: {path})",
+                        "status": "disconnected" # since we don't have full path to verify existence
+                    })
+
+            # TypedPaths
+            try:
+                typed_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths")
+                num_typed = winreg.QueryInfoKey(typed_key)[1]
+                for i in range(num_typed):
+                    try:
+                        _, val, val_type = winreg.EnumValue(typed_key, i)
+                        if val_type == winreg.REG_SZ:
+                            path = val
+                            if len(path) >= 2 and path[0].isalpha() and path[1] == ':':
+                                is_exists = os.path.exists(path)
+                                parts = path.split('\\')
+                                name = parts[-1] if parts else path
+                                if not name:
+                                    name = path
+                                drive_footprints.append({
+                                    "name": name,
+                                    "path": path,
+                                    "status": "connected" if is_exists else "disconnected"
+                                })
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+            seen_paths = set()
+            unique_footprints = []
+            for fp in drive_footprints:
+                if fp["path"] not in seen_paths:
+                    seen_paths.add(fp["path"])
+                    unique_footprints.append(fp)
+
+            return {
+                "ok": True,
+                "usb_devices": usb_devices,
+                "footprints": unique_footprints
+            }
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
+
+    def scan_browser_history(self) -> dict:
+        try:
+            import os
+            import sqlite3
+            import tempfile
+            import shutil
+            from pathlib import Path
+            from datetime import datetime
+            import re
+
+            local_app_data = os.environ.get("LOCALAPPDATA", "")
+            app_data = os.environ.get("APPDATA", "")
+
+            paths = []
+
+            # Chrome
+            chrome_user_data = Path(local_app_data) / "Google" / "Chrome" / "User Data"
+            if chrome_user_data.exists():
+                for p in ["Default", "Profile 1", "Profile 2", "Profile 3", "Profile 4", "Profile 5"]:
+                    hist = chrome_user_data / p / "History"
+                    if hist.exists():
+                        paths.append(("Chrome (" + p + ")", hist))
+
+            # Yandex
+            yandex_user_data = Path(local_app_data) / "Yandex" / "YandexBrowser" / "User Data"
+            if yandex_user_data.exists():
+                for p in ["Default", "Profile 1", "Profile 2", "Profile 3", "Profile 4", "Profile 5"]:
+                    hist = yandex_user_data / p / "History"
+                    if hist.exists():
+                        paths.append(("Yandex (" + p + ")", hist))
+
+            # Edge
+            edge_user_data = Path(local_app_data) / "Microsoft" / "Edge" / "User Data"
+            if edge_user_data.exists():
+                for p in ["Default", "Profile 1", "Profile 2", "Profile 3", "Profile 4", "Profile 5"]:
+                    hist = edge_user_data / p / "History"
+                    if hist.exists():
+                        paths.append(("Edge (" + p + ")", hist))
+
+            # Opera Stable
+            opera_stable = Path(app_data) / "Opera Software" / "Opera Stable" / "History"
+            if opera_stable.exists():
+                paths.append(("Opera Stable", opera_stable))
+
+            # Opera GX
+            opera_gx = Path(app_data) / "Opera Software" / "Opera GX Stable" / "History"
+            if opera_gx.exists():
+                paths.append(("Opera GX", opera_gx))
+
+            # Firefox
+            firefox_profiles = Path(app_data) / "Mozilla" / "Firefox" / "Profiles"
+            if firefox_profiles.exists():
+                for p in firefox_profiles.iterdir():
+                    places = p / "places.sqlite"
+                    if places.exists():
+                        paths.append(("Firefox (" + p.name + ")", places))
+
+            results = []
+
+            def is_cheat_match(text: str) -> bool:
+                t = text.lower()
+                
+                # 1. Highly specific cheat indicators (always match)
+                specific_keywords = [
+                    "celestial", "sunrise", "akrien", "zamorozka", "deadcode", "exore", "byster", 
+                    "fluger", "liquidbounce", "aristois", "meteorclient", "wurstplus", "wurst+",
+                    "fdpclient", "augustus", "exhibition", "dortware", "zeroday", "forgehax", 
+                    "seppuku", "earthhack", "weepcraft", "skillclient", "autoclicker", "cheatengine", 
+                    "processhacker", "systeminformer", "extremeinjector", "hackedclient"
+                ]
+                if any(k in t for k in specific_keywords):
+                    return True
+                    
+                # 2. Contextual cheat indicators
+                # These are only matched if accompanied by a gaming/cheat context word
+                ambiguous_keywords = [
+                    "vape", "drip", "entropy", "whiteout", "juul", "crypt", "skilled", "itami", 
+                    "koid", "wurst", "impact", "sigma", "meteor", "salhack", "future", "rusherhack", 
+                    "phobos", "pyro", "bleachhack", "inertia", "huzuni", "ares", "hono", "nurik", 
+                    "excellent", "expensive", "spook", "rudo", "boze", "mint", "fdp", "nightx", 
+                    "remix", "novoline", "tenacity", "azura", "lime", "rise", "phantom", "kangaroo", 
+                    "keystrokes", "reach", "hitbox", "velocity", "doubleclick", "fastplace", 
+                    "safewalk", "freecam", "autoarmor", "bowaimbot", "fastbow", "antiafk", 
+                    "autorespawn", "autodisconnect", "autoleave", "antibot", "nametags", "tracers", 
+                    "xray", "fullbright", "breadcrumbs", "rich", "fly"
+                ]
+                
+                context_words = [
+                    "minecraft", "mods", "mod", "client", "launcher", "reallyworld", "holyworld", 
+                    "vimeworld", "wellmore", "cheat", "hack", "exploit", "utility", "fabric", 
+                    "forge", "jar", "zip", "exe", "download", "скачать", "чит", "купить", 
+                    "кряк", "crack", "free", "бесплатно", "инжект", "inject", "bypass", "обход", 
+                    "config", "кфг", "cfg", "play", "server", "сервер", "game", "игра", "версия", 
+                    "version", "hax", "client", "launcher", "soft"
+                ]
+                
+                matched_ambiguous = False
+                for k in ambiguous_keywords:
+                    pattern = rf'(?:^|[^a-zA-Z]){k}(?:$|[^a-zA-Z])'
+                    if re.search(pattern, t):
+                        matched_ambiguous = True
+                        break
+                        
+                if matched_ambiguous:
+                    if any(cw in t for cw in context_words):
+                        return True
+                        
+                # 3. Direct cheat context combinations
+                direct_patterns = [
+                    r'cheat[-_\s]mod', r'cheat[-_\s]client', r'cheat[-_\s]pack', r'cheat[-_\s]launcher',
+                    r'reallyworld[-_\s]cheat', r'holyworld[-_\s]cheat', r'vime[-_\s]cheat', 
+                    r'vimeworld[-_\s]cheat', r'wellmore[-_\s]cheat'
+                ]
+                if any(re.search(p, t) for p in direct_patterns):
+                    return True
+                    
+                return False
+
+            def from_webkit_time(timestamp):
+                try:
+                    if timestamp > 10000000000000000:
+                        timestamp = timestamp // 1000000
+                    elif timestamp > 10000000000000:
+                        timestamp = timestamp // 1000
+                    return datetime.fromtimestamp(timestamp - 11644473600).strftime("%Y-%m-%d %H:%M:%S")
+                except Exception:
+                    return "-"
+
+            def from_firefox_time(timestamp):
+                try:
+                    return datetime.fromtimestamp(timestamp // 1000000).strftime("%Y-%m-%d %H:%M:%S")
+                except Exception:
+                    return "-"
+
+            for browser_name, db_path in paths:
+                temp_file = tempfile.NamedTemporaryFile(delete=False)
+                temp_path = Path(temp_file.name)
+                temp_file.close()
+
+                try:
+                    shutil.copy2(db_path, temp_path)
+                    conn = sqlite3.connect(str(temp_path))
+                    cursor = conn.cursor()
+
+                    if "Firefox" in browser_name:
+                        try:
+                            cursor.execute("SELECT url, title, last_visit_date FROM moz_places WHERE last_visit_date IS NOT NULL")
+                            for url, title, date in cursor.fetchall():
+                                url_str = url or ""
+                                title_str = title or ""
+                                match_text = f"{url_str} {title_str}"
+                                if is_cheat_match(match_text):
+                                    results.append({
+                                        "browser": browser_name,
+                                        "type": "visit",
+                                        "name": title_str or url_str,
+                                        "url": url_str,
+                                        "time": from_firefox_time(date)
+                                    })
+                        except Exception:
+                            pass
+                    else:
+                        try:
+                            cursor.execute("SELECT url, title, last_visit_time FROM urls")
+                            for url, title, date in cursor.fetchall():
+                                url_str = url or ""
+                                title_str = title or ""
+                                match_text = f"{url_str} {title_str}"
+                                if is_cheat_match(match_text):
+                                    results.append({
+                                        "browser": browser_name,
+                                        "type": "visit",
+                                        "name": title_str or url_str,
+                                        "url": url_str,
+                                        "time": from_webkit_time(date)
+                                    })
+                        except Exception:
+                            pass
+
+                        try:
+                            cursor.execute("SELECT target_path, start_time, referrer FROM downloads")
+                            for path, date, referrer in cursor.fetchall():
+                                path_str = path or ""
+                                ref_str = referrer or ""
+                                match_text = f"{path_str} {ref_str}"
+                                if is_cheat_match(match_text):
+                                    filename = Path(path_str).name
+                                    results.append({
+                                        "browser": browser_name,
+                                        "type": "download",
+                                        "name": filename or path_str,
+                                        "url": ref_str or "N/A",
+                                        "time": from_webkit_time(date)
+                                    })
+                        except Exception:
+                            pass
+
+                    conn.close()
+                except Exception:
+                    pass
+                finally:
+                    try:
+                        temp_path.unlink()
+                    except OSError:
+                        pass
+
+            valid_results = [r for r in results if r["time"] != "-"]
+            invalid_results = [r for r in results if r["time"] == "-"]
+            valid_results.sort(key=lambda x: x["time"], reverse=True)
+            sorted_results = valid_results + invalid_results
+            return {"ok": True, "items": sorted_results}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
+
     def choose_folder(self) -> str:
         try:
             import webview
@@ -2376,6 +3245,16 @@ class AuroraApi:
         except Exception:
             return ""
 
+    def choose_jars(self) -> list:
+        try:
+            import webview
+            if not self._window:
+                return []
+            result = self._window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=True, file_types=("Jar files (*.jar)", "All files (*.*)"))
+            return list(result) if result else []
+        except Exception:
+            return []
+
     def scan_path(self, path: str) -> dict:
         return scan_path(path)
 
@@ -2385,14 +3264,49 @@ class AuroraApi:
             path = Path(jar_path.strip().strip('"'))
             if not path.exists():
                 return error(f"File not found: {path}")
+            
+            # Calculate hashes
+            h_md5 = hashlib.md5()
+            h_sha1 = hashlib.sha1()
+            h_sha256 = hashlib.sha256()
+            with path.open("rb") as f:
+                for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                    h_md5.update(chunk)
+                    h_sha1.update(chunk)
+                    h_sha256.update(chunk)
+            
+            hashes = {
+                "md5": h_md5.hexdigest(),
+                "sha1": h_sha1.hexdigest(),
+                "sha256": h_sha256.hexdigest(),
+            }
+            
             if not path.suffix.lower() == ".jar":
-                return error("Not a .jar file")
+                # For non-jar files, we just return the hashes
+                return {
+                    "ok": True,
+                    "target": str(path),
+                    "is_jar": False,
+                    "hashes": hashes,
+                    "results": {
+                        "risk_score": 0,
+                        "risk_level": "N/A",
+                        "ai": {"malware_probability": 0},
+                        "cheats": {},
+                        "evidence": []
+                    }
+                }
+            
+            # For jar files, run full scan
             results = scan_jar(str(path), path.stat().st_size if path.exists() else 0)
             if results.get('error'):
                 return error(results['error'])
+                
             return {
                 "ok": True,
                 "target": str(path),
+                "is_jar": True,
+                "hashes": hashes,
                 "results": results,
             }
         except ImportError:
@@ -2642,5 +3556,83 @@ del "%~f0"
             if self._window:
                 self._window.destroy()
             return {"ok": True, "message": "AuroraChecker будет полностью удалён после закрытия."}
+        except Exception as exc:
+            return error(str(exc))
+
+    def delete_files(self, paths: list[str]) -> dict:
+        try:
+            deleted = 0
+            errors = []
+            for path_str in paths:
+                p = Path(path_str.strip().strip('"'))
+                if p.is_file():
+                    try:
+                        p.unlink()
+                        deleted += 1
+                    except Exception as e:
+                        errors.append(f"Failed to delete {p.name}: {str(e)}")
+            if errors:
+                return {"ok": False, "error": "; ".join(errors), "deleted": deleted}
+            return {"ok": True, "deleted": deleted}
+        except Exception as exc:
+            return error(str(exc))
+
+    def launch_jar(self, jar_path: str) -> dict:
+        try:
+            path = Path(jar_path.strip().strip('"'))
+            if not path.exists():
+                return error(f"File not found: {path}")
+            if not path.suffix.lower() == ".jar":
+                return error("Selected file is not a .jar archive")
+            
+            java_exes = ["javaw", "java", "javaw.exe", "java.exe"]
+            tools_java = TOOLS_DIR / "Java"
+            if tools_java.is_dir():
+                for candidate in tools_java.rglob("javaw.exe"):
+                    if candidate.is_file():
+                        java_exes.insert(0, str(candidate))
+                for candidate in tools_java.rglob("java.exe"):
+                    if candidate.is_file():
+                        java_exes.insert(1, str(candidate))
+            
+            success = False
+            err_msg = ""
+            for java_exe in java_exes:
+                try:
+                    subprocess.Popen(
+                        [java_exe, "-jar", str(path)],
+                        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0,
+                        close_fds=True
+                    )
+                    success = True
+                    break
+                except Exception as e:
+                    err_msg = str(e)
+                    continue
+            
+            if success:
+                return {"ok": True, "message": f"Successfully launched via {java_exe}"}
+            return error(f"Could not launch Java: {err_msg}. Verify that Java is installed on your system.")
+        except Exception as exc:
+            return error(str(exc))
+
+    def list_all_processes(self) -> dict:
+        try:
+            processes = minecraft_like_processes()
+            return {"ok": True, "processes": processes}
+        except Exception as exc:
+            return error(str(exc))
+
+    def terminate_process(self, pid: int) -> dict:
+        try:
+            import ctypes
+            PROCESS_TERMINATE = 0x0001
+            handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, int(pid))
+            if handle:
+                success = ctypes.windll.kernel32.TerminateProcess(handle, 0)
+                ctypes.windll.kernel32.CloseHandle(handle)
+                if success:
+                    return {"ok": True, "message": f"PID {pid} terminated"}
+            return error(f"Failed to terminate PID {pid}: Access denied or process not found")
         except Exception as exc:
             return error(str(exc))

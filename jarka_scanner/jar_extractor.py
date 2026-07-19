@@ -8,7 +8,7 @@ EXTRACT_EXTENSIONS = {
     '.class', '.json', '.json5', '.cfg', '.txt', '.yml', '.yaml',
     '.properties', '.ini', '.xml', '.toml', '.mcmeta', '.lang',
     '.csv', '.tsv', '.md', '.log', '.js', '.lua', '.py', '.rb',
-    '.kts', '.gradle', '.groovy', '.sql',
+    '.kts', '.gradle', '.groovy', '.sql', '.java',
 }
 EXTRACT_DIRS = ('assets', 'META-INF')
 NATIVE_EXTENSIONS = ('.dll', '.so', '.dylib')

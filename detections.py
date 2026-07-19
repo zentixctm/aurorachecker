@@ -46,7 +46,7 @@ NETWORK_CLASSES = {"OkHttp", "Apache HttpClient"}
 
 NETWORK_METHODS = {"openConnection", "setRequestMethod", "setRequestProperty"}
 
-CHEAT_SPECIFIC = {"Hitbox", "AxisAlignedBB", "Reach", "KillAura", "Aimbot", "ESP", "Velocity"}
+CHEAT_SPECIFIC = {"KillAura", "Aimbot"}
 
 OBFUSCATION_PATTERNS = {"lIlIlIlIl", "IIIIlll", "aAaAaAa"}
 

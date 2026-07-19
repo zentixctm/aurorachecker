@@ -1,67 +1,44 @@
 {
-  "network": {
-    "classes": ["java/net/URL", "URLConnection", "HttpURLConnection", "OkHttp", "Apache HttpClient"],
-    "methods": ["openConnection", "setRequestMethod", "setRequestProperty", "getOutputStream"]
-  },
   "telegram": {
     "strings": [
-      "https://api.telegram.org",
-      "sendMessage",
-      "chat_id",
-      "bot",
-      "mcLogger",
-      "mclogger",
-      "MC LOGGER",
-      "@rejavastealbot",
-      "rejavastealbot",
-      "skr.sh/saE3s725Lnp"
+      "https://api.telegram.org"
     ],
     "token_regex": "[0-9]{8,10}:[A-Za-z0-9_-]{35}"
   },
   "discord": {
-    "strings": ["discord.com/api/webhooks", "discordapp.com/api/webhooks", "Java-DiscordWebhook"]
+    "strings": [
+      "discord.com/api/webhooks",
+      "discordapp.com/api/webhooks"
+    ]
   },
   "password_logger": {
-    "strings": ["/reg", "/register", "/login", "/l"]
+    "strings": [
+      "/register",
+      "/login"
+    ],
+    "regex": ["\\b/register\\b", "\\b/login\\b"]
   },
   "command_exec": {
-    "classes": ["Runtime", "ProcessBuilder"],
-    "methods": ["getRuntime", "exec", "start"],
-    "strings": ["cmd.exe", "cmd /c", "powershell", "powershell.exe", "bash", "sh", "/bin/sh", "wget", "curl", "bitsadmin", "Invoke-WebRequest"]
-  },
-  "file_download": {
-    "strings": ["URL.openStream", "FileOutputStream", "Files.copy"]
-  },
-  "file_system": {
-    "strings": ["java/io/File", "FileWriter", "FileReader"]
-  },
-  "clipboard": {
-    "strings": ["Toolkit.getDefaultToolkit", "getSystemClipboard"]
-  },
-  "screenshot": {
-    "strings": ["Robot.createScreenCapture"]
-  },
-  "keylogger": {
-    "strings": ["KeyEvent", "Keyboard", "setKeyListener"]
+    "strings": [
+      "cmd.exe",
+      "cmd /c",
+      "powershell",
+      "powershell.exe",
+      "Invoke-WebRequest"
+    ]
   },
   "cheats": {
-    "strings": ["Hitbox", "AxisAlignedBB", "Reach", "KillAura", "Aimbot", "ESP", "Velocity", "AutoClicker"]
-  },
-  "native_libs": {
-    "extensions": [".dll", ".so", ".dylib"]
+    "strings": [
+      "KillAura", "Aimbot", "AutoClicker", "Reach", "ESP", "Velocity",
+      "Hitbox", "Scaffold", "BowAura", "Speed", "Fly", "NoFall",
+      "AntiVoid", "FastBreak", "AutoArmor", "ChestStealer", "Xray",
+      "Tracers", "Fullbright", "NoSlow", "Jesus", "Spider", "Step",
+      "Sprint", "AutoTotem", "SelfDestruct", "LogoutSpot", "ItemESP",
+      "PlayerESP", "StorageESP", "Nametags", "Clicker", "AimAssist"
+    ]
   },
   "obfuscation": {
     "short_class_pattern": "^[a-zA-Z]{1,3}$",
     "suspicious_patterns": ["lIlIlIlIl", "IIIIlll", "aAaAaAa"]
-  },
-  "native_loader": {
-    "strings": ["System.load", "System.loadLibrary", "loadLibrary", "java.lang.System.load", "java.lang.System.loadLibrary", "JNI_OnLoad"]
-  },
-  "dynamic_load": {
-    "strings": ["Class.forName", "URLClassLoader", "defineClass", "Method.invoke", "setAccessible", "java/lang/reflect", "sun/misc/Unsafe", "MethodHandles"]
-  },
-  "crypto_obf": {
-    "strings": ["Base64", "Cipher", "SecretKeySpec", "AES", "DES", "RC4", "PBKDF2WithHmacSHA", "MessageDigest", "MD5", "SHA-256"]
-  },
-  "url_regex": "https?://[^\\s\"]+"
+  }
 }

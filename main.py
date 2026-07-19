@@ -43,16 +43,16 @@ def ensure_admin_auto() -> bool:
 
 
 def main() -> int:
-    if not ensure_admin_auto():
-        return 0  # spawned as admin, exit this non-admin instance
     try:
-        import webview
-    except ImportError:
-        print("pywebview is not installed.")
-        print("Run: pip install -r requirements.txt")
-        return 1
+        if not ensure_admin_auto():
+            return 0  # spawned as admin, exit this non-admin instance
+        try:
+            import webview
+        except ImportError:
+            print("pywebview is not installed.")
+            print("Run: pip install -r requirements.txt")
+            return 1
 
-    try:
         auto_scan = "--auto-scan" in sys.argv
         html = RESOURCE_ROOT / "ui" / "index.html"
         icon = RESOURCE_ROOT / "assets" / "app.ico"
@@ -65,19 +65,28 @@ def main() -> int:
             height=760,
             min_size=(980, 620),
             background_color="#0f1218",
+            hidden=True,
         )
         api._window = window
 
         def startup():
             import time as _time
-            _time.sleep(0.6)
+            _time.sleep(0.4)
+            window.show()
             if auto_scan:
                 window.evaluate_js("triggerAutoScan()")
 
         webview.start(func=startup, debug=False, icon=str(icon) if icon.is_file() else None)
         return 0
-    except Exception as exc:
+    except BaseException as exc:
         log_crash(exc)
+        try:
+            Path("C:/Users/Admin/Downloads/aurorachecker_python/crash.log").write_text(
+                str(exc) + "\n" + "".join(traceback.format_exception(type(exc), exc, exc.__traceback__)),
+                encoding="utf-8"
+            )
+        except:
+            pass
         return 1
 
 

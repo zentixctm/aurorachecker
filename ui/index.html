@@ -8,28 +8,28 @@
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
     :root {
       color-scheme: dark;
-      --bg: #060308;
-      --panel: rgba(16, 6, 18, .85);
-      --panel-strong: rgba(10, 4, 14, .95);
-      --panel-soft: rgba(20, 8, 22, .80);
-      --line: rgba(140, 60, 110, .18);
-      --text: #e0d6de;
-      --muted: #907080;
-      --green: #4fd19a;
-      --cyan: #d46ab8;
-      --blue: #b05bcc;
-      --blue-soft: rgba(176, 91, 204, .16);
-      --blue-line: rgba(200, 100, 180, .46);
-      --amber: #efb84c;
-      --red: #ef6262;
-      --banned: #d44070;
-      --banned-soft: rgba(212, 64, 112, .18);
-      --banned-line: rgba(212, 64, 112, .46);
-      --purple-dark: #1a0a1e;
-      --crimson: #701a38;
-      --rose: #d44070;
-      --shadow: 0 22px 70px rgba(0, 0, 0, .5);
-      --glow: 0 0 30px rgba(176, 91, 204, .1);
+      --bg: #050407;
+      --panel: rgba(10, 7, 13, 0.88);
+      --panel-strong: rgba(6, 4, 8, 0.96);
+      --panel-soft: rgba(14, 10, 18, 0.82);
+      --line: rgba(255, 255, 255, 0.06);
+      --text: #e2e4e9;
+      --muted: #858aa0;
+      --green: #3cd070;
+      --cyan: #d05ba9;
+      --blue: #a04ec4;
+      --blue-soft: rgba(160, 78, 196, 0.12);
+      --blue-line: rgba(180, 80, 210, 0.38);
+      --amber: #e6a73c;
+      --red: #e65252;
+      --banned: #c8325a;
+      --banned-soft: rgba(200, 50, 90, 0.12);
+      --banned-line: rgba(200, 50, 90, 0.38);
+      --purple-dark: #120816;
+      --crimson: #5a122a;
+      --rose: #c8325a;
+      --shadow: 0 16px 48px rgba(0, 0, 0, 0.65);
+      --glow: 0 0 30px rgba(160, 78, 196, 0.05);
       font-family: 'JetBrains Mono', 'Cascadia Code', 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
@@ -41,7 +41,7 @@
 
       position: relative;
       background:
-        linear-gradient(170deg, #0a0510 0%, #0f0618 30%, #180a14 55%, #200a14 75%, #0e040a 100%);
+        linear-gradient(170deg, #050307 0%, #07040a 30%, #0c0610 55%, #100610 75%, #060207 100%);
       color: var(--text);
       letter-spacing: 0;
       overflow: hidden;
@@ -53,10 +53,10 @@
       z-index: 0;
       pointer-events: none;
       background:
-        repeating-linear-gradient(90deg, rgba(200,100,180,.025) 0 1px, transparent 1px 42px),
-        repeating-linear-gradient(0deg, rgba(212,64,112,.02) 0 1px, transparent 1px 42px),
-        linear-gradient(120deg, rgba(176,91,204,.12), transparent 34%, rgba(212,64,112,.08) 68%, rgba(200,100,180,.1));
-      opacity: .52;
+        repeating-linear-gradient(90deg, rgba(255,255,255,.005) 0 1px, transparent 1px 42px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.004) 0 1px, transparent 1px 42px),
+        linear-gradient(120deg, rgba(160,78,196,.08), transparent 34%, rgba(200,50,90,.05) 68%, rgba(255,255,255,.02));
+      opacity: .4;
       mask-image: linear-gradient(135deg, rgba(0,0,0,.92), rgba(0,0,0,.14));
     }
     body::after {
@@ -66,10 +66,10 @@
       z-index: 0;
       pointer-events: none;
       background:
-        linear-gradient(118deg, transparent 18%, rgba(212,64,112,.1) 20%, transparent 24%),
-        linear-gradient(118deg, transparent 58%, rgba(176,91,204,.08) 61%, transparent 66%);
-      filter: blur(10px);
-      opacity: .68;
+        linear-gradient(118deg, transparent 18%, rgba(200,50,90,.06) 20%, transparent 24%),
+        linear-gradient(118deg, transparent 58%, rgba(160,78,196,.05) 61%, transparent 66%);
+      filter: blur(15px);
+      opacity: .6;
       animation: backgroundShift 34s ease-in-out infinite alternate;
     }
     @keyframes backgroundShift {
@@ -80,34 +80,34 @@
     button, input { font: inherit; }
     button {
       border: 1px solid var(--line);
-      background: rgba(32, 38, 49, .78);
+      background: rgba(20, 16, 26, 0.65);
       color: var(--text);
       height: 40px;
       padding: 0 18px;
       border-radius: 7px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 10px 22px rgba(0, 0, 0, .16);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .35);
       backdrop-filter: blur(14px);
       transition: background .28s ease, border-color .28s ease, transform .28s ease, box-shadow .28s ease;
     }
     button:hover {
-      background: rgba(41, 50, 62, .92);
-      border-color: rgba(105, 155, 255, .34);
+      background: rgba(30, 24, 38, 0.85);
+      border-color: rgba(180, 80, 210, .34);
       transform: translateY(-1px);
-      box-shadow: 0 13px 24px rgba(0, 0, 0, .18);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, .45);
     }
     button:active { transform: translateY(1px); }
     button.primary {
-      background: linear-gradient(135deg, rgba(140, 50, 180, .98), rgba(212, 64, 112, .98));
+      background: linear-gradient(135deg, rgba(130, 45, 170, .98), rgba(200, 50, 90, .98));
       border-color: var(--banned-line);
       color: white;
     }
-    button.primary:hover { background: linear-gradient(135deg, #9e3bcc, #d44070); }
+    button.primary:hover { background: linear-gradient(135deg, #8b31b3, #b82d54); }
     button.danger {
       color: #ffd8d8;
-      border-color: rgba(239, 98, 98, .55);
-      background: rgba(239, 98, 98, .12);
+      border-color: rgba(230, 82, 82, .55);
+      background: rgba(230, 82, 82, .12);
     }
     button:disabled {
       opacity: .45;
@@ -120,18 +120,18 @@
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 7px;
-      background: rgba(13, 17, 24, .72);
+      background: rgba(8, 6, 11, .75);
       color: var(--text);
       outline: none;
       padding: 0 14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.01);
       backdrop-filter: blur(12px);
       transition: border-color .28s ease, box-shadow .28s ease, background .28s ease;
     }
     input:focus {
       border-color: var(--blue-line);
-      background: rgba(15, 20, 28, .86);
-      box-shadow: 0 0 0 3px var(--blue-soft), inset 0 1px 0 rgba(255,255,255,.04);
+      background: rgba(12, 9, 16, .9);
+      box-shadow: 0 0 0 3px var(--blue-soft), inset 0 1px 0 rgba(255,255,255,.02);
     }
 
     .app {
@@ -149,12 +149,12 @@
 
     .sidebar {
       border-right: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(26, 10, 30, .92) 0%, rgba(40, 14, 28, .86) 60%, rgba(20, 8, 16, .82) 100%);
+      background: linear-gradient(180deg, rgba(10, 6, 14, .95) 0%, rgba(14, 8, 20, .92) 60%, rgba(8, 4, 11, .94) 100%);
       padding: 28px 22px;
       display: flex;
       flex-direction: column;
       gap: 24px;
-      box-shadow: 18px 0 60px rgba(0, 0, 0, .22);
+      box-shadow: 10px 0 30px rgba(0, 0, 0, .45);
       backdrop-filter: blur(22px) saturate(1.2);
       position: relative;
       overflow: hidden;
@@ -300,9 +300,9 @@
     }
     .choice:hover {
       transform: translateY(-4px);
-      border-color: rgba(200, 100, 180, .38);
-      background: rgba(40, 14, 28, .84);
-      box-shadow: 0 24px 54px rgba(0,0,0,.28);
+      border-color: rgba(180, 80, 210, .38);
+      background: rgba(22, 10, 32, .84);
+      box-shadow: 0 20px 40px rgba(0,0,0,.5);
     }
     .choice h3 {
       margin: 0;
@@ -345,18 +345,18 @@
       font-weight: 800;
       text-align: center;
       color: #dfe7ef;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.015);
       transition: border-color .32s ease, transform .32s ease, background .32s ease, color .32s ease;
     }
     .chip:hover {
       transform: translateY(-2px);
       border-color: var(--blue-line);
-      background: rgba(35, 43, 52, .82);
+      background: rgba(30, 20, 42, .82);
       color: #ffffff;
     }
-    .chip:nth-child(3n+1) { border-top-color: rgba(176,91,204,.42); }
-    .chip:nth-child(3n+2) { border-top-color: rgba(212,64,112,.42); }
-    .chip:nth-child(3n) { border-top-color: rgba(239,184,76,.42); }
+    .chip:nth-child(3n+1) { border-top-color: rgba(160,78,196,.42); }
+    .chip:nth-child(3n+2) { border-top-color: rgba(200,50,90,.42); }
+    .chip:nth-child(3n) { border-top-color: rgba(230,167,60,.42); }
 
     .actions {
       display: flex;
@@ -373,13 +373,13 @@
     .tabs button {
       min-width: 112px;
       color: var(--muted);
-      background: rgba(22, 28, 36, .62);
+      background: rgba(15, 11, 20, .62);
     }
     .tabs button.active-tab {
       color: #ffffff;
       border-color: var(--banned-line);
-      background: linear-gradient(135deg, rgba(176, 91, 204, .22), rgba(212, 64, 112, .12));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.045), 0 12px 26px rgba(0,0,0,.17);
+      background: linear-gradient(135deg, rgba(160, 78, 196, .22), rgba(200, 50, 90, .12));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.02), 0 12px 26px rgba(0,0,0,.3);
     }
 
     .table-actions {
@@ -394,12 +394,12 @@
       padding: 0 10px;
     }
     .table-actions .download {
-      color: #f0d6ee;
+      color: #ead6e8;
       border-color: var(--banned-line);
       background: var(--banned-soft);
     }
     .table-actions .download:hover {
-      background: rgba(212, 64, 112, .24);
+      background: rgba(200, 50, 90, .24);
     }
 
     .stats {
@@ -412,13 +412,13 @@
       border: 1px solid var(--line);
       border-radius: 7px;
       padding: 12px 14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.015);
       transition: border-color .32s ease, transform .32s ease, background .32s ease;
     }
     .metric:hover {
       transform: translateY(-2px);
-      border-color: rgba(200, 100, 180, .34);
-      background: rgba(40, 14, 28, .8);
+      border-color: rgba(180, 80, 210, .34);
+      background: rgba(22, 10, 32, .8);
     }
     .metric span {
       display: block;
@@ -451,7 +451,7 @@
       position: sticky;
       top: 0;
       z-index: 1;
-      background: rgba(18, 23, 32, .9);
+      background: rgba(14, 10, 18, 0.94);
       color: var(--muted);
       text-align: left;
       height: 42px;
@@ -462,16 +462,16 @@
     td {
       height: 52px;
       padding: 0 16px;
-      border-top: 1px solid rgba(48, 56, 66, .72);
+      border-top: 1px solid rgba(255, 255, 255, .04);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       transition: background .26s ease, color .26s ease, box-shadow .26s ease;
     }
-    tr:hover td { background: rgba(35, 43, 52, .72); }
+    tr:hover td { background: rgba(30, 20, 42, .45); }
     tr.selected td {
       background: var(--blue-soft);
-      box-shadow: inset 0 1px 0 rgba(79,125,255,.12), inset 0 -1px 0 rgba(79,125,255,.12);
+      box-shadow: inset 0 1px 0 rgba(79,125,255,.05), inset 0 -1px 0 rgba(79,125,255,.05);
     }
     .mono { font-family: Consolas, ui-monospace, monospace; }
     .risk { color: var(--red); font-weight: 900; }
@@ -498,7 +498,7 @@
       inset: 0;
       display: none;
       place-items: center;
-      background: rgba(6, 8, 12, .52);
+      background: rgba(4, 2, 6, .65);
       backdrop-filter: blur(14px);
       z-index: 10;
     }
@@ -520,7 +520,7 @@
       height: 10px;
       overflow: hidden;
       border-radius: 5px;
-      background: rgba(36, 43, 53, .9);
+      background: rgba(20, 16, 26, .9);
       margin-top: 16px;
     }
     .bar::before {
@@ -529,7 +529,7 @@
       height: 100%;
       width: 46%;
       background: linear-gradient(90deg, var(--blue), var(--cyan), var(--rose));
-      box-shadow: 0 0 16px rgba(212,64,112,.28);
+      box-shadow: 0 0 16px rgba(200,50,90,.28);
       animation: slide 1.9s infinite ease-in-out;
     }
     @keyframes slide {
@@ -542,7 +542,7 @@
       inset: 0;
       display: none;
       place-items: center;
-      background: rgba(6, 8, 12, .58);
+      background: rgba(4, 2, 6, .7);
       backdrop-filter: blur(16px);
       z-index: 20;
     }
@@ -589,12 +589,12 @@
       font-size: 10px;
     }
     .log {
-      background: rgba(17, 21, 28, .78);
+      background: rgba(9, 7, 13, .86);
       border: 1px solid var(--line);
       border-radius: 7px;
       padding: 14px;
       font-family: Consolas, ui-monospace, monospace;
-      color: #cdd6e0;
+      color: #e2e4e9;
       white-space: pre-wrap;
       line-height: 1.5;
       max-height: 260px;
@@ -605,8 +605,8 @@
     .error {
       display: none;
       color: #ffdada;
-      background: rgba(239, 98, 98, .1);
-      border: 1px solid rgba(239, 98, 98, .35);
+      background: rgba(230, 82, 82, .1);
+      border: 1px solid rgba(230, 82, 82, .35);
       border-radius: 7px;
       padding: 12px 14px;
       font-weight: 700;
@@ -618,8 +618,8 @@
     }
     .error.ok {
       color: #d9ffe9;
-      background: rgba(79, 209, 154, .1);
-      border-color: rgba(79, 209, 154, .32);
+      background: rgba(60, 208, 112, .1);
+      border-color: rgba(60, 208, 112, .32);
     }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -630,13 +630,18 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
     ::-webkit-scrollbar { width: 10px; height: 10px; }
-    ::-webkit-scrollbar-track { background: rgba(255,255,255,.035); }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,.35); }
     ::-webkit-scrollbar-thumb {
-      background: rgba(142, 162, 181, .36);
-      border: 2px solid rgba(16, 20, 27, .9);
+      background: rgba(255, 255, 255, .08);
+      border: 2px solid rgba(8, 4, 10, .9);
       border-radius: 999px;
     }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(142, 162, 181, .58); }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .15); }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -648,6 +653,12 @@
   </style>
 </head>
 <body>
+  <div id="splash-screen" style="position:fixed;inset:0;background:#0f1218;display:grid;place-items:center;z-index:9999;transition:opacity .5s ease,visibility .5s">
+    <div style="text-align:center">
+      <div style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#f0e6ee,#d46ab8 46%,#b05bcc);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:20px;font-family:'JetBrains Mono',sans-serif">AuroraChecker</div>
+      <div style="width:50px;height:50px;border:3px solid rgba(212,64,112,.1);border-top:3px solid var(--rose);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto"></div>
+    </div>
+  </div>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
@@ -661,6 +672,9 @@
         <button data-nav="jardll">jar/dll scan</button>
         <button data-nav="programs">tools</button>
         <button data-nav="texts">texts</button>
+        <button data-nav="launch">java launch</button>
+        <button data-nav="usb">usb & drives</button>
+        <button data-nav="browser">browser scan</button>
       </nav>
       <div class="footer">
         <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(212,64,112,.35);background:rgba(212,64,112,.08);font-size:12px">self destruct</button>
@@ -704,6 +718,20 @@
             </div>
             <div><button class="primary" onclick="loadProgramTools()">open</button></div>
           </div>
+          <div class="panel choice">
+            <div>
+              <h3>usb & drives</h3>
+              <p>usb connection history and footprints of files from disconnected external drives.</p>
+            </div>
+            <div><button class="primary" onclick="showView('usb'); loadUsbData();">open</button></div>
+          </div>
+          <div class="panel choice">
+            <div>
+              <h3>browser scan</h3>
+              <p>extracts downloads and search history matching cheat names from chrome, yandex, edge, opera, and firefox.</p>
+            </div>
+            <div><button class="primary" onclick="showView('browser'); loadBrowserData();">open</button></div>
+          </div>
         </div>
       </section>
 
@@ -716,9 +744,8 @@
         </div>
         <div class="panel scan-panel">
           <div class="input-row">
-            <input id="modsPath" placeholder="Path to mods folder or jar">
+            <input id="modsPath" placeholder="Path to mods folder">
             <button onclick="chooseFolder()">folder</button>
-            <button onclick="chooseJar()">jar</button>
             <button class="primary" onclick="scanMods()">scan</button>
           </div>
           <div id="modsError" class="error"></div>
@@ -727,12 +754,11 @@
              ondragover="event.preventDefault();this.style.borderColor='var(--rose)';this.style.background='rgba(212,64,112,.2)'"
              ondragleave="this.style.borderColor='var(--banned-line)';this.style.background='var(--banned-soft)'"
              ondrop="event.preventDefault();handleJarkaDrop(event)"
-             onclick="document.getElementById('jarkaFilePicker').click()">
-          <div style="font-size:15px;font-weight:700;color:var(--rose)">drop .jar here</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:6px">or click to select jar(s)</div>
-          <input type="file" id="jarkaFilePicker" accept=".jar" multiple style="display:none" onchange="handleJarkaFiles(this.files)">
-          <div id="jarkaResult" style="margin-top:14px;display:none;text-align:left;width:100%"></div>
+             onclick="handleJarkaDrop(event)">
+          <div style="font-size:15px;font-weight:700;color:var(--rose)">drop file(s) here</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">or click to select files (scans .jar mods / calculates hashes)</div>
         </div>
+        <div id="jarkaResult" style="margin-top:14px;display:none;text-align:left;width:100%;max-height:calc(100vh - 380px);overflow-y:auto;padding-right:8px"></div>
       </section>
 
       <section id="ghosts" class="view">
@@ -837,6 +863,105 @@
         </div>
       </section>
 
+      <section id="launch" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>java launch</h2>
+            <p>select jar file to launch via java.</p>
+          </div>
+        </div>
+        <div class="panel scan-panel">
+          <div class="input-row">
+            <input id="launchJarPath" placeholder="Path to jar file">
+            <button onclick="chooseLaunchJar()">browse</button>
+            <button class="primary" onclick="launchJar()">launch</button>
+          </div>
+          <div id="launchError" class="error"></div>
+        </div>
+      </section>
+
+      <section id="usb" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>usb & unplugged drives</h2>
+            <p>usb connection history and footprints of files from disconnected external drives.</p>
+          </div>
+          <div class="actions">
+            <button class="primary" onclick="loadUsbData()">scan / refresh</button>
+          </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 18px; flex: 1; min-height: 0;">
+          <!-- Left: USB Connection History -->
+          <div class="panel" style="display: flex; flex-direction: column; padding: 18px; min-height: 0;">
+            <h3 style="margin: 0 0 10px; font-size: 16px;">usb connection history</h3>
+            <div class="table-wrap" style="flex: 1; overflow: auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 50%;">friendly name / model</th>
+                    <th style="width: 50%;">serial number / ID</th>
+                  </tr>
+                </thead>
+                <tbody id="usbRows">
+                  <tr><td colspan="2" class="unknown">Click scan to load data</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Right: Disconnected Drive File Footprints -->
+          <div class="panel" style="display: flex; flex-direction: column; padding: 18px; min-height: 0;">
+            <h3 style="margin: 0 0 10px; font-size: 16px;">folder & file footprints (shellbags)</h3>
+            <div class="table-wrap" style="flex: 1; overflow: auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 30%;">name</th>
+                    <th style="width: 50%;">reconstructed path</th>
+                    <th style="width: 20%;">status</th>
+                  </tr>
+                </thead>
+                <tbody id="footprintRows">
+                  <tr><td colspan="3" class="unknown">Click scan to load data</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="usbError" class="error"></div>
+      </section>
+
+      <section id="browser" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>browser scan</h2>
+            <p>automatically searches downloads and browsing history matching cheat names from chrome, yandex, edge, opera, and firefox.</p>
+          </div>
+          <div class="actions">
+            <button class="primary" onclick="loadBrowserData()">scan / refresh</button>
+          </div>
+        </div>
+        
+        <div class="table-wrap" style="flex: 1; overflow: auto; margin-top: 4px;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 15%;">browser</th>
+                <th style="width: 10%;">type</th>
+                <th style="width: 25%;">name / title</th>
+                <th style="width: 35%;">url / path</th>
+                <th style="width: 15%;">time</th>
+              </tr>
+            </thead>
+            <tbody id="browserRows">
+              <tr><td colspan="5" class="unknown">Click scan to load data</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="browserError" class="error"></div>
+      </section>
+
       <section id="results" class="view">
         <div class="header">
           <div class="title">
@@ -902,6 +1027,7 @@
     let resultFilter = "";
     let activeToolTab = "beta";
     let lastBackView = "home";
+    let lastScannedJars = [];
 
     function api() {
       return window.pywebview && window.pywebview.api;
@@ -923,6 +1049,15 @@
       box.classList.toggle("active", Boolean(message));
     }
 
+    function hideSplashScreen() {
+      const splash = document.getElementById("splash-screen");
+      if (splash) {
+        splash.style.opacity = "0";
+        splash.style.visibility = "hidden";
+        setTimeout(() => splash.remove(), 500);
+      }
+    }
+
     async function init() {
       if (!api()) {
         showError("modsError", "pywebview API is not available. Start this app through main.py.");
@@ -933,8 +1068,11 @@
       document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => {
         if (btn.dataset.nav === "programs") loadProgramTools();
         else if (btn.dataset.nav === "texts") { showView("texts"); loadTexts(); }
+        else if (btn.dataset.nav === "usb") { showView("usb"); loadUsbData(); }
+        else if (btn.dataset.nav === "browser") { showView("browser"); loadBrowserData(); }
         else showView(btn.dataset.nav);
       }));
+      setTimeout(hideSplashScreen, 1200);
     }
 
     async function chooseFolder() {
@@ -945,6 +1083,102 @@
     async function chooseJar() {
       const path = await api().choose_jar();
       if (path) document.getElementById("modsPath").value = path;
+    }
+
+    async function chooseLaunchJar() {
+      const path = await api().choose_jar();
+      if (path) document.getElementById("launchJarPath").value = path;
+    }
+
+    async function launchJar() {
+      showError("launchError", "");
+      document.getElementById("launchError").classList.remove("ok");
+      const path = document.getElementById("launchJarPath").value;
+      if (!path) {
+        showError("launchError", "Select a jar file to launch.");
+        return;
+      }
+      setLoading(true, "Launching...");
+      try {
+        const payload = await api().launch_jar(path);
+        if (payload.ok) {
+          showError("launchError", payload.message);
+          document.getElementById("launchError").classList.add("ok");
+        } else {
+          showError("launchError", payload.error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function loadUsbData() {
+      showError("usbError", "");
+      setLoading(true, "Scanning USB devices and drive footprints...");
+      try {
+        const payload = await api().get_usb_and_drive_footprints();
+        if (!payload.ok) {
+          showError("usbError", payload.error);
+          return;
+        }
+
+        // Render USB devices
+        const usbRows = document.getElementById("usbRows");
+        const devs = payload.usb_devices || [];
+        usbRows.innerHTML = devs.map(d => `
+          <tr>
+            <td class="preserve-case" style="font-weight:700">${escapeHtml(d.name)}</td>
+            <td class="mono preserve-case" style="font-size:11px">${escapeHtml(d.serial)}</td>
+          </tr>
+        `).join("") || `<tr><td colspan="2" class="unknown">No USB storage history found in registry</td></tr>`;
+
+        // Render Footprints
+        const footprintRows = document.getElementById("footprintRows");
+        const fps = payload.footprints || [];
+        footprintRows.innerHTML = fps.map(f => {
+          const isConn = f.status === "connected";
+          return `<tr>
+            <td class="preserve-case" style="font-weight:700">${escapeHtml(f.name)}</td>
+            <td class="mono preserve-case" style="font-size:11px" title="${escapeHtml(f.path)}">${escapeHtml(f.path)}</td>
+            <td class="${isConn ? "clean" : "risk"}" style="font-size:11px;font-weight:800">${escapeHtml(f.status)}</td>
+          </tr>`;
+        }).join("") || `<tr><td colspan="3" class="unknown">No unplugged drive footprints found in ShellBags</td></tr>`;
+
+      } catch (err) {
+        showError("usbError", String(err));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function loadBrowserData() {
+      showError("browserError", "");
+      setLoading(true, "Scanning browser history & downloads for cheats...");
+      try {
+        const payload = await api().scan_browser_history();
+        if (!payload.ok) {
+          showError("browserError", payload.error);
+          return;
+        }
+
+        const browserRows = document.getElementById("browserRows");
+        const items = payload.items || [];
+        browserRows.innerHTML = items.map(item => {
+          const typeClass = item.type === "download" ? "risk" : "unknown";
+          return `<tr>
+            <td class="preserve-case" style="font-weight:700">${escapeHtml(item.browser)}</td>
+            <td class="${typeClass}" style="font-size:11px;font-weight:800">${escapeHtml(item.type)}</td>
+            <td class="preserve-case" style="font-weight:700;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</td>
+            <td class="mono preserve-case" style="font-size:11px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;" title="${escapeHtml(item.url)}">${escapeHtml(item.url)}</td>
+            <td class="mono" style="font-size:11px">${escapeHtml(item.time)}</td>
+          </tr>`;
+        }).join("") || `<tr><td colspan="5" class="unknown">No matching cheat entries found in browser history or downloads</td></tr>`;
+
+      } catch (err) {
+        showError("browserError", String(err));
+      } finally {
+        setLoading(false);
+      }
     }
 
     async function scanMods() {
@@ -1178,55 +1412,185 @@
     }
 
     async function handleJarkaFiles(files) {
-      const jars = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.jar'));
-      if (!jars.length) { showError('modsError', 'No .jar files selected'); return; }
-      await runJarkaScans(jars);
+      const selectedFiles = Array.from(files);
+      if (!selectedFiles.length) { showError('modsError', 'No files selected'); return; }
+      await runJarkaScans(selectedFiles);
     }
 
     async function handleJarkaDrop(event) {
-      const files = Array.from(event.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith('.jar'));
-      if (!files.length) { showError('modsError', 'Drop .jar files only'); return; }
-      await runJarkaScans(files);
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      // Не открывать диалог если уже показываются результаты
+      const resultDiv = document.getElementById('jarkaResult');
+      if (resultDiv && resultDiv.style.display !== 'none' && resultDiv.innerHTML.trim()) {
+        return;
+      }
+      
+      // If it is a real drop event, read files from dataTransfer
+      if (event && event.type === 'drop' && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+        const selectedFiles = [];
+        for (let i = 0; i < event.dataTransfer.files.length; i++) {
+          const f = event.dataTransfer.files[i];
+          selectedFiles.push({ name: f.name, path: f.path || f.name });
+        }
+        if (selectedFiles.length) {
+          await runJarkaScans(selectedFiles);
+          return;
+        }
+      }
+      
+      const paths = await api().choose_jars();
+      if (paths && paths.length) {
+        const selectedFiles = paths.map(p => ({ name: p.split('\\').pop().split('/').pop(), path: p }));
+        await runJarkaScans(selectedFiles);
+      } else {
+        showError('modsError', 'No files selected');
+      }
     }
+
+
 
     async function runJarkaScans(files) {
       showError('modsError', '');
-      setLoading(true, `JarkaScanner: analyzing ${files.length} jar(s)...`);
+      setLoading(true, `scanning: analyzing ${files.length} file(s)...`);
       const results = [];
       try {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          setLoading(true, `JarkaScanner: ${i+1}/${files.length} - ${file.name}`);
+          setLoading(true, `scanning: ${i+1}/${files.length} ${file.name}`);
           const payload = await api().scan_jar_jarka(file.path || file.name);
-          results.push({ name: file.name, ok: payload.ok, data: payload.ok ? payload.results : payload.error });
+          results.push({
+            name: file.name,
+            ok: payload.ok,
+            is_jar: payload.is_jar,
+            hashes: payload.hashes,
+            data: payload.ok ? payload.results : payload.error
+          });
         }
+        lastScannedJars = files.map(f => f.path || f.name);
         const div = document.getElementById('jarkaResult');
         div.style.display = 'block';
+        let clearButtonHtml = `
+          <div style="margin-top: 12px; display: flex; justify-content: center; gap: 8px;">
+            <button style="height: 32px; font-size: 11px; padding: 0 12px;" onclick="clearJarkaUI(event)">clear results</button>
+          </div>
+        `;
         div.innerHTML = results.map(r => {
           if (!r.ok) return `<div style="padding:10px;margin-top:8px;border-radius:7px;background:rgba(239,98,98,.1)"><strong style="color:var(--red)">${escapeHtml(r.name)}</strong><div style="font-size:12px;color:var(--muted)">error: ${escapeHtml(r.data)}</div></div>`;
+          const isJar = r.is_jar !== false;
           const riskScore = r.data.risk_score || 0;
           const riskLevel = r.data.risk_level || 'N/A';
           const isMalware = riskLevel === 'MALWARE';
-          const logs = [];
-          if (r.data.telegram_token) logs.push('telegram token');
-          if (r.data.discord_webhook) logs.push('discord webhook');
-          if (r.data.command_execution) logs.push('command exec');
-          if (r.data.cheats && Object.keys(r.data.cheats).length) logs.push('cheats: ' + Object.keys(r.data.cheats).join(', '));
-          if (r.data.obfuscation) logs.push('obfuscation');
-          if (r.data.native_libs) logs.push('native libs: ' + (r.data.native_libs_paths || []).length);
-          if (r.data.suspicious_urls && r.data.suspicious_urls.length) logs.push('suspicious urls: ' + r.data.suspicious_urls.length);
           const ai = r.data.ai || {};
-          return `<div style="padding:10px;margin-top:8px;border-radius:7px;background:rgba(0,0,0,.3);border-left:3px solid ${isMalware ? 'var(--rose)' : (riskScore > 20 ? 'var(--amber)' : 'var(--green)')}">
-            <div style="font-weight:800;font-size:14px;color:${isMalware ? 'var(--rose)' : (riskScore > 20 ? 'var(--amber)' : 'var(--green)')}">${escapeHtml(r.name)} — ${riskScore}/100 (${riskLevel})</div>
-            <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-top:4px">${logs.length ? logs.map(l => '<span style="margin-right:8px">• ' + escapeHtml(l) + '</span>').join('') : '<span>no significant findings</span>'}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px">ai malware: ${ai.malware_probability || 0}%</div>
+          const hasMalicious = riskScore > 0;
+
+          const mal = [];
+          if (isJar) {
+            if (r.data.telegram_token) {
+              const t = (r.data.telegram_tokens || []).join(', ');
+              mal.push('Telegram token' + (t ? ': ' + escapeHtml(t) : ''));
+            }
+            if (r.data.discord_webhook) {
+              const m = (r.data.discord_matches || []).join(', ');
+              mal.push('Discord webhook' + (m ? ': ' + escapeHtml(m) : ''));
+            }
+            if (r.data.password_logger) mal.push('Password logger');
+            if (r.data.cheats && Object.keys(r.data.cheats).length) {
+              const found = Object.entries(r.data.cheats).filter(([,v]) => v).map(([k]) => k);
+              mal.push('Detects: ' + found.join(', '));
+            }
+            if (r.data.suspicious_urls && r.data.suspicious_urls.length) {
+              mal.push('Suspicious URLs: ' + r.data.suspicious_urls.map(escapeHtml).join(', '));
+            }
+          }
+
+          const evidence = r.data.evidence || [];
+          const evidenceHtml = isJar && evidence.length ? '<div style="margin-top:8px">' + evidence.slice(0, 15).map((e, i) => {
+            const snippet = e.context || '';
+            const highlighted = snippet.replace(new RegExp('(' + escapeRegex(e.matched || '') + ')', 'gi'), '<mark style="background:rgba(212,64,112,.3);color:var(--rose);padding:0 2px;border-radius:2px">$1</mark>');
+            return '<details style="margin-bottom:4px"><summary style="cursor:pointer;font-size:11px;color:var(--amber);font-family:Consolas,monospace;padding:4px 6px;border-radius:4px;background:rgba(255,255,255,0.03);user-select:none">⚠ ' + escapeHtml(e.file || '') + ' → <span style="color:var(--rose);font-weight:700">' + escapeHtml(e.matched || '') + '</span></summary><pre style="margin:4px 0 0 0;padding:8px;border-radius:5px;background:rgba(0,0,0,.4);font-size:10px;color:#cdd6e0;font-family:Consolas,monospace;overflow-x:auto;white-space:pre-wrap;max-height:150px;overflow-y:auto;line-height:1.5">' + highlighted + '</pre></details>';
+          }).join('') + (evidence.length > 15 ? '<div style="font-size:10px;color:var(--muted);margin-top:4px">...and ' + (evidence.length - 15) + ' more</div>' : '') + '</div>' : '';
+
+          const barColor = !isJar ? '#4facfe' : (isMalware ? 'var(--rose)' : (hasMalicious ? 'var(--amber)' : 'var(--green)'));
+          const textColor = !isJar ? '#4facfe' : (isMalware ? 'var(--rose)' : (hasMalicious ? 'var(--amber)' : 'var(--green)'));
+          const label = !isJar ? 'HASH INFO' : (isMalware ? 'MALWARE' : (hasMalicious ? 'SUSPICIOUS' : 'CLEAN'));
+
+          let hashesHtml = '';
+          if (r.hashes) {
+            hashesHtml = `
+              <div style="margin-top:8px; font-size:11px; background:rgba(255,255,255,0.02); padding:8px; border-radius:5px; border:1px solid rgba(255,255,255,0.05)">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:center; gap:8px;">
+                  <span style="color:var(--muted); flex-shrink:0;">MD5:</span>
+                  <span class="mono preserve-case" style="cursor:pointer; color:var(--text); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:80%;" onclick="navigator.clipboard.writeText('${r.hashes.md5}');alert('MD5 скопирован в буфер обмена!')" title="Нажмите, чтобы скопировать">${r.hashes.md5}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:center; gap:8px;">
+                  <span style="color:var(--muted); flex-shrink:0;">SHA-1:</span>
+                  <span class="mono preserve-case" style="cursor:pointer; color:var(--text); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:80%;" onclick="navigator.clipboard.writeText('${r.hashes.sha1}');alert('SHA-1 скопирован в буфер обмена!')" title="Нажмите, чтобы скопировать">${r.hashes.sha1}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                  <span style="color:var(--muted); flex-shrink:0;">SHA-256:</span>
+                  <span class="mono preserve-case" style="cursor:pointer; color:var(--text); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:80%;" onclick="navigator.clipboard.writeText('${r.hashes.sha256}');alert('SHA-256 скопирован в буфер обмена!')" title="Нажмите, чтобы скопировать">${r.hashes.sha256}</span>
+                </div>
+              </div>
+            `;
+          }
+
+          return `<div style="padding:10px;margin-top:8px;border-radius:7px;background:rgba(0,0,0,.3);border-left:3px solid ${barColor}">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <div style="font-weight:800;font-size:14px;color:${textColor};text-overflow:ellipsis;overflow:hidden;white-space:nowrap;max-width:250px;" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</div>
+              <div style="font-size:10px;padding:1px 6px;border-radius:4px;background:${barColor};color:#fff;font-weight:700">${label}</div>
+              ${isJar && riskScore > 0 ? '<div style="font-size:10px;color:var(--muted)">risk: ' + riskScore + '%</div>' : ''}
+              ${isJar && ai.malware_probability > 0 ? '<div style="font-size:10px;color:var(--muted)">AI: ' + ai.malware_probability + '%</div>' : ''}
+            </div>
+            ${isJar && hasMalicious ? '<div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.1);margin-bottom:6px;overflow:hidden"><div style="height:100%;width:' + riskScore + '%;background:' + barColor + ';border-radius:2px;transition:width 0.3s"></div></div>' : ''}
+            ${isJar ? (mal.length ? '<div style="font-size:11px;color:var(--rose);line-height:1.6;margin-top:4px;font-weight:700">' + mal.map(d => '<div>⚠ ' + d + '</div>').join('') + '</div>' : '<div style="font-size:11px;color:var(--green);margin-top:4px">No threats found</div>') : ''}
+            ${evidenceHtml}
+            ${hashesHtml}
           </div>`;
-        }).join('');
+        }).join('') + clearButtonHtml;
       } finally {
         setLoading(false);
         document.getElementById('jarkaDropZone').style.borderColor = 'var(--banned-line)';
         document.getElementById('jarkaDropZone').style.background = 'var(--banned-soft)';
       }
+    }
+
+    async function deleteScannedJars(event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      if (!lastScannedJars || !lastScannedJars.length) return;
+      if (!confirm(`Are you sure you want to permanently delete these ${lastScannedJars.length} file(s) from disk?`)) return;
+      
+      setLoading(true, "Deleting files...");
+      try {
+        const payload = await api().delete_files(lastScannedJars);
+        if (payload.ok) {
+          showError("modsError", "");
+          const div = document.getElementById('jarkaResult');
+          div.style.display = 'none';
+          div.innerHTML = '';
+          lastScannedJars = [];
+          alert(`Successfully deleted ${payload.deleted} file(s).`);
+        } else {
+          showError("modsError", payload.error);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function clearJarkaUI(event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      const div = document.getElementById('jarkaResult');
+      div.style.display = 'none';
+      div.innerHTML = '';
+      lastScannedJars = [];
+      showError("modsError", "");
     }
 
     async function downloadMissingTools() {
@@ -1310,7 +1674,7 @@
       const item = results[index];
       if (!item) return;
       document.getElementById("modalTitle").textContent = item.name;
-      const logs = (item.analysisResults || []).map(log => `[${log.type}] ${log.className} -> ${log.detail}`).join("\\n") || "No heuristic hits.";
+      const logs = (item.analysisResults || []).map(log => `[${log.type}] ${log.className} -> ${log.detail}`).join("\n--------------------------\n") || "No heuristic hits.";
       document.getElementById("modalBody").innerHTML = `
         <div class="kv"><span>Verdict</span><strong class="${item.banned ? "banned" : (item.suspicious ? "risk" : "clean")}">${escapeHtml(item.verdict)}</strong></div>
         <div class="kv"><span>Path</span><div class="mono preserve-case">${escapeHtml(item.path)}</div></div>
@@ -1340,6 +1704,10 @@
       return String(value ?? "").replace(/[&<>"']/g, char => ({
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
       }[char]));
+    }
+
+    function escapeRegex(str) {
+      return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
     window.addEventListener("pywebviewready", init);

@@ -80,24 +80,16 @@ def is_obfuscated_class(name: str) -> bool:
 
 
 def calculate_risk_score(results: dict) -> int:
-    """Рассчитать риск: +40 telegram, +30 discord, +30 runtime.exec, +20 http, +20 недоверенные ссылки, +15 подозрительные URL, +10 obfuscation, +10 native libs."""
     score = 0
     if results.get('telegram_token'):
-        score += 40
+        score += 50
     if results.get('discord_webhook'):
-        score += 30
-    if results.get('runtime_exec'):
-        score += 30
-    if results.get('http_connection'):
-        score += 20
-    if results.get('untrusted_file_url'):
-        score += 20
-    if results.get('suspicious_urls'):
-        score += 15
-    if results.get('obfuscation'):
-        score += 10
-    if results.get('native_libs'):
-        score += 10
+        score += 40
+    if results.get('password_logger'):
+        score += 35
+    cheats = results.get('cheats', {})
+    cheat_count = sum(1 for v in cheats.values() if v)
+    score += cheat_count * 10
     return min(score, 100)
 
 
