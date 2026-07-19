@@ -26,12 +26,20 @@ def extract_jar(jar_path: str, out_dir: str = None) -> str:
 def list_extractable_paths(jar_path: str) -> list:
     """Список путей внутри JAR для анализа: текстовые конфиги/скрипты, assets, META-INF."""
     paths = []
+    exclude_ext = {
+        '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.ico', '.svg',
+        '.mp3', '.mp4', '.wav', '.ogg', '.flac',
+        '.ttf', '.otf', '.woff', '.woff2',
+        '.dll', '.so', '.dylib', '.exe'
+    }
     with zipfile.ZipFile(jar_path, 'r') as z:
         for name in z.namelist():
             if z.getinfo(name).is_dir():
                 continue
             p = Path(name)
             ext = p.suffix.lower()
+            if ext in exclude_ext:
+                continue
             top = name.split('/')[0].lower() if '/' in name else p.parts[0].lower()
             if ext in EXTRACT_EXTENSIONS or top in EXTRACT_DIRS:
                 paths.append(name)

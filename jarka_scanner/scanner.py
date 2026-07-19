@@ -2,6 +2,7 @@
 import os
 import re
 import tempfile
+import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from .jar_extractor import list_extractable_paths, list_native_paths, list_nested_jars, read_file_from_jar
@@ -53,19 +54,22 @@ def run_detectors(jar_path: str, file_paths: list, all_strings: dict, native_pat
 
 
 def extract_strings_parallel(jar_path: str, file_paths: list, max_workers: int = 4) -> dict:
-    """Извлечь строки из всех файлов (параллельно)."""
+    """Извлечь строки из всех файлов (оптимизировано, один раз открывает Zip)."""
     all_strings = {}
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_path = {
-            executor.submit(extract_strings_from_jar_file, jar_path, p): p
-            for p in file_paths
-        }
-        for future in as_completed(future_to_path):
-            path = future_to_path[future]
-            try:
-                all_strings[path] = future.result()
-            except Exception:
-                all_strings[path] = []
+    try:
+        with zipfile.ZipFile(jar_path, 'r') as z:
+            for p in file_paths:
+                try:
+                    data = z.read(p)
+                    if data:
+                        text = data.decode('utf-8', errors='ignore')
+                        all_strings[p] = re.findall(r'[\x20-\x7e]{4,}', text)
+                    else:
+                        all_strings[p] = []
+                except Exception:
+                    all_strings[p] = []
+    except Exception:
+        pass
     return all_strings
 
 
