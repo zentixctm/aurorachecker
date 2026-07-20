@@ -720,15 +720,15 @@
         <span onclick="openRepo()" class="repo-link" title="Open GitHub Repository">by zentixctm</span>
       </div>
       <nav class="nav">
-        <button data-nav="home" class="active">Главная</button>
-        <button data-nav="sysinfo">Система & Forensics</button>
-        <button data-nav="mods">Сканер модов (.jar)</button>
-        <button data-nav="jardll">Активность JAR & DLL</button>
-        <button data-nav="programs">Встроенные утилиты</button>
-        <button data-nav="texts">Поисковые запросы</button>
-        <button data-nav="launch">Запуск Java</button>
-        <button data-nav="usb">История папок (ShellBags)</button>
-        <button data-nav="browser">История браузеров</button>
+        <button data-nav="home" class="active">home</button>
+        <button data-nav="sysinfo">system info</button>
+        <button data-nav="mods">mods folder</button>
+        <button data-nav="jardll">jar | dll scan</button>
+        <button data-nav="programs">tools</button>
+        <button data-nav="texts">texts</button>
+        <button data-nav="launch">java launch</button>
+        <button data-nav="usb">shellbags</button>
+        <button data-nav="browser">browser scan</button>
       </nav>
       <div class="footer">
         <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);font-size:12px">self destruct</button>
@@ -1344,7 +1344,7 @@
       const cheatKeywords = ['vape', 'expensive', 'nursultan', 'celestial', 'doomsday', 'wurst', 'liquidbounce', 'cheat', 'hack', 'crack', 'client', 'slinky', 'ghost', 'drip', 'entropy', 'whiteout', 'juul', 'skilled', 'itami', 'koid', 'akrien', 'zamorozka', 'sunrise', 'hono', 'excellent', 'deadcode'];
       
       footprintRows.innerHTML = list.map(f => {
-        const isConn = f.status === "доступen" || f.status === "доступен" || f.status === "connected";
+        const isConn = f.status === "available" || f.status === "connected";
         const nameLower = (f.name || "").toLowerCase();
         const pathLower = (f.path || "").toLowerCase();
         const hasCheatKeyword = cheatKeywords.some(kw => nameLower.includes(kw) || pathLower.includes(kw));

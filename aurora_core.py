@@ -3482,7 +3482,7 @@ class AuroraApi:
                     drive_footprints.append({
                         "name": name,
                         "path": path,
-                        "status": "connected" if is_exists else "disconnected",
+                        "status": "available" if is_exists else "missing",
                         "time": last_visited
                     })
                     
@@ -3547,7 +3547,7 @@ class AuroraApi:
                     drive_footprints.append({
                         "name": name,
                         "path": path,
-                        "status": "доступен" if is_exists else "недоступен",
+                        "status": "available" if is_exists else "missing",
                         "time": last_visited
                     })
                 # If it's just a filename
@@ -3561,14 +3561,14 @@ class AuroraApi:
                         drive_footprints.append({
                             "name": path,
                             "path": found_full_path,
-                            "status": "доступен",
+                            "status": "available",
                             "time": last_visited
                         })
                     else:
                         drive_footprints.append({
                             "name": path,
                             "path": f"(filename only: {path})",
-                            "status": "недоступен",
+                            "status": "missing",
                             "time": last_visited
                         })
 
@@ -3598,7 +3598,7 @@ class AuroraApi:
                                 drive_footprints.append({
                                     "name": name,
                                     "path": path,
-                                    "status": "доступен" if is_exists else "недоступен",
+                                    "status": "available" if is_exists else "missing",
                                     "time": typed_time
                                 })
                     except Exception:
