@@ -64,15 +64,14 @@ def main() -> int:
             width=1180,
             height=760,
             min_size=(980, 620),
-            background_color="#0f1218",
+            background_color="#07090e",
             hidden=True,
         )
         api._window = window
 
         def startup():
-            import time as _time
-            _time.sleep(0.4)
             window.show()
+            window.evaluate_js("if (window.startSplashTimer) { window.startSplashTimer(); }")
             if auto_scan:
                 window.evaluate_js("triggerAutoScan()")
 

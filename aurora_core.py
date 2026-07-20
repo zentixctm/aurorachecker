@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import shutil
 import shlex
+import platform
 import subprocess
 import sys
 import tempfile
@@ -119,13 +120,57 @@ BANNED_MODS = {
 }
 
 GHOST_SIGNATURES = [
-    ("Vape Lite Client", ("vape lite", "vapelite", "vape_lite", "vape-lite", "vape lite client")),
-    ("Vape V4 Client", ("vape v4", "vapev4", "vape_v4", "vape-v4", "vape v4 client")),
-    ("DoomsDay Client", ("doomsday", "doomsdayclient", "doomsday client", "doomsdayclient.com")),
-    ("Slinky Client", ("slinky", "slinkyclient", "slinky client", "slinky_client")),
-    ("Sunset Client", ("sunsetclient", "sunset client", "sunset_client", "sunset-loader", "sunset.dll")),
-    ("Karma Client", ("karmaclient", "karma client", "karma_client", "karma-loader", "karma.dll")),
-    ("InjGen", ("injgen", "inj_gen", "injectgen", "inj-generator", "injgenerator")),
+    ("System Client", ("dev/mark/system", "system_client", "systemclient/module", "systemintelijready")),
+    ("Wayne Client", ("ru/wayne", "selfdestructmodule", "auracombomodule", "wayne_waypoints.json")),
+    ("Nursultan Client", ("net/nursultan", "nursultan/module", "nursultan/gui", "nur/client", "nursultan")),
+    ("Celestial Client", ("celestial/main", "com/celestial", "celestialrecode", "celka", "celestial")),
+    ("Expensive Client", ("expensive/module", "expensive/ui", "com/expensive/module", "expensive")),
+    ("Excellent Client", ("excellent/client", "excellent/module", "net/excellent")),
+    ("Akrien Client", ("akrien/client", "akrien/module", "net/akrien")),
+    ("DeadCode Client", ("deadcode/main", "deadcode/api", "deadcode/module", "net/deadcode")),
+    ("WildClient", ("wildclient/module", "wildclient/ui", "wildclient/main")),
+    ("Wexside Client", ("wexside/client", "wexside/module", "wexside/ui")),
+    ("Minced Client", ("minced/client", "minced/module", "net/minced")),
+    ("Fluger Client", ("fluger/client", "fluger/module", "net/fluger")),
+    ("NeverHook Client", ("neverhook/client", "neverhook/module", "org/neverhook")),
+    ("ThunderHack", ("thunder/hack", "thunderhack/module", "thunder/gui")),
+    ("Meteor Client", ("meteordevelopment/meteorclient", "meteor-client", "meteorclient/systems")),
+    ("LiquidBounce", ("net/ccbluex/liquidbounce", "liquidbounce/module")),
+    ("Wurst Client", ("net/wurstclient", "wurstclient/features")),
+    ("Future Client", ("net/futureclient", "future/client", "future/module")),
+    ("RusherHack", ("rusherhack/client", "rusherhack/module")),
+    ("Baritone Pathfinder", ("baritone/api", "baritone/process", "baritone/behavior")),
+    ("Vape Lite Client", ("vape lite", "vapelite", "vape_lite", "vape-lite", "vape/loader", "vape/client")),
+    ("Vape V4 Client", ("vape v4", "vapev4", "vape_v4", "vape-v4", "vape.gg", "vape/loader", "vape/client", "vape")),
+    ("Whiteout Ghost Client", ("whiteout/client", "whiteout_loader", "whiteout.cc", "wo_inject", "whiteout")),
+    ("Entropy Ghost Client", ("entropy/client", "entropy_inject", "entropy.cc", "entropy_gui")),
+    ("Drip Lite Client", ("drip/client", "drip_lite", "drip_loader", "drip.cc")),
+    ("Juul Ghost Client", ("juul/client", "juul_inject", "juul.cc")),
+    ("Koid Ghost Client", ("koid/client", "koid_autoclicker")),
+    ("Itami Ghost Client", ("itami/client", "itami.exe")),
+    ("Skilled Client", ("skilled/client", "skilled_v3")),
+    ("Vec.dll / Native Hook", ("vec.dll", "gclip.dll", "hitbox.dll", "reach.dll", "velocity.dll")),
+    ("DoomsDay Client", ("doomsday/", "doomsdayclient", "doomsday_client", "doomsday.vip", "doomsday.cc", "doomsday.net", "doomsday.dll", "doomsday_", "doomsday")),
+    ("Liminar Injector", ("liminar_inj", "liminar.exe")),
+    ("ExLoader", ("exloader.exe", "exloader/configs")),
+    ("AutoClicker / Macro", ("speedautoclicker", "fastclicker", "opautoclicker", "gsautoclicker", "gclipwin64")),
+    ("Slinky Client", ("slinkyclient", "slinky client", "slinky_loader", "slinky")),
+    ("Sunset Client", ("sunsetclient", "sunset client", "sunset-loader", "sunset.dll")),
+    ("Karma Client", ("karmaclient", "karma client", "karma.dll")),
+    ("Zamorozka Client", ("zamorozka/client", "zamorozkaclient")),
+    ("Sunrise Client", ("sunrise/client", "sunriseclient")),
+    ("Hono Client", ("hono/client", "honoclient")),
+    ("Extazyy Client", ("extazyy/client", "extazyyclient")),
+    ("Ricardo Client", ("ricardo/client", "ricardoclient")),
+    ("Nightware Client", ("nightware/client", "nightwareclient")),
+    ("FDPClient", ("fdpclient/module", "fdpclient")),
+    ("Augustus Client", ("augustus/client", "augustusclient")),
+    ("Novoline Client", ("novoline/client", "novolineclient")),
+    ("Tenacity Client", ("tenacity/client", "tenacityclient")),
+    ("Astolfo Client", ("astolfo/client", "astolfoclient")),
+    ("Rise Client", ("rise/client", "riseclient")),
+    ("Lambda Client", ("lambda/client", "lambdaclient")),
+    ("Earthhack", ("earthhack/client", "earthhack_client")),
 ]
 
 TRUSTED_MODULE_HINTS = (
@@ -354,35 +399,68 @@ KNOWN_BENIGN_NATIVE_NAMES = (
     "liblame4j",
     "discordhook",
     "discord_hook",
+    "discord_game_sdk",
+    "discord-rpc",
+    "lwjgl",
+    "openal",
+    "glfw",
+    "jemalloc",
+    "tinyfd",
+    "renderdoc",
+    "com_mojang",
+    "awt",
+    "java",
+    "jli",
+    "jvm",
+    "jimage",
+    "jsvml",
+    "sunmscapi",
+    "extnet",
+    "net",
+    "zip",
+    "nio",
+    "management",
+    "instrument",
+    "sunec",
+    "attach",
+    "verify",
+    "freetype",
+    "vulkan",
+    "msvcp",
+    "vcruntime",
+    "tlauncher",
+    "feather",
+    "lunar",
+    "optifine",
+    "authlib",
 )
 
 KNOWN_BENIGN_NATIVE_PATHS = (
     "\\appdata\\local\\discord\\",
-    "\\appdata\\local\\temp\\jna-",
-    "\\appdata\\local\\temp\\libopus4j-",
-    "\\appdata\\local\\temp\\librnnoise4j-",
-    "\\appdata\\local\\temp\\libspeex4j-",
-    "\\appdata\\local\\temp\\liblame4j-",
+    "\\appdata\\local\\temp\\",
+    "\\.minecraft\\",
+    "\\.lunarclient\\",
+    "\\.feather\\",
+    "\\prismlauncher\\",
+    "\\curseforge\\",
+    "\\modrinth\\",
+    "\\.tlauncher\\",
+    "\\mojang_jre\\",
+    "\\java-runtime\\",
+    "\\java\\",
+    "\\jre\\",
+    "\\jdk\\",
 )
 
-GENERIC_AGENT_MEMORY_MARKERS = (
-    "agent_onload",
-    "agent_onattach",
-    "jni_onload",
-    "jvmti",
-    "jvmtienv",
-    "classfileloadhook",
-    "retransformclasses",
-    "seteventnotificationmode",
-    "nativemethodbind",
-)
+GENERIC_AGENT_MEMORY_MARKERS = ()
 
 KNOWN_MEMORY_MARKERS = tuple(
     token.lower()
-    for _, tokens in GHOST_SIGNATURES
+    for display, tokens in GHOST_SIGNATURES
+    if display not in ("Lunar Client", "InjGen")
     for token in tokens
-    if len(token) >= 5
-) + ("com/lunarclient", "com/lunar", "injgen", "injectgen")
+    if len(token) >= 5 and token.lower() not in ("injgen", "injectgen", "javalauncher.log", "com/lunarclient", "com/lunar")
+)
 
 PROCESS_QUERY_INFORMATION = 0x0400
 PROCESS_VM_READ = 0x0010
@@ -393,7 +471,7 @@ PAGE_GUARD = 0x100
 READABLE_PROTECTIONS = {0x02, 0x04, 0x08, 0x20, 0x40, 0x80}
 EXECUTABLE_PROTECTIONS = {0x10, 0x20, 0x40, 0x80}
 MEMORY_CHUNK_SIZE = 1024 * 1024
-MAX_MEMORY_SCAN_BYTES = 768 * 1024 * 1024
+MAX_MEMORY_SCAN_BYTES = 256 * 1024 * 1024
 MAX_MEMORY_FINDINGS = 24
 
 
@@ -829,9 +907,31 @@ def cancel_scan() -> dict:
     return {"ok": True}
 
 
+SCAN_PROGRESS = {"current": 0, "total": 0, "status": "", "percent": 0, "detail": ""}
+
+
+def get_scan_progress() -> dict:
+    global SCAN_PROGRESS
+    return SCAN_PROGRESS
+
+
+def update_scan_progress(current: int, total: int, status: str, detail: str = "") -> None:
+    global SCAN_PROGRESS
+    pct = int((current / total) * 100) if total > 0 else 100
+    SCAN_PROGRESS = {
+        "current": current,
+        "total": total,
+        "status": status,
+        "detail": detail or f"checking {status}",
+        "percent": min(100, max(0, pct))
+    }
+
+
 def reset_cancel_scan() -> dict:
     global CANCEL_SCAN_REQUESTED
+    global SCAN_PROGRESS
     CANCEL_SCAN_REQUESTED = False
+    SCAN_PROGRESS = {"current": 0, "total": 0, "status": "", "percent": 0, "detail": ""}
     return {"ok": True}
 
 
@@ -845,7 +945,9 @@ def scan_path(path_text: str) -> dict:
         jars = [path]
     else:
         jars = sorted(p for p in path.rglob("*.jar") if p.is_file())
+    total_jars = len(jars)
     if not jars:
+        update_scan_progress(0, 0, "Done")
         return {
             "ok": True,
             "target": str(path.resolve()),
@@ -854,20 +956,39 @@ def scan_path(path_text: str) -> dict:
         }
 
     items = []
-    for jar in jars:
+    for idx, jar in enumerate(jars):
         if CANCEL_SCAN_REQUESTED:
             break
+        update_scan_progress(idx + 1, total_jars, jar.name, f"parsing bytecode & signatures: {jar.name}")
         modrinth = check_modrinth(jar)
         logs = [] if modrinth else heuristic_results(jar)
+        
+        jarka_ev = []
+        try:
+            from jarka_scanner.scanner import scan_jar
+            jres = scan_jar(str(jar), jar.stat().st_size if jar.exists() else 0)
+            if jres and isinstance(jres, dict):
+                ev_list = jres.get("evidence", [])
+                for ev in ev_list:
+                    jarka_ev.append({
+                        "type": ev.get("rule", "Jarka Detection"),
+                        "message": ev.get("description", str(ev)),
+                        "confidence": "high" if ev.get("severity") == "high" else "medium"
+                    })
+        except Exception:
+            pass
+
+        all_logs = logs + jarka_ev
         items.append(result_item(
             jar.name,
             str(jar.resolve()),
             jar.stat().st_size if jar.exists() else 0,
             modrinth,
-            (not modrinth) and high_confidence(logs),
+            (not modrinth) and high_confidence(all_logs),
             download_source(jar),
-            logs,
+            all_logs,
         ))
+    update_scan_progress(total_jars, total_jars, "Completed")
     return ok(str(path.resolve()), items)
 
 
@@ -1152,7 +1273,6 @@ def scan_ghost_process(process: dict) -> dict | None:
     check_ghost_text(command, "Command line", logs, seen)
     for agent in agent_arguments(command):
         check_ghost_text(agent, "JVM agent argument", logs, seen)
-        add_unique_entry(logs, seen, "JVM agent argument", "JVM Agent", compact(agent, 220))
     modules = loaded_modules(pid)
     logs.extend(process_module_entries(modules, seen))
     for module in modules:
@@ -1304,9 +1424,12 @@ def memory_scan_entries(pid: int, seen: set[str]) -> list[dict]:
                 if is_readable_memory(mbi) and int(mbi.Type) == MEM_PRIVATE:
                     offset = 0
                     while offset < region_size and scanned < MAX_MEMORY_SCAN_BYTES and len(logs) < MAX_MEMORY_FINDINGS:
+                        if CANCEL_SCAN_REQUESTED:
+                            return logs
                         chunk_size = min(MEMORY_CHUNK_SIZE, region_size - offset, MAX_MEMORY_SCAN_BYTES - scanned)
                         data = read_memory_chunk(read_process_memory, handle, base + offset, chunk_size)
                         scanned += chunk_size
+                        update_scan_progress(scanned, MAX_MEMORY_SCAN_BYTES, f"RAM Scan (PID {pid})", f"analyzing RAM memory: {scanned // (1024 * 1024)}MB / {MAX_MEMORY_SCAN_BYTES // (1024 * 1024)}MB")
                         if data:
                             inspect_memory_chunk(data, base + offset, int(mbi.Type), int(mbi.Protect), logs, seen)
                         offset += chunk_size
@@ -1349,7 +1472,7 @@ def read_memory_chunk(read_process_memory, handle, address: int, size: int) -> b
     return bytes(buffer[: read.value])
 
 
-JVM_MODIFICATION_DWORDS = {0x00080006, 0xFCE01E99}
+JVM_MODIFICATION_DWORDS = {0xFCE01E99}
 
 def get_memory_protection_desc(protect: int) -> str:
     mapping = {
@@ -1409,44 +1532,6 @@ def inspect_memory_chunk(data: bytes, address: int, region_type: int, protect: i
                 "PE image bytes in executable private memory at 0x" + format(address, "X"),
             )
 
-        # 3. Detect zero-wipe string clearing (memory wiping)
-        if b'\x00' * 32 in data:
-            idx = data.find(b'\x00' * 32)
-            before = data[max(0, idx - 100):idx]
-            after = data[idx + 32:min(len(data), idx + 132)]
-            readable_before = sum(1 for b in before if 32 <= b <= 126)
-            readable_after = sum(1 for b in after if 32 <= b <= 126)
-            if readable_before > 15 and readable_after > 15:
-                # Check for Java structures to avoid false positive metadata noise
-                context_text = (before + after).decode('ascii', errors='ignore').lower()
-                is_java_structure = (
-                    "lcom/" in context_text or
-                    "lorg/" in context_text or
-                    "java/" in context_text or
-                    "net/minecraft" in context_text or
-                    "minecraft" in context_text or
-                    "client" in context_text or
-                    "()" in context_text or
-                    "class" in context_text or
-                    "loader" in context_text or
-                    "/" in context_text
-                )
-                if is_java_structure:
-                    context_before = before.decode('ascii', errors='ignore')[-40:].strip()
-                    context_after = after.decode('ascii', errors='ignore')[:40].strip()
-                    context_before = re.sub(r'[^\w./$_;-]', '', context_before)
-                    context_after = re.sub(r'[^\w./$_;-]', '', context_after)
-                    context_str = f"... {context_before} [WIPED DATA] {context_after} ..."
-                    prot_desc = get_memory_protection_desc(protect)
-                    type_desc = get_memory_type_desc(region_type)
-                    add_unique_entry(
-                        logs,
-                        seen,
-                        "Process memory",
-                        "String Wiping",
-                        f"Memory zero-wipe (erased string) at 0x{address + idx:X} [{type_desc}, {prot_desc}] near: {context_str}"
-                    )
-
         check_jvm_modification_dwords(data, address, protect, region_type, logs, seen)
 
 
@@ -1501,6 +1586,7 @@ def agent_arguments(command: str) -> list[str]:
 
 
 def scan_ghost(pid: int | None = None) -> dict:
+    update_scan_progress(1, 100, "Detecting Java processes...", "searching for active Minecraft / Java processes")
     if pid is None:
         processes = minecraft_like_processes()
         target = "Process scan"
@@ -1508,9 +1594,20 @@ def scan_ghost(pid: int | None = None) -> dict:
         processes = [find_process(pid)]
         target = f"Process scan: PID {pid}"
         
-    findings = [item for item in (scan_ghost_process(process) for process in processes) if item]
-    
-    # Run DNS Cache check and Driver check on process scan!
+    update_scan_progress(5, 100, "Scanning process runtime...", f"found {len(processes)} process(es)")
+    findings = []
+    for process in processes:
+        if CANCEL_SCAN_REQUESTED:
+            break
+        item = scan_ghost_process(process)
+        if item:
+            findings.append(item)
+
+    if CANCEL_SCAN_REQUESTED:
+        update_scan_progress(100, 100, "Cancelled", "scan stopped by user")
+        return error("Scan cancelled by user")
+        
+    update_scan_progress(85, 100, "Checking DNS Cache & active system drivers...", "running kernel driver & DNS verification")
     dns_logs = check_dns_cache()
     driver_logs = check_drivers()
     combined_system_logs = dns_logs + driver_logs
@@ -1525,6 +1622,7 @@ def scan_ghost(pid: int | None = None) -> dict:
             combined_system_logs
         ))
         
+    update_scan_progress(100, 100, "Done", "process scan complete")
     if not processes and not combined_system_logs:
         return ok(target, [summary("No Minecraft-like Java processes found.", target)])
     if not findings:
@@ -2410,10 +2508,14 @@ def _scan_usn(ext: str, valid_names: set[str] | None = None, timeout: int = 120)
         else:
             mask = 0
         action = _reason_to_action(mask)
-        e = _activity_line(ts, action, fname, "")
+        is_wiped = bool(mask & 0x00000008) or bool(mask & 0x00000002)
         if mask & 0x00000200:
+            status = "wiped / self-destruct" if is_wiped else action
+            display_name = f"[SELF-DESTRUCT WIPING] {fname}" if is_wiped else fname
+            e = _activity_line(ts, status, display_name, "")
             deleted_rows.append(e)
         else:
+            e = _activity_line(ts, action, fname, "")
             activity_rows.append(e)
     def _sort_key(row: dict) -> tuple:
         d = (row.get("date") or "").strip()
@@ -2582,6 +2684,114 @@ def _scan_bam_deleted(ext: str, max_rows: int = 100) -> list[dict]:
                 pass
     if not rows:
         rows.append(_activity_line("-", "not found", f"no deleted {ext} found via bam", ""))
+    return rows
+
+
+def _scan_muicache(max_rows: int = 100) -> list[dict]:
+    """Scans Windows MuiCache in registry for executed application paths and titles (HolyCheck method)."""
+    if os.name != "nt":
+        return []
+    import winreg
+    rows = []
+    mui_keys = [
+        (winreg.HKEY_CURRENT_USER, r"Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"),
+        (winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\ShellNoRoam\MUICache"),
+    ]
+    seen = set()
+    for root_hkey, sub_key in mui_keys:
+        try:
+            key = winreg.OpenKey(root_hkey, sub_key)
+            val_count = winreg.QueryInfoKey(key)[1]
+            for i in range(val_count):
+                try:
+                    val_name, val_data, _ = winreg.EnumValue(key, i)
+                    if not val_name or not isinstance(val_name, str):
+                        continue
+                    clean_path = val_name.rsplit(".", 1)[0] if val_name.endswith((".FriendlyName", ".ApplicationCompany")) else val_name
+                    if not clean_path.lower().endswith((".exe", ".jar")):
+                        continue
+                    if clean_path.lower() in seen:
+                        continue
+                    seen.add(clean_path.lower())
+
+                    title = str(val_data) if isinstance(val_data, str) else os.path.basename(clean_path)
+                    is_deleted = not os.path.exists(clean_path)
+                    status = "deleted" if is_deleted else "active"
+                    
+                    path_low = clean_path.lower()
+                    is_suspicious = any(p in path_low for p in ["temp", "downloads", "appdata\\local\\temp", "desktop"]) or (len(clean_path) > 2 and clean_path[1:3] == ":\\" and clean_path[0].lower() not in ["c", "d"])
+                    
+                    rows.append(_activity_line(
+                        "-",
+                        "risk" if is_suspicious else status,
+                        f"MuiCache: {title} ({os.path.basename(clean_path)})",
+                        clean_path
+                    ))
+                except Exception:
+                    continue
+            key.Close()
+        except Exception:
+            pass
+    return rows[:max_rows]
+
+
+def _scan_event_logs(max_rows: int = 50) -> list[dict]:
+    """Fast native scan of Windows Event Logs for Log Clearing (104, 1102) and Driver Installation (7045)."""
+    if os.name != "nt":
+        return []
+    import xml.etree.ElementTree as ET
+    rows = []
+
+    def parse_iso_time(ts_str: str) -> str:
+        if not ts_str: return "-"
+        try:
+            dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+            return dt.strftime("%d.%m.%Y %H:%M:%S")
+        except Exception:
+            return ts_str[:19].replace("T", " ")
+
+    # 1. System log query (104 = Log Cleared, 7045 = New Service/Driver)
+    cmd_sys = ["wevtutil.exe", "qe", "System", "/q:*[System[(EventID=104 or EventID=7045)]]", "/f:RenderedXml", f"/c:{max_rows}", "/rd:true"]
+    try:
+        proc = subprocess.run(cmd_sys, capture_output=True, text=True, errors="ignore", **hidden_subprocess_options())
+        out = proc.stdout or ""
+        if "<Event" in out:
+            root = ET.fromstring("<Events>" + out + "</Events>")
+            for ev in root.findall("{http://schemas.microsoft.com/win/2004/08/events/event}Event"):
+                sys_elem = ev.find("{http://schemas.microsoft.com/win/2004/08/events/event}System")
+                if sys_elem is not None:
+                    eid_elem = sys_elem.find("{http://schemas.microsoft.com/win/2004/08/events/event}EventID")
+                    eid = eid_elem.text if eid_elem is not None else ""
+                    tc_elem = sys_elem.find("{http://schemas.microsoft.com/win/2004/08/events/event}TimeCreated")
+                    ts = tc_elem.attrib.get("SystemTime", "") if tc_elem is not None else ""
+                    t_str = parse_iso_time(ts)
+                    if eid == "104":
+                        rows.append(_activity_line(t_str, "[LOG CLEARING DETECTED]", "System Event Log Cleared (Event 104)", "System EventLog"))
+                    elif eid == "7045":
+                        rows.append(_activity_line(t_str, "[SERVICE INSTALLED]", "New Service/Kernel Driver Installed (Event 7045)", "System Service"))
+    except Exception:
+        pass
+
+    # 2. Security log query (1102 = Audit Log Cleared)
+    cmd_sec = ["wevtutil.exe", "qe", "Security", "/q:*[System[(EventID=1102)]]", "/f:RenderedXml", f"/c:{max_rows}", "/rd:true"]
+    try:
+        proc = subprocess.run(cmd_sec, capture_output=True, text=True, errors="ignore", **hidden_subprocess_options())
+        out = proc.stdout or ""
+        if "<Event" in out:
+            root = ET.fromstring("<Events>" + out + "</Events>")
+            for ev in root.findall("{http://schemas.microsoft.com/win/2004/08/events/event}Event"):
+                sys_elem = ev.find("{http://schemas.microsoft.com/win/2004/08/events/event}System")
+                if sys_elem is not None:
+                    eid_elem = sys_elem.find("{http://schemas.microsoft.com/win/2004/08/events/event}EventID")
+                    eid = eid_elem.text if eid_elem is not None else ""
+                    tc_elem = sys_elem.find("{http://schemas.microsoft.com/win/2004/08/events/event}TimeCreated")
+                    ts = tc_elem.attrib.get("SystemTime", "") if tc_elem is not None else ""
+                    t_str = parse_iso_time(ts)
+                    if eid == "1102":
+                        rows.append(_activity_line(t_str, "[LOG CLEARING DETECTED]", "Security Audit Log Cleared (Event 1102)", "Security EventLog"))
+    except Exception:
+        pass
+
     return rows
 
 
@@ -2798,7 +3008,7 @@ def _enable_services():
 
 def scan_jar_dll_activity() -> dict:
     _enable_services()
-    # scan user directories first (these are the only files we care about)
+    update_scan_progress(10, 100, "Scanning User Directories", "scanning user folders for JAR and DLL files...")
     jar_user = _scan_user_files(".jar")
     dll_user = _scan_user_files(".dll")
     user_fnames: set[str] = set()
@@ -2806,18 +3016,22 @@ def scan_jar_dll_activity() -> dict:
         n = r.get("name", "")
         if n:
             user_fnames.add(n.lower())
-    # USN: only show files that match user directories (no system files)
+    update_scan_progress(35, 100, "Scanning USN Journal", "reading USN Change Journal records...")
     jar_activity, jar_deleted, jar_note = _scan_usn(".jar", user_fnames)
     dll_activity, dll_deleted, dll_note = _scan_usn(".dll", user_fnames)
-    # BAM + LNK for deleted files + UserAssist & Prefetch
+    update_scan_progress(60, 100, "Scanning BAM & Registry Forensics", "analyzing BAM, UserAssist ROT13 & MuiCache...")
     jar_bam = _scan_bam_deleted(".jar")
     dll_bam = _scan_bam_deleted(".dll")
     exe_bam = _scan_bam_deleted(".exe")
     userassist_rows = _scan_userassist()
     prefetch_rows = _scan_prefetch()
+    mui_rows = _scan_muicache()
+    update_scan_progress(85, 100, "Analyzing EventLogs & Shortcut Activity", "checking EventLog history & LNK files...")
+    event_rows = _scan_event_logs()
     jar_lnk_del = _scan_lnk_deleted(".jar")
     dll_lnk_del = _scan_lnk_deleted(".dll")
-    deleted_rows = jar_deleted + dll_deleted + jar_bam + dll_bam + exe_bam + jar_lnk_del + dll_lnk_del + userassist_rows
+    update_scan_progress(100, 100, "Done", "activity scan complete")
+    deleted_rows = jar_deleted + dll_deleted + jar_bam + dll_bam + exe_bam + jar_lnk_del + dll_lnk_del + userassist_rows + mui_rows + event_rows
     items = []
     items.extend({**row, "section": "jar"} for row in jar_activity)
     items.extend({**row, "section": "dll"} for row in dll_activity)
@@ -2864,6 +3078,169 @@ def scan_jar_dll_activity() -> dict:
     }
 
 
+def get_system_info_summary() -> dict:
+    class SHQUERYRBINFO(ctypes.Structure):
+        _fields_ = [('cbSize', wintypes.DWORD), ('i64Size', ctypes.c_int64), ('i64NumItems', ctypes.c_int64)]
+
+    rb_info = SHQUERYRBINFO()
+    rb_info.cbSize = ctypes.sizeof(SHQUERYRBINFO)
+    res = ctypes.windll.shell32.SHQueryRecycleBinW(None, ctypes.byref(rb_info))
+    num_items = rb_info.i64NumItems if res == 0 else 0
+    size_bytes = rb_info.i64Size if res == 0 else 0
+    size_formatted = format_bytes(size_bytes)
+
+    latest_del_date = "Корзина пуста" if num_items == 0 else "Неизвестно"
+    if num_items > 0:
+        try:
+            import win32com.client
+            sh = win32com.client.Dispatch('Shell.Application')
+            rb = sh.Namespace(10)
+            items = rb.Items()
+            dates = []
+            for i in range(min(items.Count, 100)):
+                it = items.Item(i)
+                d = rb.GetDetailsOf(it, 2).replace('\u200e', '').replace('\u200f', '').strip()
+                if d:
+                    dates.append(d)
+            if dates:
+                latest_del_date = dates[0]
+        except Exception:
+            pass
+
+    uptime_ms = ctypes.windll.kernel32.GetTickCount64()
+    uptime_sec = int(uptime_ms / 1000)
+    days = uptime_sec // 86400
+    hours = (uptime_sec % 86400) // 3600
+    minutes = (uptime_sec % 3600) // 60
+    boot_dt = datetime.now() - timedelta(seconds=uptime_sec)
+
+    usbs_count = 0
+    try:
+        import winreg
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r'SYSTEM\CurrentControlSet\Enum\USBSTOR')
+        usbs_count = winreg.QueryInfoKey(key)[0]
+    except Exception:
+        pass
+
+    def _service_status(srv_name: str) -> str:
+        try:
+            proc = subprocess.run(['sc.exe', 'query', srv_name], capture_output=True, text=True, errors='ignore', **hidden_subprocess_options())
+            out = proc.stdout or ''
+            if 'RUNNING' in out: return 'Running'
+            if 'STOPPED' in out: return 'Stopped'
+            return 'Not Found'
+        except Exception:
+            return 'Unknown'
+
+    # Temp Folder Analysis
+    temp_path = Path(os.environ.get("TEMP", r"C:\Users\Admin\AppData\Local\Temp"))
+    temp_files_count = 0
+    temp_total_bytes = 0
+    valid_mtimes = []
+    if temp_path.exists():
+        try:
+            for root, dirs, filenames in os.walk(temp_path):
+                for f in filenames:
+                    fp = os.path.join(root, f)
+                    try:
+                        st = os.stat(fp)
+                        if st.st_mtime > 946684800:
+                            valid_mtimes.append(st.st_mtime)
+                            temp_total_bytes += st.st_size
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+
+    valid_mtimes.sort()
+    oldest_ts = valid_mtimes[0] if valid_mtimes else None
+    newest_ts = valid_mtimes[-1] if valid_mtimes else None
+    oldest_str = datetime.fromtimestamp(oldest_ts).strftime("%d.%m.%Y %H:%M:%S") if oldest_ts else "Неизвестно"
+    newest_str = datetime.fromtimestamp(newest_ts).strftime("%d.%m.%Y %H:%M:%S") if newest_ts else "Неизвестно"
+    now_ts = time.time()
+    diff_hours = (now_ts - oldest_ts) / 3600 if oldest_ts else 999
+
+    if len(valid_mtimes) < 50 or diff_hours < 2:
+        temp_status = "Очищалась недавно (менее 2 часов назад)"
+    elif diff_hours < 24:
+        temp_status = f"Очищалась сегодня ({oldest_str})"
+    else:
+        temp_status = f"Старые файлы от {oldest_str} (не очищалась)"
+
+    # Minecraft Roots Search
+    appdata = Path(os.environ.get("APPDATA", ""))
+    localappdata = Path(os.environ.get("LOCALAPPDATA", ""))
+    userprofile = Path(os.environ.get("USERPROFILE", ""))
+
+    candidate_paths = [
+        (appdata / ".minecraft", "Official / Standard Minecraft"),
+        (appdata / ".tlauncher", "TLauncher"),
+        (appdata / ".tla", "Legacy Launcher"),
+        (userprofile / ".lunarclient", "Lunar Client"),
+        (appdata / ".feather", "Feather Client"),
+        (appdata / "PrismLauncher", "Prism Launcher"),
+        (localappdata / "PrismLauncher", "Prism Launcher"),
+        (appdata / "ModrinthApp", "Modrinth App"),
+        (localappdata / "ModrinthApp", "Modrinth App"),
+        (localappdata / "CurseForge", "CurseForge"),
+        (appdata / ".atlauncher", "ATLauncher"),
+        (appdata / ".koksik", "Koksik Launcher"),
+    ]
+
+    found_roots = []
+    seen_paths = set()
+    for p, name in candidate_paths:
+        str_p = str(p).lower()
+        if str_p not in seen_paths and p.exists() and p.is_dir():
+            seen_paths.add(str_p)
+            try:
+                mtime = datetime.fromtimestamp(p.stat().st_mtime).strftime("%d.%m.%Y %H:%M:%S")
+                found_roots.append({"name": name, "path": str(p), "last_modified": mtime})
+            except Exception:
+                pass
+
+    return {
+        "ok": True,
+        "recycle_bin": {
+            "num_items": num_items,
+            "size_formatted": size_formatted,
+            "latest_delete_date": latest_del_date,
+            "status": "Очищена" if num_items == 0 else f"Файлов в корзине: {num_items}"
+        },
+        "temp_folder": {
+            "status": temp_status,
+            "files_count": len(valid_mtimes),
+            "size_formatted": format_bytes(temp_total_bytes),
+            "oldest_file": oldest_str,
+            "newest_file": newest_str
+        },
+        "minecraft_roots": found_roots,
+        "uptime": {
+            "uptime_str": f"{days}д {hours}ч {minutes}мин",
+            "boot_time": boot_dt.strftime("%d.%m.%Y %H:%M:%S")
+        },
+        "identity": {
+            "computer_name": os.environ.get("COMPUTERNAME", "Unknown"),
+            "user_name": os.environ.get("USERNAME", "Unknown"),
+            "os_version": f"{platform.system()} {platform.release()} (Build {platform.version()})",
+            "arch": platform.architecture()[0]
+        },
+        "timezone": {
+            "current_time": datetime.now().strftime("%d.%m.%Y %H:%M:%S"),
+            "timezone_name": time.tzname[0] if time.tzname else "UTC"
+        },
+        "usb_history": {
+            "total_count": usbs_count
+        },
+        "services": {
+            "pcasvc": _service_status("PcaSvc"),
+            "dps": _service_status("DPS"),
+            "sysmain": _service_status("SysMain"),
+            "eventlog": _service_status("EventLog")
+        }
+    }
+
+
 class AuroraApi:
     __slots__ = ("_window", "_injgen_lock", "_injgen_process", "_injgen_output", "_download_lock", "_downloads")
 
@@ -2877,6 +3254,22 @@ class AuroraApi:
 
     def app_info(self) -> dict:
         return {"name": "AuroraChecker", "author": "zentixctm", "version": APP_VERSION}
+
+    def get_system_info_summary(self) -> dict:
+        try:
+            return get_system_info_summary()
+        except Exception as exc:
+            return error(str(exc))
+
+    def open_folder_path(self, path: str) -> dict:
+        try:
+            target = Path(path).expanduser()
+            if target.exists():
+                os.startfile(str(target))
+                return {"ok": True}
+            return error(f"Folder does not exist: {path}")
+        except Exception as exc:
+            return error(str(exc))
 
     def default_mods_path(self) -> str:
         return default_mods_path()
@@ -2911,10 +3304,19 @@ class AuroraApi:
                                             friendly_name = friendly_name.split(";")[-1]
                                     except Exception:
                                         friendly_name = device_id
+                                try:
+                                    info = winreg.QueryInfoKey(serial_key)
+                                    ft = info[2]
+                                    ts = (ft - 116444736000000000) / 10000000
+                                    last_conn = datetime.fromtimestamp(ts).strftime("%d.%m.%Y %H:%M:%S")
+                                except Exception:
+                                    last_conn = "Unknown"
+
                                 usb_devices.append({
                                     "name": friendly_name,
                                     "serial": serial,
-                                    "device_id": device_id
+                                    "device_id": device_id,
+                                    "last_connected": last_conn
                                 })
                             except Exception:
                                 pass
@@ -2977,6 +3379,14 @@ class AuroraApi:
                     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path)
                 except Exception:
                     return
+                try:
+                    info = winreg.QueryInfoKey(key)
+                    parent_ft = info[2]
+                    parent_ts = (parent_ft - 116444736000000000) / 10000000
+                    parent_time = datetime.fromtimestamp(parent_ts).strftime("%d.%m.%Y %H:%M:%S")
+                except Exception:
+                    parent_time = "Unknown"
+
                 num_values = winreg.QueryInfoKey(key)[1]
                 values_dict = {}
                 for idx_val in range(num_values):
@@ -3002,7 +3412,19 @@ class AuroraApi:
                                     next_path = current_path + '\\' + item_name
                             else:
                                 next_path = item_name
-                            shellbag_paths.append(next_path)
+
+                            sub_time = parent_time
+                            try:
+                                sub_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, f"{key_path}\\{subkey_name}")
+                                sub_info = winreg.QueryInfoKey(sub_key)
+                                sub_ft = sub_info[2]
+                                sub_ts = (sub_ft - 116444736000000000) / 10000000
+                                sub_time = datetime.fromtimestamp(sub_ts).strftime("%d.%m.%Y %H:%M:%S")
+                                winreg.CloseKey(sub_key)
+                            except Exception:
+                                pass
+
+                            shellbag_paths.append((next_path, sub_time))
                             traverse(f"{key_path}\\{subkey_name}", next_path)
                     except Exception:
                         pass
@@ -3019,6 +3441,15 @@ class AuroraApi:
                     try:
                         ext = winreg.EnumKey(mru_key, i)
                         ext_key = winreg.OpenKey(mru_key, ext)
+                        
+                        try:
+                            ext_info = winreg.QueryInfoKey(ext_key)
+                            ext_ft = ext_info[2]
+                            ext_ts = (ext_ft - 116444736000000000) / 10000000
+                            ext_time = datetime.fromtimestamp(ext_ts).strftime("%d.%m.%Y %H:%M:%S")
+                        except Exception:
+                            ext_time = "Unknown"
+
                         num_values = winreg.QueryInfoKey(ext_key)[1]
                         for j in range(num_values):
                             try:
@@ -3026,11 +3457,13 @@ class AuroraApi:
                                 if name.isdigit() and val_type == winreg.REG_BINARY:
                                     decoded = decode_shell_item(data)
                                     if decoded:
-                                        mru_files.append(decoded)
+                                        mru_files.append((decoded, ext_time))
                             except Exception:
                                 pass
+                        winreg.CloseKey(ext_key)
                     except Exception:
                         pass
+                winreg.CloseKey(mru_key)
             except Exception:
                 pass
 
@@ -3038,7 +3471,7 @@ class AuroraApi:
             drive_footprints = []
             
             # Folders from ShellBags
-            for path in shellbag_paths:
+            for path, last_visited in shellbag_paths:
                 if len(path) >= 2 and path[0].isalpha() and path[1] == ':':
                     drive_letter = path[0].upper()
                     if "windows" in path.lower() or "program files" in path.lower():
@@ -3049,11 +3482,60 @@ class AuroraApi:
                     drive_footprints.append({
                         "name": name,
                         "path": path,
-                        "status": "connected" if is_exists else "disconnected"
+                        "status": "connected" if is_exists else "disconnected",
+                        "time": last_visited
                     })
                     
             # Files from OpenSavePidlMRU
-            for path in mru_files:
+            user_profile = Path(os.environ.get("USERPROFILE", ""))
+            search_roots = [
+                user_profile / "Downloads",
+                user_profile / "Desktop",
+                user_profile / "Documents",
+                user_profile / "AppData" / "Roaming" / ".minecraft",
+                Path(os.environ.get("TEMP", ""))
+            ]
+            
+            import string
+            available_drives = [f"{d}:\\" for d in string.ascii_uppercase if os.path.exists(f"{d}:\\")]
+            
+            search_cache = {}
+            
+            def find_file_everywhere(filename):
+                if filename in search_cache:
+                    return search_cache[filename]
+                
+                # Check user profile roots first (recursive)
+                for root in search_roots:
+                    if root.exists():
+                        try:
+                            # Using rglob to find the filename recursively
+                            for p in root.rglob(filename):
+                                if p.is_file():
+                                    search_cache[filename] = str(p)
+                                    return str(p)
+                        except Exception:
+                            pass
+                
+                # Check other drives recursively
+                for drive in available_drives:
+                    if drive.upper().startswith("C:"):
+                        continue
+                    try:
+                        for root_dir, dirs, files in os.walk(drive):
+                            # Skip system/trash dirs to avoid lag
+                            dirs[:] = [d for d in dirs if d.lower() not in ('$recycle.bin', 'system volume information', 'program files', 'program files (x86)', 'windows')]
+                            if filename in files:
+                                full_path = os.path.join(root_dir, filename)
+                                search_cache[filename] = full_path
+                                return full_path
+                    except Exception:
+                        pass
+                
+                search_cache[filename] = None
+                return None
+
+            for path, last_visited in mru_files:
                 # If it's a full path
                 if len(path) >= 2 and path[0].isalpha() and path[1] == ':':
                     drive_letter = path[0].upper()
@@ -3065,21 +3547,42 @@ class AuroraApi:
                     drive_footprints.append({
                         "name": name,
                         "path": path,
-                        "status": "connected" if is_exists else "disconnected"
+                        "status": "доступен" if is_exists else "недоступен",
+                        "time": last_visited
                     })
                 # If it's just a filename
                 elif any(path.lower().endswith(ext) for ext in ('.jar', '.exe', '.zip', '.dll', '.rar', '.7z')):
                     if "windows" in path.lower() or "program files" in path.lower():
                         continue
-                    drive_footprints.append({
-                        "name": path,
-                        "path": f"(filename only: {path})",
-                        "status": "disconnected" # since we don't have full path to verify existence
-                    })
+                    
+                    found_full_path = find_file_everywhere(path)
+                    
+                    if found_full_path:
+                        drive_footprints.append({
+                            "name": path,
+                            "path": found_full_path,
+                            "status": "доступен",
+                            "time": last_visited
+                        })
+                    else:
+                        drive_footprints.append({
+                            "name": path,
+                            "path": f"(filename only: {path})",
+                            "status": "недоступен",
+                            "time": last_visited
+                        })
 
             # TypedPaths
             try:
                 typed_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths")
+                try:
+                    t_info = winreg.QueryInfoKey(typed_key)
+                    t_ft = t_info[2]
+                    t_ts = (t_ft - 116444736000000000) / 10000000
+                    typed_time = datetime.fromtimestamp(t_ts).strftime("%d.%m.%Y %H:%M:%S")
+                except Exception:
+                    typed_time = "Unknown"
+
                 num_typed = winreg.QueryInfoKey(typed_key)[1]
                 for i in range(num_typed):
                     try:
@@ -3095,10 +3598,12 @@ class AuroraApi:
                                 drive_footprints.append({
                                     "name": name,
                                     "path": path,
-                                    "status": "connected" if is_exists else "disconnected"
+                                    "status": "доступен" if is_exists else "недоступен",
+                                    "time": typed_time
                                 })
                     except Exception:
                         pass
+                winreg.CloseKey(typed_key)
             except Exception:
                 pass
 
@@ -3314,11 +3819,25 @@ class AuroraApi:
         except Exception:
             return []
 
+    def open_url(self, url: str) -> dict:
+        import webbrowser
+        try:
+            webbrowser.open(url)
+            return {"ok": True}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
+
     def cancel_scan(self) -> dict:
         return cancel_scan()
 
     def reset_cancel_scan(self) -> dict:
         return reset_cancel_scan()
+
+    def get_scan_progress(self) -> dict:
+        return get_scan_progress()
+
+    def scan_usb_footprints(self) -> dict:
+        return self.get_usb_and_drive_footprints()
 
     def scan_path(self, path: str) -> dict:
         return scan_path(path)
@@ -3364,10 +3883,41 @@ class AuroraApi:
                     }
                 }
             
-            # For jar files, run full scan
+            # Run Modrinth check, Heuristics, Download source, AND Jarka scanner!
+            modrinth = check_modrinth(path)
+            heuristics = [] if modrinth else heuristic_results(path)
+            source = download_source(path)
             results = scan_jar(str(path), path.stat().st_size if path.exists() else 0)
             if results.get('error'):
                 return error(results['error'])
+            
+            # Enrich Jarka evidence with heuristic logs and Modrinth status
+            evidence = results.get("evidence", [])
+            if modrinth:
+                evidence.insert(0, {
+                    "rule": "Modrinth Verified",
+                    "severity": "info",
+                    "description": f"Verified Modrinth release ({modrinth.get('project', '')} v{modrinth.get('version', '')})"
+                })
+            else:
+                for h in heuristics:
+                    evidence.append({
+                        "rule": h.get("type", "Heuristic Match"),
+                        "severity": "high" if h.get("confidence") == "high" or h.get("risk") == "high" else "warning",
+                        "description": h.get("details", h.get("message", str(h)))
+                    })
+
+            if source and source.get("url"):
+                evidence.append({
+                    "rule": "Download Source (ADS)",
+                    "severity": "info",
+                    "description": f"Downloaded from: {source.get('url')}"
+                })
+
+            results["evidence"] = evidence
+            results["modrinth"] = modrinth
+            results["download_source"] = source
+            results["heuristics"] = heuristics
                 
             return {
                 "ok": True,
@@ -3393,11 +3943,7 @@ class AuroraApi:
 
     def launch_injgen_console(self) -> dict:
         try:
-            exe_path = self._find_injgen()
-            if not exe_path:
-                return error("InjGen.exe not found in the bundled tools.")
-            os.startfile(str(exe_path))
-            return {"ok": True, "message": "Started"}
+            return scan_ghost()
         except Exception as exc:
             return error(str(exc))
 

@@ -5,47 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AuroraChecker</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    
     :root {
       color-scheme: dark;
-      --bg: #050407;
-      --panel: rgba(10, 7, 13, 0.88);
-      --panel-strong: rgba(6, 4, 8, 0.96);
-      --panel-soft: rgba(14, 10, 18, 0.82);
+      --bg: #05070a;
+      --panel: rgba(10, 15, 24, 0.55);
+      --panel-strong: rgba(7, 10, 17, 0.96);
+      --panel-soft: rgba(16, 23, 38, 0.45);
       --line: rgba(255, 255, 255, 0.06);
-      --text: #e2e4e9;
-      --muted: #858aa0;
-      --green: #3cd070;
-      --cyan: #d05ba9;
-      --blue: #a04ec4;
-      --blue-soft: rgba(160, 78, 196, 0.12);
-      --blue-line: rgba(180, 80, 210, 0.38);
-      --amber: #e6a73c;
-      --red: #e65252;
-      --banned: #c8325a;
-      --banned-soft: rgba(200, 50, 90, 0.12);
-      --banned-line: rgba(200, 50, 90, 0.38);
-      --purple-dark: #120816;
-      --crimson: #5a122a;
-      --rose: #c8325a;
-      --shadow: 0 16px 48px rgba(0, 0, 0, 0.65);
-      --glow: 0 0 30px rgba(160, 78, 196, 0.05);
-      font-family: 'JetBrains Mono', 'Cascadia Code', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --line-glow: rgba(14, 165, 233, 0.2);
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      
+      --accent: #0ea5e9;
+      --accent-glow: rgba(14, 165, 233, 0.35);
+      --cyan: #06b6d4;
+      --cyan-soft: rgba(6, 182, 212, 0.1);
+      --purple: #c084fc;
+      --green: #10b981;
+      --green-soft: rgba(16, 185, 129, 0.1);
+      --amber: #fbbf24;
+      --amber-soft: rgba(251, 191, 36, 0.1);
+      --red: #f87171;
+      --red-soft: rgba(248, 113, 113, 0.1);
+      --rose: #fb7185;
+      --rose-soft: rgba(251, 113, 133, 0.1);
+      
+      --shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.8);
+      --shadow-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.95);
+      font-family: 'Plus Jakarta Sans', -apple-system, system-ui, sans-serif;
+    }
+
+    /* Sleek Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(14, 165, 233, 0.35);
     }
 
     * { box-sizing: border-box; }
+    
     body {
       margin: 0;
       min-height: 100vh;
-      text-transform: lowercase;
-
-      position: relative;
-      background:
-        linear-gradient(170deg, #050307 0%, #07040a 30%, #0c0610 55%, #100610 75%, #060207 100%);
+      background: var(--bg);
       color: var(--text);
-      letter-spacing: 0;
       overflow: hidden;
+      font-size: 13px;
+      -webkit-font-smoothing: antialiased;
     }
+
     body::before {
       content: "";
       position: fixed;
@@ -53,85 +72,94 @@
       z-index: 0;
       pointer-events: none;
       background:
-        repeating-linear-gradient(90deg, rgba(255,255,255,.005) 0 1px, transparent 1px 42px),
-        repeating-linear-gradient(0deg, rgba(255,255,255,.004) 0 1px, transparent 1px 42px),
-        linear-gradient(120deg, rgba(160,78,196,.08), transparent 34%, rgba(200,50,90,.05) 68%, rgba(255,255,255,.02));
-      opacity: .4;
-      mask-image: linear-gradient(135deg, rgba(0,0,0,.92), rgba(0,0,0,.14));
-    }
-    body::after {
-      content: "";
-      position: fixed;
-      inset: -30% -10%;
-      z-index: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(118deg, transparent 18%, rgba(200,50,90,.06) 20%, transparent 24%),
-        linear-gradient(118deg, transparent 58%, rgba(160,78,196,.05) 61%, transparent 66%);
-      filter: blur(15px);
-      opacity: .6;
-      animation: backgroundShift 34s ease-in-out infinite alternate;
-    }
-    @keyframes backgroundShift {
-      from { transform: translate3d(-1.5%, -1%, 0); }
-      to { transform: translate3d(1.5%, 1%, 0); }
+        radial-gradient(circle at 10% 10%, rgba(14, 165, 233, 0.16) 0%, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(192, 132, 252, 0.1) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 60%);
+      opacity: 0.95;
     }
 
     button, input { font: inherit; }
+
     button {
       border: 1px solid var(--line);
-      background: rgba(20, 16, 26, 0.65);
+      background: rgba(18, 24, 38, 0.7);
       color: var(--text);
-      height: 40px;
-      padding: 0 18px;
-      border-radius: 7px;
-      font-weight: 700;
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
       cursor: pointer;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, .35);
-      backdrop-filter: blur(14px);
-      transition: background .28s ease, border-color .28s ease, transform .28s ease, box-shadow .28s ease;
+      backdrop-filter: blur(16px);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      user-select: none;
     }
+
     button:hover {
-      background: rgba(30, 24, 38, 0.85);
-      border-color: rgba(180, 80, 210, .34);
+      background: rgba(30, 41, 59, 0.9);
+      border-color: rgba(99, 102, 241, 0.4);
       transform: translateY(-1px);
-      box-shadow: 0 12px 20px rgba(0, 0, 0, .45);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
     }
-    button:active { transform: translateY(1px); }
+
+    button:active {
+      transform: translateY(0);
+    }
+
     button.primary {
-      background: linear-gradient(135deg, rgba(130, 45, 170, .98), rgba(200, 50, 90, .98));
-      border-color: var(--banned-line);
-      color: white;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      border: 1px solid rgba(199, 210, 254, 0.3);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
     }
-    button.primary:hover { background: linear-gradient(135deg, #8b31b3, #b82d54); }
+
+    button.primary:hover {
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
     button.danger {
-      color: #ffd8d8;
-      border-color: rgba(230, 82, 82, .55);
-      background: rgba(230, 82, 82, .12);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.35);
+      background: rgba(239, 68, 68, 0.12);
     }
+
+    button.danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.6);
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+    }
+
     button:disabled {
-      opacity: .45;
+      opacity: 0.4;
       cursor: not-allowed;
-      transform: none;
+      transform: none !important;
+      box-shadow: none !important;
     }
 
     input {
-      height: 42px;
+      height: 40px;
       width: 100%;
       border: 1px solid var(--line);
-      border-radius: 7px;
-      background: rgba(8, 6, 11, .75);
+      border-radius: 8px;
+      background: rgba(10, 14, 23, 0.85);
       color: var(--text);
       outline: none;
       padding: 0 14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.01);
+      font-size: 13px;
       backdrop-filter: blur(12px);
-      transition: border-color .28s ease, box-shadow .28s ease, background .28s ease;
+      transition: all 0.2s ease;
     }
+
     input:focus {
-      border-color: var(--blue-line);
-      background: rgba(12, 9, 16, .9);
-      box-shadow: 0 0 0 3px var(--blue-soft), inset 0 1px 0 rgba(255,255,255,.02);
+      border-color: var(--accent);
+      background: rgba(15, 22, 35, 0.95);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
     }
 
     .app {
@@ -139,91 +167,111 @@
       z-index: 2;
       height: 100vh;
       display: grid;
-      grid-template-columns: 242px 1fr;
-      animation: appIn .78s cubic-bezier(.2,.8,.2,1) both;
+      grid-template-columns: 240px 1fr;
+      animation: appIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
+
     @keyframes appIn {
-      from { opacity: 0; transform: scale(.985); }
+      from { opacity: 0; transform: scale(0.99); }
       to { opacity: 1; transform: scale(1); }
     }
 
     .sidebar {
       border-right: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(10, 6, 14, .95) 0%, rgba(14, 8, 20, .92) 60%, rgba(8, 4, 11, .94) 100%);
-      padding: 28px 22px;
+      background: rgba(10, 14, 22, 0.85);
+      padding: 24px 18px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
-      box-shadow: 10px 0 30px rgba(0, 0, 0, .45);
-      backdrop-filter: blur(22px) saturate(1.2);
+      gap: 20px;
+      backdrop-filter: blur(24px);
       position: relative;
-      overflow: hidden;
     }
+
     .sidebar::before {
       content: "";
       position: absolute;
-      inset: 0 0 auto;
-      height: 1px;
-      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--rose));
-      opacity: .75;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #6366f1, #06b6d4, #a855f7);
     }
 
     .brand {
-      position: relative;
-      padding: 5px 0 10px;
+      padding: 4px 6px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
+
     .brand h1 {
       margin: 0;
-      font-size: 25px;
-      line-height: 1.05;
-      background: linear-gradient(135deg, #f0e6ee, #d46ab8 46%, #b05bcc);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
+
     .brand span {
       display: block;
       color: var(--muted);
-      font-size: 12px;
-      margin-top: 7px;
-      font-weight: 700;
+      font-size: 11px;
+      margin-top: 4px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .brand span:hover {
+      color: var(--accent);
+      text-decoration: underline;
     }
 
     .nav {
       display: grid;
-      gap: 9px;
+      gap: 6px;
     }
+
     .nav button {
       position: relative;
       text-align: left;
       width: 100%;
       background: transparent;
-      border-color: transparent;
+      border: 1px solid transparent;
       color: var(--muted);
-      box-shadow: none;
-      overflow: hidden;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12.5px;
+      justify-content: flex-start;
     }
+
     .nav button:hover {
       color: var(--text);
-      background: rgba(212,100,180,.055);
-      transform: translateX(2px);
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateX(3px);
       box-shadow: none;
     }
+
     .nav button.active {
-      color: var(--text);
-      border-color: var(--line);
-      background: linear-gradient(135deg, rgba(176, 91, 204, .18), rgba(212, 64, 112, .12));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 12px 30px rgba(0,0,0,.16);
+      color: #ffffff;
+      background: rgba(14, 165, 233, 0.12);
+      border-color: rgba(14, 165, 233, 0.25);
     }
+
     .nav button.active::before {
       content: "";
       position: absolute;
-      left: 8px;
-      top: 10px;
-      bottom: 10px;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
       width: 3px;
-      border-radius: 2px;
-      background: var(--cyan);
+      border-radius: 0 3px 3px 0;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
     }
 
     .footer { margin-top: auto; }
@@ -232,20 +280,21 @@
       position: relative;
       min-width: 0;
       height: 100vh;
-      overflow: hidden;
-      padding: 30px 34px;
+      overflow-y: auto;
+      padding: 28px 32px;
     }
 
     .view { display: none; height: 100%; }
     .view.active {
       display: flex;
       flex-direction: column;
-      gap: 22px;
-      animation: viewIn .52s cubic-bezier(.2,.8,.2,1) both;
+      gap: 20px;
+      animation: viewIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
+
     @keyframes viewIn {
-      from { opacity: 0; transform: translateY(10px); filter: blur(5px); }
-      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .header {
@@ -254,75 +303,85 @@
       align-items: flex-start;
       gap: 18px;
     }
+
     .title h2 {
       margin: 0;
-      font-size: 31px;
-      line-height: 1.1;
-      text-shadow: 0 12px 34px rgba(0,0,0,.34);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
     }
+
     .title p {
-      margin: 7px 0 0;
+      margin: 4px 0 0;
       color: var(--muted);
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 13px;
     }
 
     .panel {
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 12px;
       box-shadow: var(--shadow);
-      backdrop-filter: blur(18px) saturate(1.16);
+      backdrop-filter: blur(20px);
       position: relative;
     }
+
     .home-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-      margin-top: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
     }
+
     .choice {
       position: relative;
-      padding: 28px;
-      min-height: 214px;
+      padding: 24px;
+      min-height: 190px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       overflow: hidden;
-      transition: border-color .34s ease, transform .34s ease, background .34s ease, box-shadow .34s ease;
+      border-radius: 12px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .choice::before {
       content: "";
       position: absolute;
-      inset: 0 0 auto 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--cyan));
+      opacity: 0.7;
     }
+
     .choice:hover {
-      transform: translateY(-4px);
-      border-color: rgba(180, 80, 210, .38);
-      background: rgba(22, 10, 32, .84);
-      box-shadow: 0 20px 40px rgba(0,0,0,.5);
+      transform: translateY(-3px);
+      border-color: rgba(99, 102, 241, 0.4);
+      background: rgba(20, 27, 44, 0.85);
+      box-shadow: var(--shadow-lg);
     }
+
     .choice h3 {
       margin: 0;
-      font-size: 23px;
+      font-size: 18px;
+      font-weight: 700;
     }
+
     .choice p {
       margin: 8px 0 0;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.5;
-      max-width: 360px;
     }
 
     .scan-panel {
-      padding: 26px;
+      padding: 24px;
       display: grid;
-      gap: 18px;
-      border-top: 1px solid var(--line);
-      overflow: hidden;
+      gap: 16px;
     }
+
     .input-row {
       display: grid;
       grid-template-columns: 1fr auto auto auto;
@@ -334,29 +393,26 @@
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
-      margin: 4px 0 4px;
+      margin: 4px 0;
     }
+
     .chip {
       border: 1px solid var(--line);
       background: var(--panel-soft);
-      border-radius: 7px;
-      padding: 13px 12px;
-      font-size: 13px;
-      font-weight: 800;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+      font-weight: 700;
       text-align: center;
-      color: #dfe7ef;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.015);
-      transition: border-color .32s ease, transform .32s ease, background .32s ease, color .32s ease;
+      color: var(--text);
+      transition: all 0.2s ease;
     }
+
     .chip:hover {
       transform: translateY(-2px);
-      border-color: var(--blue-line);
-      background: rgba(30, 20, 42, .82);
-      color: #ffffff;
+      border-color: var(--accent);
+      background: rgba(30, 41, 59, 0.8);
     }
-    .chip:nth-child(3n+1) { border-top-color: rgba(160,78,196,.42); }
-    .chip:nth-child(3n+2) { border-top-color: rgba(200,50,90,.42); }
-    .chip:nth-child(3n) { border-top-color: rgba(230,167,60,.42); }
 
     .actions {
       display: flex;
@@ -364,121 +420,137 @@
       align-items: center;
       flex-wrap: wrap;
     }
+
     .tabs {
       display: flex;
-      gap: 9px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }
+
     .tabs button {
-      min-width: 112px;
+      min-width: 100px;
       color: var(--muted);
-      background: rgba(15, 11, 20, .62);
+      background: rgba(15, 22, 35, 0.6);
     }
+
     .tabs button.active-tab {
       color: #ffffff;
-      border-color: var(--banned-line);
-      background: linear-gradient(135deg, rgba(160, 78, 196, .22), rgba(200, 50, 90, .12));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.02), 0 12px 26px rgba(0,0,0,.3);
+      border-color: rgba(99, 102, 241, 0.4);
+      background: rgba(99, 102, 241, 0.18);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
     }
 
     .table-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
     }
+
     .table-actions button {
       width: 100%;
       min-width: 0;
-      padding: 0 10px;
+      padding: 0 8px;
+      height: 30px;
+      font-size: 11px;
     }
+
     .table-actions .download {
-      color: #ead6e8;
-      border-color: var(--banned-line);
-      background: var(--banned-soft);
-    }
-    .table-actions .download:hover {
-      background: rgba(200, 50, 90, .24);
+      color: var(--text);
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
     }
-    .metric {
-      background: var(--panel-soft);
+
+    .stat, .metric {
+      background: rgba(18, 24, 38, 0.6);
       border: 1px solid var(--line);
-      border-radius: 7px;
-      padding: 12px 14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.015);
-      transition: border-color .32s ease, transform .32s ease, background .32s ease;
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: all 0.2s ease;
     }
-    .metric:hover {
+
+    .stat:hover, .metric:hover {
+      border-color: rgba(99, 102, 241, 0.3);
       transform: translateY(-2px);
-      border-color: rgba(180, 80, 210, .34);
-      background: rgba(22, 10, 32, .8);
+      background: rgba(24, 32, 50, 0.7);
     }
-    .metric span {
+
+    .stat .num, .metric strong {
+      display: block;
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .stat .lbl, .metric span {
       display: block;
       color: var(--muted);
-      font-size: 10px;
-      font-weight: 900;
-      margin-bottom: 4px;
-    }
-    .metric strong {
-      font-size: 18px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 4px;
     }
 
     .table-wrap {
       min-height: 0;
       flex: 1;
       overflow: auto;
-      border-radius: 8px;
+      border-radius: 12px;
       border: 1px solid var(--line);
       background: var(--panel);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(18px) saturate(1.15);
+      backdrop-filter: blur(20px);
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
       font-size: 13px;
     }
+
     th {
       position: sticky;
       top: 0;
       z-index: 1;
-      background: rgba(14, 10, 18, 0.94);
+      background: rgba(13, 17, 26, 0.95);
       color: var(--muted);
       text-align: left;
-      height: 42px;
+      height: 40px;
       padding: 0 16px;
       font-size: 11px;
-      backdrop-filter: blur(14px);
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(16px);
     }
+
     td {
-      height: 52px;
+      height: 48px;
       padding: 0 16px;
-      border-top: 1px solid rgba(255, 255, 255, .04);
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      transition: background .26s ease, color .26s ease, box-shadow .26s ease;
+      transition: background 0.2s ease;
     }
-    tr:hover td { background: rgba(30, 20, 42, .45); }
-    tr.selected td {
-      background: var(--blue-soft);
-      box-shadow: inset 0 1px 0 rgba(79,125,255,.05), inset 0 -1px 0 rgba(79,125,255,.05);
+
+    tr:hover td {
+      background: rgba(99, 102, 241, 0.06);
     }
-    .mono { font-family: Consolas, ui-monospace, monospace; }
-    .risk { color: var(--red); font-weight: 900; }
-    .clean, .trusted { color: var(--green); font-weight: 900; }
-    .unknown { color: var(--amber); font-weight: 900; }
-    .process { color: var(--cyan); font-weight: 900; }
-    .banned { color: var(--rose); font-weight: 900; text-shadow: 0 0 12px rgba(212,64,112,.4); }
+
+    .mono { font-family: 'JetBrains Mono', Consolas, monospace; }
+
+    .risk, .banned { color: var(--rose); font-weight: 700; }
+    .clean, .trusted { color: var(--green); font-weight: 700; }
+    .unknown { color: var(--amber); font-weight: 700; }
+    .process { color: var(--cyan); font-weight: 700; }
 
     .toolbar {
       display: grid;
@@ -486,11 +558,11 @@
       gap: 12px;
       align-items: center;
     }
+
     .actions button.active-filter {
       color: #ffffff;
-      border-color: var(--banned-line);
-      background: var(--banned-soft);
-      box-shadow: 0 10px 22px rgba(0,0,0,.16);
+      border-color: rgba(99, 102, 241, 0.5);
+      background: rgba(99, 102, 241, 0.2);
     }
 
     .overlay {
@@ -498,43 +570,50 @@
       inset: 0;
       display: none;
       place-items: center;
-      background: rgba(4, 2, 6, .65);
-      backdrop-filter: blur(14px);
-      z-index: 10;
+      background: rgba(5, 7, 12, 0.8);
+      backdrop-filter: blur(16px);
+      z-index: 100;
     }
+
     .overlay.active {
       display: grid;
-      animation: fadeIn .3s ease both;
+      animation: fadeIn 0.25s ease both;
     }
+
     .loader {
-      width: 420px;
-      padding: 24px;
-      background: var(--panel);
+      width: 400px;
+      padding: 28px;
+      background: rgba(13, 17, 26, 0.95);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(22px) saturate(1.18);
-      animation: dialogIn .44s cubic-bezier(.2,.8,.2,1) both;
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(24px);
+      text-align: center;
     }
+
     .bar {
-      height: 10px;
+      height: 8px;
       overflow: hidden;
-      border-radius: 5px;
-      background: rgba(20, 16, 26, .9);
-      margin-top: 16px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      margin-top: 20px;
+      position: relative;
     }
+
     .bar::before {
       content: "";
       display: block;
       height: 100%;
-      width: 46%;
-      background: linear-gradient(90deg, var(--blue), var(--cyan), var(--rose));
-      box-shadow: 0 0 16px rgba(200,50,90,.28);
-      animation: slide 1.9s infinite ease-in-out;
+      width: 50%;
+      background: linear-gradient(90deg, var(--accent), var(--cyan), var(--rose));
+      border-radius: 4px;
+      box-shadow: 0 0 16px var(--accent);
+      animation: slide 1.6s infinite cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     @keyframes slide {
       0% { transform: translateX(-100%); }
-      100% { transform: translateX(230%); }
+      100% { transform: translateX(220%); }
     }
 
     .modal {
@@ -542,142 +621,117 @@
       inset: 0;
       display: none;
       place-items: center;
-      background: rgba(4, 2, 6, .7);
-      backdrop-filter: blur(16px);
-      z-index: 20;
+      background: rgba(5, 7, 12, 0.82);
+      backdrop-filter: blur(20px);
+      z-index: 200;
     }
+
     .modal.active {
       display: grid;
-      animation: fadeIn .3s ease both;
+      animation: fadeIn 0.25s ease both;
     }
+
     .dialog {
-      width: min(860px, calc(100vw - 52px));
-      max-height: calc(100vh - 56px);
+      width: min(840px, calc(100vw - 48px));
+      max-height: calc(100vh - 48px);
       overflow: hidden;
-      background: var(--panel);
+      background: rgba(13, 17, 26, 0.96);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
       display: flex;
       flex-direction: column;
-      backdrop-filter: blur(22px) saturate(1.18);
-      animation: dialogIn .44s cubic-bezier(.2,.8,.2,1) both;
+      animation: dialogIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
+
     .dialog-head {
-      padding: 22px 26px;
+      padding: 20px 24px;
       border-bottom: 1px solid var(--line);
       display: flex;
       justify-content: space-between;
-      gap: 14px;
+      align-items: center;
     }
-    .dialog-head h3 { margin: 0; font-size: 22px; }
+
+    .dialog-head h3 { margin: 0; font-size: 18px; font-weight: 700; }
+
     .dialog-body {
-      padding: 22px 26px;
-      overflow: auto;
+      padding: 24px;
+      overflow-y: auto;
       display: grid;
       gap: 16px;
     }
-    .kv {
-      display: grid;
-      grid-template-columns: 120px 1fr;
-      gap: 14px;
-      font-size: 13px;
-    }
-    .kv span {
-      color: var(--muted);
-      font-weight: 900;
-      font-size: 10px;
-    }
-    .log {
-      background: rgba(9, 7, 13, .86);
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      padding: 14px;
-      font-family: Consolas, ui-monospace, monospace;
-      color: #e2e4e9;
-      white-space: pre-wrap;
-      line-height: 1.5;
-      max-height: 260px;
-      overflow: auto;
-    }
 
     .preserve-case { text-transform: none; }
-    .error {
+
+    .error-box {
       display: none;
-      color: #ffdada;
-      background: rgba(230, 82, 82, .1);
-      border: 1px solid rgba(230, 82, 82, .35);
-      border-radius: 7px;
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
       padding: 12px 14px;
-      font-weight: 700;
-      backdrop-filter: blur(12px);
+      font-weight: 600;
+      margin-top: 10px;
     }
-    .error.active {
+
+    .error-box.active {
       display: block;
-      animation: viewIn .38s ease both;
     }
-    .error.ok {
-      color: #d9ffe9;
-      background: rgba(60, 208, 112, .1);
-      border-color: rgba(60, 208, 112, .32);
-    }
+
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
+
     @keyframes dialogIn {
-      from { opacity: 0; transform: translateY(14px) scale(.985); }
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
-    ::-webkit-scrollbar { width: 10px; height: 10px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,.35); }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
     ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, .08);
-      border: 2px solid rgba(8, 4, 10, .9);
-      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
     }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .15); }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: .001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .001ms !important;
-      }
-    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
   </style>
 </head>
 <body>
-  <div id="splash-screen" style="position:fixed;inset:0;background:#0f1218;display:grid;place-items:center;z-index:9999;transition:opacity .5s ease,visibility .5s">
-    <div style="text-align:center">
-      <div style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#f0e6ee,#d46ab8 46%,#b05bcc);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:20px;font-family:'JetBrains Mono',sans-serif">AuroraChecker</div>
-      <div style="width:50px;height:50px;border:3px solid rgba(212,64,112,.1);border-top:3px solid var(--rose);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto"></div>
+  <div id="splash-screen" style="position:fixed;inset:0;background:#07090e;display:grid;place-items:center;z-index:9999;transition:opacity .6s ease,visibility .6s">
+    <div style="text-align:center;width:320px">
+      <div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#ffffff 0%,#a5b4fc 100%);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:4px">AuroraChecker</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:24px;font-weight:600">Initializing core components...</div>
+      
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span id="splashStatus" style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace">Initializing modules...</span>
+        <span id="splashPercent" style="font-size:12px;font-weight:800;color:var(--accent);font-family:'JetBrains Mono',monospace">0%</span>
+      </div>
+      
+      <div style="height:6px;width:100%;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden">
+        <div id="splashBarFill" style="height:100%;width:0%;background:linear-gradient(90deg, var(--accent), var(--cyan));border-radius:3px;transition:width 0.2s ease"></div>
+      </div>
     </div>
   </div>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <h1>AuroraChecker</h1>
-        <span>by zentixctm</span>
+        <span onclick="openRepo()" class="repo-link" title="Open GitHub Repository">by zentixctm</span>
       </div>
       <nav class="nav">
-        <button data-nav="home" class="active">home</button>
-        <button data-nav="mods">mods folder</button>
-        <button data-nav="ghosts">process scan</button>
-        <button data-nav="jardll">jar/dll scan</button>
-        <button data-nav="programs">tools</button>
-        <button data-nav="texts">texts</button>
-        <button data-nav="launch">java launch</button>
-        <button data-nav="usb">usb & drives</button>
-        <button data-nav="browser">browser scan</button>
+        <button data-nav="home" class="active">Главная</button>
+        <button data-nav="sysinfo">Система & Forensics</button>
+        <button data-nav="mods">Сканер модов (.jar)</button>
+        <button data-nav="jardll">Активность JAR & DLL</button>
+        <button data-nav="programs">Встроенные утилиты</button>
+        <button data-nav="texts">Поисковые запросы</button>
+        <button data-nav="launch">Запуск Java</button>
+        <button data-nav="usb">История папок (ShellBags)</button>
+        <button data-nav="browser">История браузеров</button>
       </nav>
       <div class="footer">
-        <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(212,64,112,.35);background:rgba(212,64,112,.08);font-size:12px">self destruct</button>
+        <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);font-size:12px">self destruct</button>
       </div>
     </aside>
 
@@ -690,32 +744,20 @@
           </div>
         </div>
 
-        <div class="panel" style="margin-bottom:16px;background:linear-gradient(135deg, rgba(138,180,248,0.12), rgba(168,199,250,0.05));border:1px solid rgba(138,180,248,0.3)">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
-            <div>
-              <h3 style="margin:0;font-size:16px;color:#8ab4f8">⚡ Full Auto Scan (Быстрая проверка в 1 клик)</h3>
-              <p style="margin:4px 0 0 0;font-size:12px;color:var(--muted)">Автоматический комплексный анализ: Моды + История Браузера + USB Флешки + BAM / UserAssist / Prefetch</p>
-            </div>
-            <button class="primary" onclick="runFullAutoScan()" style="height:36px;padding:0 20px;font-weight:700">Запустить быструю проверку</button>
-          </div>
-          <div id="fullAutoSummary" style="display:none;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1)"></div>
-          <div id="homeError" class="error-box"></div>
-        </div>
-
         <div class="home-grid">
+          <div class="panel choice">
+            <div>
+              <h3>system info</h3>
+              <p>recycle bin clear date, pc uptime, boot time, win build, and system forensics status.</p>
+            </div>
+            <div><button class="primary" onclick="showView('sysinfo'); loadSystemInfo();">open</button></div>
+          </div>
           <div class="panel choice">
             <div>
               <h3>mods folder</h3>
               <p>folder and jar analysis with online source check and heuristics.</p>
             </div>
             <div><button class="primary" onclick="showView('mods')">open</button></div>
-          </div>
-          <div class="panel choice">
-            <div>
-              <h3>process scan</h3>
-              <p>runtime checks for java agents, native modules, memory strings, and private executable regions.</p>
-            </div>
-            <div><button class="primary" onclick="showView('ghosts')">open</button></div>
           </div>
           <div class="panel choice">
             <div>
@@ -733,8 +775,8 @@
           </div>
           <div class="panel choice">
             <div>
-              <h3>usb & drives</h3>
-              <p>usb connection history and footprints of files from disconnected external drives.</p>
+              <h3>shellbags</h3>
+              <p>analyzes directory opening history and footprints from external/deleted folders.</p>
             </div>
             <div><button class="primary" onclick="showView('usb'); loadUsbData();">open</button></div>
           </div>
@@ -744,6 +786,71 @@
               <p>extracts downloads and search history matching cheat names from chrome, yandex, edge, opera, and firefox.</p>
             </div>
             <div><button class="primary" onclick="showView('browser'); loadBrowserData();">open</button></div>
+          </div>
+        </div>
+        <div style="margin-top: auto; padding-top: 20px; text-align: center;">
+          <span style="font-size: 10px; opacity: 0.15; user-select: none;">sv1chqxx пидор</span>
+        </div>
+      </section>
+
+      <section id="sysinfo" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>system info & forensics</h2>
+            <p>recycle bin clear timestamp, system uptime, identity & windows security status.</p>
+          </div>
+          <button class="primary" onclick="loadSystemInfo()" style="height:34px;padding:0 16px">refresh info</button>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:16px;margin-bottom:16px">
+          <div class="panel" style="padding:18px">
+            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+              <span>Recycle Bin</span>
+              <span id="sysInfoRbStatus" style="font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(56,189,248,.12);color:var(--cyan)">--</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:6px">
+                <span style="color:var(--muted)">Files count:</span>
+                <span id="sysInfoRbCount" style="font-weight:700">--</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:6px">
+                <span style="color:var(--muted)">Total size:</span>
+                <span id="sysInfoRbSize" style="font-weight:700">--</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding-top:2px">
+                <span style="color:var(--muted)">Last deleted item:</span>
+                <span id="sysInfoRbDate" style="font-weight:700;color:var(--rose)">--</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="padding:18px">
+            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">Windows Forensics Services</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:6px">
+                <span style="color:var(--muted)">PcaSvc (Compatibility Assistant):</span>
+                <span id="sysInfoSrvPca" style="font-weight:700">--</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:6px">
+                <span style="color:var(--muted)">DPS (Diagnostic Policy):</span>
+                <span id="sysInfoSrvDps" style="font-weight:700">--</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding-bottom:6px">
+                <span style="color:var(--muted)">SysMain (Superfetch):</span>
+                <span id="sysInfoSrvSysMain" style="font-weight:700">--</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="color:var(--muted)">EventLog:</span>
+                <span id="sysInfoSrvEventLog" style="font-weight:700">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="padding:18px">
+          <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">Discovered Minecraft Root Folders</div>
+          <div id="sysInfoMcRootsTable" style="display:flex;flex-direction:column;gap:8px">
+            <div style="color:var(--muted);font-size:12px">Scanning for Minecraft roots...</div>
           </div>
         </div>
       </section>
@@ -772,25 +879,6 @@
           <div style="font-size:12px;color:var(--muted);margin-top:6px">or click to select files (scans .jar mods / calculates hashes)</div>
         </div>
         <div id="jarkaResult" style="margin-top:14px;display:none;text-align:left;width:100%;max-height:calc(100vh - 380px);overflow-y:auto;padding-right:8px"></div>
-      </section>
-
-      <section id="ghosts" class="view">
-        <div class="header">
-          <div class="title">
-            <h2>process scan</h2>
-            <p>aurorachecker runtime scan</p>
-          </div>
-        </div>
-        <div class="panel scan-panel">
-          <div class="actions">
-            <button class="primary" onclick="scanGhostAuto()">auto scan</button>
-          </div>
-          <div id="ghostError" class="error"></div>
-        </div>
-        <div class="panel" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden">
-          <div style="padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;font-weight:800;text-transform:uppercase;color:var(--muted)">Scan console</div>
-          <pre style="flex:1;margin:0;padding:14px 16px;overflow:auto;font-family:'JetBrains Mono',Consolas,monospace;font-size:13px;line-height:1.6;color:#cdd6e0;background:rgba(6,8,12,.42);white-space:pre-wrap">Auto scan opens the scanner in a separate console window.</pre>
-        </div>
       </section>
 
       <section id="jardll" class="view">
@@ -896,50 +984,36 @@
       <section id="usb" class="view">
         <div class="header">
           <div class="title">
-            <h2>usb & unplugged drives</h2>
-            <p>usb connection history and footprints of files from disconnected external drives.</p>
+            <h2>shellbags explorer</h2>
+            <p>analyses directories and file footprints opened via windows explorer.</p>
           </div>
           <div class="actions">
             <button class="primary" onclick="loadUsbData()">scan / refresh</button>
           </div>
         </div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 18px; flex: 1; min-height: 0;">
-          <!-- Left: USB Connection History -->
-          <div class="panel" style="display: flex; flex-direction: column; padding: 18px; min-height: 0;">
-            <h3 style="margin: 0 0 10px; font-size: 16px;">usb connection history</h3>
-            <div class="table-wrap" style="flex: 1; overflow: auto;">
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width: 50%;">friendly name / model</th>
-                    <th style="width: 50%;">serial number / ID</th>
-                  </tr>
-                </thead>
-                <tbody id="usbRows">
-                  <tr><td colspan="2" class="unknown">Click scan to load data</td></tr>
-                </tbody>
-              </table>
-            </div>
+        <div class="panel scan-panel" style="margin-bottom:14px">
+          <div class="input-row">
+            <input id="shellbagSearch" oninput="filterShellbags()" placeholder="Search folders by name or path..." style="flex:1">
           </div>
-          
-          <!-- Right: Disconnected Drive File Footprints -->
-          <div class="panel" style="display: flex; flex-direction: column; padding: 18px; min-height: 0;">
-            <h3 style="margin: 0 0 10px; font-size: 16px;">folder & file footprints (shellbags)</h3>
-            <div class="table-wrap" style="flex: 1; overflow: auto;">
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width: 30%;">name</th>
-                    <th style="width: 50%;">reconstructed path</th>
-                    <th style="width: 20%;">status</th>
-                  </tr>
-                </thead>
-                <tbody id="footprintRows">
-                  <tr><td colspan="3" class="unknown">Click scan to load data</td></tr>
-                </tbody>
-              </table>
-            </div>
+        </div>
+
+        <div class="panel" style="display: flex; flex-direction: column; padding: 18px; flex: 1; min-height: 0;">
+          <h3 style="margin: 0 0 10px; font-size: 16px;">folder & file footprints (shellbags)</h3>
+          <div class="table-wrap" style="flex: 1; overflow: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 25%;">name</th>
+                  <th style="width: 40%;">reconstructed path</th>
+                  <th style="width: 20%;">last opened / modified</th>
+                  <th style="width: 15%;">status</th>
+                </tr>
+              </thead>
+              <tbody id="footprintRows">
+                <tr><td colspan="4" class="unknown">Click scan to load data</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
         <div id="usbError" class="error"></div>
@@ -1018,10 +1092,16 @@
 
   <div id="loading" class="overlay">
     <div class="loader">
-      <strong id="loadingText">Scanning...</strong>
-      <div class="bar"></div>
-      <div style="margin-top:16px;text-align:center">
-        <button class="danger" onclick="stopScan()" style="height:32px;font-size:11px;padding:0 16px;">stop scan</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <strong id="loadingText" style="font-size:13px;font-weight:700">Scanning...</strong>
+        <span id="loadingPercent" style="font-size:14px;font-weight:800;color:var(--accent);font-family:'JetBrains Mono',monospace">0%</span>
+      </div>
+      <div class="bar" style="position:relative;overflow:hidden;height:8px;background:rgba(255,255,255,0.06);border-radius:4px">
+        <div id="loadingBarFill" style="height:100%;width:0%;background:linear-gradient(90deg, var(--accent), var(--cyan));border-radius:4px;transition:width 0.15s ease"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+        <button class="danger" onclick="stopScan()" style="height:30px;font-size:11px;padding:0 14px">stop scan</button>
+        <div id="loadingDetail" style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted);text-align:right;max-width:240px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap">initializing module...</div>
       </div>
     </div>
   </div>
@@ -1037,6 +1117,59 @@
   </div>
 
   <script>
+    let splashStarted = false;
+
+    function startSplashTimer() {
+      if (splashStarted) return;
+      splashStarted = true;
+
+      let pct = 0;
+      const statuses = [
+        "Initializing core components...",
+        "Connecting pywebview API...",
+        "Loading signature rules...",
+        "Initializing Jarka heuristics...",
+        "Checking Windows services...",
+        "Preparing UI workspace...",
+        "Ready"
+      ];
+      
+      const pEl = document.getElementById("splashPercent");
+      const fEl = document.getElementById("splashBarFill");
+      const sEl = document.getElementById("splashStatus");
+      if (pEl) pEl.textContent = "0%";
+      if (fEl) fEl.style.width = "0%";
+      if (sEl) sEl.textContent = statuses[0];
+
+      const splashTimer = setInterval(() => {
+        pct += Math.floor(Math.random() * 8) + 6;
+        if (pct >= 100) {
+          pct = 100;
+          clearInterval(splashTimer);
+          if (pEl) pEl.textContent = "100%";
+          if (fEl) fEl.style.width = "100%";
+          if (sEl) sEl.textContent = "Ready";
+          
+          setTimeout(() => {
+            const splash = document.getElementById("splash-screen");
+            if (splash) {
+              splash.style.opacity = "0";
+              splash.style.visibility = "hidden";
+            }
+          }, 250);
+        } else {
+          const statusIdx = Math.min(statuses.length - 1, Math.floor((pct / 100) * statuses.length));
+          if (pEl) pEl.textContent = `${pct}%`;
+          if (fEl) fEl.style.width = `${pct}%`;
+          if (sEl) sEl.textContent = statuses[statusIdx];
+        }
+      }, 70);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      startSplashTimer();
+    });
+
     let results = [];
     let programTools = [];
     let commandTools = [];  // unused, kept for compat
@@ -1045,6 +1178,7 @@
     let lastBackView = "home";
     let lastScannedJars = [];
     let cancelScanRequested = false;
+    let shellbagFootprints = [];
 
     function stopScan() {
       cancelScanRequested = true;
@@ -1058,20 +1192,52 @@
       return window.pywebview && window.pywebview.api;
     }
 
+    function openRepo() {
+      if (api() && api().open_url) {
+        api().open_url("https://github.com/zentixctm/aurorachecker");
+      } else {
+        window.open("https://github.com/zentixctm/aurorachecker", "_blank");
+      }
+    }
+
     function showView(id) {
       document.querySelectorAll(".view").forEach(view => view.classList.toggle("active", view.id === id));
       document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.nav === id));
+      if (id === "sysinfo") loadSystemInfo();
     }
 
-    function setLoading(active, text = "Scanning...") {
+    function setLoading(active, text = "Scanning...", percent = null, detail = "") {
       if (active) {
         cancelScanRequested = false;
         if (api() && api().reset_cancel_scan) {
           api().reset_cancel_scan();
         }
       }
-      document.getElementById("loadingText").textContent = text;
-      document.getElementById("loading").classList.toggle("active", active);
+      
+      const textEl = document.getElementById("loadingText");
+      const percentEl = document.getElementById("loadingPercent");
+      const fillEl = document.getElementById("loadingBarFill");
+      const detailEl = document.getElementById("loadingDetail");
+      
+      if (textEl) textEl.textContent = text;
+      if (detailEl) detailEl.textContent = detail || (percent !== null ? `processing: ${Math.round(percent)}%` : "running task...");
+      
+      if (percent !== null && percent !== undefined) {
+        const pct = Math.min(100, Math.max(0, Math.round(percent)));
+        if (percentEl) percentEl.textContent = `${pct}%`;
+        if (fillEl) {
+          fillEl.style.width = `${pct}%`;
+          fillEl.style.animation = "none";
+        }
+      } else {
+        if (percentEl) percentEl.textContent = "";
+        if (fillEl) {
+          fillEl.style.width = "40%";
+          fillEl.style.animation = "slide 1.6s infinite cubic-bezier(0.4, 0, 0.2, 1)";
+        }
+      }
+      
+      document.getElementById("loading").classList.toggle("active", Boolean(active));
     }
 
     function showError(id, message) {
@@ -1145,36 +1311,19 @@
 
     async function loadUsbData() {
       showError("usbError", "");
-      setLoading(true, "Scanning USB devices and drive footprints...");
+      setLoading(true, "Scanning ShellBags...", 25);
       try {
+        setLoading(true, "Querying ShellBags...", 60);
         const payload = await api().get_usb_and_drive_footprints();
+        setLoading(true, "Finalizing ShellBags report...", 90);
         if (!payload.ok) {
           showError("usbError", payload.error);
           return;
         }
 
-        // Render USB devices
-        const usbRows = document.getElementById("usbRows");
-        const devs = payload.usb_devices || [];
-        usbRows.innerHTML = devs.map(d => `
-          <tr>
-            <td class="preserve-case" style="font-weight:700">${escapeHtml(d.name)}</td>
-            <td class="mono preserve-case" style="font-size:11px">${escapeHtml(d.serial)}</td>
-          </tr>
-        `).join("") || `<tr><td colspan="2" class="unknown">No USB storage history found in registry</td></tr>`;
-
-        // Render Footprints
-        const footprintRows = document.getElementById("footprintRows");
-        const fps = payload.footprints || [];
-        footprintRows.innerHTML = fps.map(f => {
-          const isConn = f.status === "connected";
-          return `<tr>
-            <td class="preserve-case" style="font-weight:700">${escapeHtml(f.name)}</td>
-            <td class="mono preserve-case" style="font-size:11px" title="${escapeHtml(f.path)}">${escapeHtml(f.path)}</td>
-            <td class="${isConn ? "clean" : "risk"}" style="font-size:11px;font-weight:800">${escapeHtml(f.status)}</td>
-          </tr>`;
-        }).join("") || `<tr><td colspan="3" class="unknown">No unplugged drive footprints found in ShellBags</td></tr>`;
-
+        shellbagFootprints = payload.footprints || [];
+        document.getElementById("shellbagSearch").value = "";
+        renderShellbagsList(shellbagFootprints);
       } catch (err) {
         showError("usbError", String(err));
       } finally {
@@ -1182,11 +1331,51 @@
       }
     }
 
+    function filterShellbags() {
+      const q = document.getElementById("shellbagSearch").value.toLowerCase();
+      const filtered = shellbagFootprints.filter(f => {
+        return (f.name || "").toLowerCase().includes(q) || (f.path || "").toLowerCase().includes(q);
+      });
+      renderShellbagsList(filtered);
+    }
+
+    function renderShellbagsList(list) {
+      const footprintRows = document.getElementById("footprintRows");
+      const cheatKeywords = ['vape', 'expensive', 'nursultan', 'celestial', 'doomsday', 'wurst', 'liquidbounce', 'cheat', 'hack', 'crack', 'client', 'slinky', 'ghost', 'drip', 'entropy', 'whiteout', 'juul', 'skilled', 'itami', 'koid', 'akrien', 'zamorozka', 'sunrise', 'hono', 'excellent', 'deadcode'];
+      
+      footprintRows.innerHTML = list.map(f => {
+        const isConn = f.status === "доступen" || f.status === "доступен" || f.status === "connected";
+        const nameLower = (f.name || "").toLowerCase();
+        const pathLower = (f.path || "").toLowerCase();
+        const hasCheatKeyword = cheatKeywords.some(kw => nameLower.includes(kw) || pathLower.includes(kw));
+        
+        let rowStyle = "";
+        let badgeStyle = "";
+        let pathStyle = "font-size:11px";
+        if (hasCheatKeyword) {
+          rowStyle = "background: rgba(239, 68, 68, 0.08); border-left: 3px solid var(--rose);";
+          badgeStyle = "background: rgba(239, 68, 68, 0.15); color: var(--rose); font-weight: bold; border-radius: 4px; padding: 2px 6px;";
+          pathStyle += "; color: #ffa3a3; font-weight: bold;";
+        } else {
+          badgeStyle = isConn ? "color: var(--green)" : "color: var(--rose)";
+        }
+        
+        return `<tr style="${rowStyle}">
+          <td class="preserve-case" style="font-weight:700">${escapeHtml(f.name)}</td>
+          <td class="mono preserve-case" style="${pathStyle}" title="${escapeHtml(f.path)}">${escapeHtml(f.path)}</td>
+          <td class="mono" style="font-size:11px;color:var(--muted)">${escapeHtml(f.time || "-")}</td>
+          <td style="font-size:11px"><span style="${badgeStyle}">${escapeHtml(f.status)}</span></td>
+        </tr>`;
+      }).join("") || `<tr><td colspan="4" class="unknown">No open folder footprints found matching the filter</td></tr>`;
+    }
+
     async function loadBrowserData() {
       showError("browserError", "");
-      setLoading(true, "Scanning browser history & downloads for cheats...");
+      setLoading(true, "Scanning browser history & downloads for cheats...", 30);
       try {
+        setLoading(true, "Analyzing Chrome, Edge, Firefox, Opera databases...", 70);
         const payload = await api().scan_browser_history();
+        setLoading(true, "Parsing cheat URLs...", 95);
         if (!payload.ok) {
           showError("browserError", payload.error);
           return;
@@ -1214,7 +1403,7 @@
 
     async function runFullAutoScan() {
       showError("homeError", "");
-      setLoading(true, "⚡ [1/4] Scanning Mods folder...");
+      setLoading(true, "[1/4] Scanning Mods folder...");
       try {
         const modsPath = document.getElementById("modsPath") ? document.getElementById("modsPath").value : "";
         let modsPayload = null;
@@ -1223,15 +1412,15 @@
         }
         if (cancelScanRequested) return;
 
-        setLoading(true, "⚡ [2/4] Scanning Browser history & downloads...");
+        setLoading(true, "[2/4] Scanning Browser history & downloads...");
         const browserPayload = await api().scan_browser_history();
         if (cancelScanRequested) return;
 
-        setLoading(true, "⚡ [3/4] Scanning USB ShellBags & Unplugged drives...");
-        const usbPayload = await api().scan_usb_footprints();
+        setLoading(true, "[3/4] Scanning USB ShellBags & Unplugged drives...");
+        const usbPayload = await (api().scan_usb_footprints ? api().scan_usb_footprints() : api().get_usb_and_drive_footprints());
         if (cancelScanRequested) return;
 
-        setLoading(true, "⚡ [4/4] Scanning BAM / UserAssist / Prefetch executed apps...");
+        setLoading(true, "[4/4] Scanning BAM / UserAssist / Prefetch executed apps...");
         const activityPayload = await api().scan_jar_dll_activity();
         if (cancelScanRequested) return;
 
@@ -1265,7 +1454,7 @@
       summaryBox.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <strong style="font-size:14px;color:${hasThreats ? 'var(--red)' : 'var(--green)'}">
-            ${hasThreats ? '⚠️ Внимание: найдены подозрительные артефакты!' : '✅ Проверка завершена: критических угроз не найдено'}
+            ${hasThreats ? 'ATTENTION: Suspicious artifacts detected' : 'SCAN COMPLETE: No critical threats found'}
           </strong>
         </div>
         <div class="stats" style="grid-template-columns: repeat(4, 1fr); gap: 10px;">
@@ -1289,29 +1478,69 @@
       `;
     }
 
+    let progressInterval = null;
+
+    function startProgressPolling() {
+      if (progressInterval) clearInterval(progressInterval);
+      progressInterval = setInterval(async () => {
+        try {
+          if (api() && api().get_scan_progress) {
+            const prog = await api().get_scan_progress();
+            if (prog && prog.total > 0) {
+              const label = prog.current && prog.total ? `[${prog.current}/${prog.total}] ${prog.status}` : (prog.status || "Scanning...");
+              setLoading(true, label, prog.percent || 0, prog.detail || `progress ${prog.percent || 0}%`);
+            }
+          }
+        } catch(e) {}
+      }, 100);
+    }
+
+    function stopProgressPolling() {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+    }
+
     async function scanMods() {
       showError("modsError", "");
-      setLoading(true, "Scanning mods...");
+      setLoading(true, "Initializing mods scan...", 0);
+      startProgressPolling();
       try {
         const payload = await api().scan_path(document.getElementById("modsPath").value);
+        stopProgressPolling();
         if (cancelScanRequested) return;
         if (!payload.ok) {
           showError("modsError", payload.error);
           return;
         }
+        setLoading(true, "Finalizing...", 100);
         showResults(payload, "mods");
       } finally {
+        stopProgressPolling();
         setLoading(false);
       }
     }
 
     async function scanGhostAuto() {
       showError("ghostError", "");
-      setLoading(true, "Scanning...");
+      setLoading(true, "Scanning Java process runtime & RAM memory...", 0, "initializing scanner...");
+      startProgressPolling();
       try {
-        const started = await api().launch_injgen_console();
-        if (!started.ok) showError("ghostError", started.error);
+        const payload = await api().launch_injgen_console();
+        stopProgressPolling();
+        if (cancelScanRequested) return;
+        if (!payload.ok) {
+          showError("ghostError", payload.error);
+          return;
+        }
+        setLoading(true, "Finalizing scan report...", 100);
+        showResults(payload, "ghosts");
+      } catch (err) {
+        stopProgressPolling();
+        showError("ghostError", String(err));
       } finally {
+        stopProgressPolling();
         setLoading(false);
       }
     }
@@ -1323,20 +1552,28 @@
 
     async function scanJarDllActivity() {
       showError("jardllError", "");
-      setLoading(true, "Scanning JAR | DLL activity...");
+      setLoading(true, "Scanning JAR | DLL activity...", 0, "initializing activity scan...");
+      startProgressPolling();
       try {
         const payload = await api().scan_jar_dll_activity();
+        stopProgressPolling();
+        if (cancelScanRequested) return;
         if (!payload.ok) {
           showError("jardllError", payload.error);
           return;
         }
+        setLoading(true, "Sorting activity rows...", 100);
         renderActivityRows("jarActivityRows", payload.jarActivity || []);
         renderActivityRows("dllActivityRows", payload.dllActivity || []);
         renderActivityRows("deletedRows", payload.deletedActivity || [], true);
         if (payload.note) {
           showError("jardllError", payload.note);
         }
+      } catch (err) {
+        stopProgressPolling();
+        showError("jardllError", String(err));
       } finally {
+        stopProgressPolling();
         setLoading(false);
       }
     }
@@ -1485,6 +1722,8 @@
       { name: "size .exe", text: ".exe size:12mb-25mb" },
       { name: "doomsday setup size", text: "ext:txt;cmd;bat  content:\"java -jar\"" },
       { name: "mods size", text: "*.jar size:10mb..15mb" },
+      { name: "troxill size", text: "size:25158025bytes" },
+      { name: "flow client size", text: "size:68397056bytes" },
       { name: "doomsday log (win+r)", text: "%USERLOCALAPPDATA%\\Temp\\JavaLauncher.log" },
       { name: "liminar setup size", text: "ext:txt;cmd;bat;ps1 content:\"ExecutionPolicy Bypass -Command\" content:\"ProcessStartInfo\" content:\"UseShellExecute\"" },
       { name: "size by liminar inj", text: "ext:lmr;bin;dat;tmp;cache;pak;res;cfg;dll;scr;drv;lib;node;addon;plugin;client;x64;upd;exe;bat;cmd size:17.5mb..20mb" },
@@ -1563,13 +1802,14 @@
 
     async function runJarkaScans(files) {
       showError('modsError', '');
-      setLoading(true, `scanning: analyzing ${files.length} file(s)...`);
+      setLoading(true, `Analyzing ${files.length} file(s)...`, 0);
       const results = [];
       try {
         for (let i = 0; i < files.length; i++) {
           if (cancelScanRequested) break;
           const file = files[i];
-          setLoading(true, `scanning: ${i+1}/${files.length} ${file.name}`);
+          const pct = Math.round(((i + 1) / files.length) * 100);
+          setLoading(true, `[${i+1}/${files.length}] ${file.name}`, pct);
           const payload = await api().scan_jar_jarka(file.path || file.name);
           if (cancelScanRequested) break;
           results.push({
@@ -1617,12 +1857,36 @@
             }
           }
 
-          const evidence = r.data.evidence || [];
-          const evidenceHtml = isJar && evidence.length ? '<div style="margin-top:8px">' + evidence.slice(0, 15).map((e, i) => {
-            const snippet = e.context || '';
-            const highlighted = snippet.replace(new RegExp('(' + escapeRegex(e.matched || '') + ')', 'gi'), '<mark style="background:rgba(212,64,112,.3);color:var(--rose);padding:0 2px;border-radius:2px">$1</mark>');
-            return '<details style="margin-bottom:4px"><summary style="cursor:pointer;font-size:11px;color:var(--amber);font-family:Consolas,monospace;padding:4px 6px;border-radius:4px;background:rgba(255,255,255,0.03);user-select:none">⚠ ' + escapeHtml(e.file || '') + ' → <span style="color:var(--rose);font-weight:700">' + escapeHtml(e.matched || '') + '</span></summary><pre style="margin:4px 0 0 0;padding:8px;border-radius:5px;background:rgba(0,0,0,.4);font-size:10px;color:#cdd6e0;font-family:Consolas,monospace;overflow-x:auto;white-space:pre-wrap;max-height:150px;overflow-y:auto;line-height:1.5">' + highlighted + '</pre></details>';
-          }).join('') + (evidence.length > 15 ? '<div style="font-size:10px;color:var(--muted);margin-top:4px">...and ' + (evidence.length - 15) + ' more</div>' : '') + '</div>' : '';
+          const evidence = (r.data.evidence || []).filter(e => e && (e.rule || e.description || e.matched || e.file || e.context));
+          const evidenceHtml = isJar && evidence.length ? '<div style="margin-top:8px">' + evidence.map((e, i) => {
+            const ruleText = e.rule ? escapeHtml(e.rule) : 'Match';
+            const descText = e.description ? escapeHtml(e.description) : '';
+            const fileText = e.file ? escapeHtml(e.file) : '';
+            const matchedText = e.matched ? escapeHtml(e.matched) : '';
+            
+            const highlightedMatch = matchedText ? `<mark style="background:rgba(239,68,68,0.2);color:var(--rose);border-bottom:2px solid var(--rose);padding:0 4px;border-radius:3px;font-weight:700">${matchedText}</mark>` : '';
+            const fileDisplay = fileText ? `<span style="color:#818cf8;font-weight:700">${fileText}</span>` : `<span style="color:var(--muted)">[Mod Root]</span>`;
+            const title = `${fileDisplay} &rarr; ${highlightedMatch || descText || ruleText}`;
+            const sevColor = e.severity === 'info' ? 'var(--cyan)' : (e.severity === 'high' ? 'var(--rose)' : 'var(--amber)');
+            
+            let snippetParts = [];
+            if (e.file) snippetParts.push(`Class/File: ${e.file}`);
+            if (e.rule) snippetParts.push(`Rule: ${e.rule}`);
+            if (e.matched) snippetParts.push(`Matched Pattern: ${e.matched}`);
+            if (e.description && e.description !== e.matched) snippetParts.push(`Details: ${e.description}`);
+            if (e.context) snippetParts.push(`\nCode Context:\n${e.context}`);
+            
+            const fullSnippet = snippetParts.join('\n') || e.details || e.message || 'No additional code context.';
+            let rawText = escapeHtml(fullSnippet);
+            if (e.matched) {
+              const matchRegex = new RegExp('(' + escapeRegex(e.matched) + ')', 'gi');
+              rawText = rawText.replace(matchRegex, '<mark style="background:rgba(239,68,68,0.25);color:#ff6b6b;border-bottom:2px solid #ef4444;padding:0 3px;border-radius:2px;font-weight:700">$1</mark>');
+            }
+
+            const snippetHtml = `<pre style="margin:6px 0 0 0;padding:10px;border-radius:6px;background:rgba(0,0,0,.5);font-size:11px;color:#cdd6e0;font-family:'JetBrains Mono',monospace;overflow-x:auto;white-space:pre-wrap;max-height:450px;overflow-y:auto;line-height:1.6;user-select:text;border:1px solid rgba(255,255,255,0.06)">${rawText}</pre>`;
+            
+            return `<details style="margin-bottom:6px"><summary style="cursor:pointer;font-size:11px;color:${sevColor};font-family:'JetBrains Mono',monospace;padding:6px 10px;border-radius:6px;background:rgba(255,255,255,0.04);user-select:none;font-weight:600">${title}</summary>${snippetHtml}</details>`;
+          }).join('') + '</div>' : '';
 
           const barColor = !isJar ? '#4facfe' : (isMalware ? 'var(--rose)' : (hasMalicious ? 'var(--amber)' : 'var(--green)'));
           const textColor = !isJar ? '#4facfe' : (isMalware ? 'var(--rose)' : (hasMalicious ? 'var(--amber)' : 'var(--green)'));
@@ -1656,7 +1920,7 @@
               ${isJar && ai.malware_probability > 0 ? '<div style="font-size:10px;color:var(--muted)">AI: ' + ai.malware_probability + '%</div>' : ''}
             </div>
             ${isJar && hasMalicious ? '<div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.1);margin-bottom:6px;overflow:hidden"><div style="height:100%;width:' + riskScore + '%;background:' + barColor + ';border-radius:2px;transition:width 0.3s"></div></div>' : ''}
-            ${isJar ? (mal.length ? '<div style="font-size:11px;color:var(--rose);line-height:1.6;margin-top:4px;font-weight:700">' + mal.map(d => '<div>⚠ ' + d + '</div>').join('') + '</div>' : '<div style="font-size:11px;color:var(--green);margin-top:4px">No threats found</div>') : ''}
+            ${isJar ? (mal.length ? '<div style="font-size:11px;color:var(--rose);line-height:1.6;margin-top:4px;font-weight:700">' + mal.map(d => '<div>• ' + d + '</div>').join('') + '</div>' : '<div style="font-size:11px;color:var(--green);margin-top:4px">No threats found</div>') : ''}
             ${evidenceHtml}
             ${hashesHtml}
           </div>`;
@@ -1785,13 +2049,13 @@
       const item = results[index];
       if (!item) return;
       document.getElementById("modalTitle").textContent = item.name;
-      const logs = (item.analysisResults || []).map(log => `[${log.type}] ${log.className} -> ${log.detail}`).join("\n--------------------------\n") || "No heuristic hits.";
+      const logs = (item.analysisResults || []).map(log => `[${log.type}] ${log.className || log.type} -> ${log.detail || log.message || ""}`).join("\n--------------------------\n") || "No heuristic hits.";
       document.getElementById("modalBody").innerHTML = `
         <div class="kv"><span>Verdict</span><strong class="${item.banned ? "banned" : (item.suspicious ? "risk" : "clean")}">${escapeHtml(item.verdict)}</strong></div>
-        <div class="kv"><span>Path</span><div class="mono preserve-case">${escapeHtml(item.path)}</div></div>
+        <div class="kv"><span>Path</span><div class="mono preserve-case" style="word-break:break-all">${escapeHtml(item.path)}</div></div>
         <div class="kv"><span>Size</span><div class="mono">${escapeHtml(item.size)}</div></div>
         <div class="kv"><span>Source</span><div class="${sourceClass(item.source)}">${escapeHtml(item.source)}</div></div>
-        <div class="log">${escapeHtml(logs)}</div>
+        <div class="log" style="max-height:480px;font-size:11px;line-height:1.6;user-select:text;white-space:pre-wrap;overflow-y:auto">${escapeHtml(logs)}</div>
       `;
       document.getElementById("modal").classList.add("active");
     }
@@ -1819,6 +2083,75 @@
 
     function escapeRegex(str) {
       return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    async function openFolderFromUi(path) {
+      if (!api() || !api().open_folder_path) return;
+      try {
+        await api().open_folder_path(path);
+      } catch(e) {
+        console.error("Failed to open folder:", e);
+      }
+    }
+
+    async function loadSystemInfo() {
+      if (!api() || !api().get_system_info_summary) return;
+      try {
+        const res = await api().get_system_info_summary();
+        if (!res || !res.ok) return;
+
+        const setText = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = val ?? "--";
+        };
+
+        const rb = res.recycle_bin || {};
+        setText("sysInfoRbStatus", rb.status || "--");
+        setText("sysInfoRbCount", (rb.num_items ?? 0) + " items");
+        setText("sysInfoRbSize", rb.size_formatted || "0 B");
+        setText("sysInfoRbDate", rb.latest_delete_date || "Unknown");
+
+        const up = res.uptime || {};
+        setText("sysInfoUptimeStr", up.uptime_str || "--");
+        setText("sysInfoBootTime", up.boot_time || "--");
+
+        const srv = res.services || {};
+        const setSrvStatus = (elemId, status) => {
+          const el = document.getElementById(elemId);
+          if (!el) return;
+          el.textContent = status || "Unknown";
+          el.style.color = status === "Running" ? "var(--green)" : "var(--rose)";
+        };
+        setSrvStatus("sysInfoSrvPca", srv.pcasvc);
+        setSrvStatus("sysInfoSrvDps", srv.dps);
+        setSrvStatus("sysInfoSrvSysMain", srv.sysmain);
+        setSrvStatus("sysInfoSrvEventLog", srv.eventlog);
+
+        const mcRoots = res.minecraft_roots || [];
+        const mcRootsContainer = document.getElementById("sysInfoMcRootsTable");
+        if (mcRootsContainer) {
+          if (!mcRoots.length) {
+            mcRootsContainer.innerHTML = `<div style="color:var(--muted);font-size:12px">No Minecraft root folders discovered.</div>`;
+          } else {
+            mcRootsContainer.innerHTML = mcRoots.map(r => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;gap:12px">
+                <div style="display:flex;flex-direction:column;gap:3px;overflow:hidden">
+                  <div style="font-weight:700;font-size:13px;color:var(--cyan)">${escapeHtml(r.name)}</div>
+                  <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${escapeHtml(r.path)}">${escapeHtml(r.path)}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;flex-shrink:0">
+                  <div style="font-size:11px;color:var(--text);font-family:'JetBrains Mono',monospace">
+                    <span style="color:var(--muted)">Modified:</span> ${escapeHtml(r.last_modified)}
+                  </div>
+                  <button class="primary" data-path="${escapeHtml(r.path)}" onclick="openFolderFromUi(this.dataset.path)" style="height:28px;padding:0 14px;font-size:11px">open</button>
+                </div>
+              </div>
+            `).join("");
+          }
+        }
+      } catch(e) {
+        console.error("Failed to load system info summary:", e);
+      }
     }
 
     window.addEventListener("pywebviewready", init);
