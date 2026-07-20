@@ -2585,6 +2585,88 @@ def _scan_bam_deleted(ext: str, max_rows: int = 100) -> list[dict]:
     return rows
 
 
+def _scan_userassist(max_rows: int = 100) -> list[dict]:
+    """Decodes HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\UserAssist entries."""
+    if os.name != "nt":
+        return []
+    import winreg
+    rows = []
+    base_key = r"Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist"
+    trans = str.maketrans(
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+        "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm"
+    )
+    try:
+        ua_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, base_key)
+        count = winreg.QueryInfoKey(ua_key)[0]
+        for i in range(count):
+            sub_name = winreg.EnumKey(ua_key, i)
+            try:
+                sub_key = winreg.OpenKey(ua_key, sub_name + r"\Count")
+                val_count = winreg.QueryInfoKey(sub_key)[1]
+                for j in range(val_count):
+                    try:
+                        val_name, val_data, _ = winreg.EnumValue(sub_key, j)
+                        decoded_path = val_name.translate(trans)
+                        if not decoded_path.lower().endswith((".exe", ".jar", ".bat", ".cmd", ".vbs")):
+                            continue
+                        
+                        run_count = 0
+                        date_str = "-"
+                        if isinstance(val_data, bytes) and len(val_data) >= 68:
+                            run_count = int.from_bytes(val_data[4:8], "little")
+                            ft_val = int.from_bytes(val_data[60:68], "little")
+                            if ft_val > 0:
+                                try:
+                                    ft_s = datetime(1601, 1, 1) + timedelta(microseconds=ft_val // 10)
+                                    date_str = ft_s.strftime("%Y-%m-%d %H:%M:%S")
+                                except Exception:
+                                    pass
+                        
+                        is_deleted = not os.path.exists(decoded_path)
+                        path_low = decoded_path.lower()
+                        is_suspicious = any(p in path_low for p in ["temp", "downloads", "appdata\\local\\temp", "desktop"]) or (len(decoded_path) > 2 and decoded_path[1:3] == ":\\" and decoded_path[0].lower() not in ["c", "d"])
+                        
+                        status = "deleted" if is_deleted else ("risk" if is_suspicious else "active")
+                        label = f"{os.path.basename(decoded_path)} (runs: {run_count})"
+                        rows.append(_activity_line(
+                            date_str,
+                            status,
+                            label,
+                            decoded_path
+                        ))
+                    except Exception:
+                        continue
+                sub_key.Close()
+            except Exception:
+                continue
+        ua_key.Close()
+    except Exception:
+        pass
+    return rows[:max_rows]
+
+
+def _scan_prefetch(max_rows: int = 50) -> list[dict]:
+    """Scans Prefetch directory for recently run executables."""
+    prefetch_dir = r"C:\Windows\Prefetch"
+    if not os.path.exists(prefetch_dir):
+        return []
+    rows = []
+    try:
+        entries = sorted(
+            [os.path.join(prefetch_dir, f) for f in os.listdir(prefetch_dir) if f.lower().endswith(".pf")],
+            key=lambda x: os.path.getmtime(x),
+            reverse=True
+        )
+        for pf in entries[:max_rows]:
+            mtime = datetime.fromtimestamp(os.path.getmtime(pf)).strftime("%Y-%m-%d %H:%M:%S")
+            exe_name = os.path.basename(pf).split("-")[0] + ".exe"
+            rows.append(_activity_line(mtime, "prefetch", exe_name, pf))
+    except Exception:
+        pass
+    return rows
+
+
 def _device_to_dos(device_path: str) -> str:
     """Convert \Device\HarddiskVolume2\path\to\file to C:\path\to\file"""
     if not device_path.startswith("\\"):
@@ -2727,12 +2809,15 @@ def scan_jar_dll_activity() -> dict:
     # USN: only show files that match user directories (no system files)
     jar_activity, jar_deleted, jar_note = _scan_usn(".jar", user_fnames)
     dll_activity, dll_deleted, dll_note = _scan_usn(".dll", user_fnames)
-    # BAM + LNK for deleted files
+    # BAM + LNK for deleted files + UserAssist & Prefetch
     jar_bam = _scan_bam_deleted(".jar")
     dll_bam = _scan_bam_deleted(".dll")
+    exe_bam = _scan_bam_deleted(".exe")
+    userassist_rows = _scan_userassist()
+    prefetch_rows = _scan_prefetch()
     jar_lnk_del = _scan_lnk_deleted(".jar")
     dll_lnk_del = _scan_lnk_deleted(".dll")
-    deleted_rows = jar_deleted + dll_deleted + jar_bam + dll_bam + jar_lnk_del + dll_lnk_del
+    deleted_rows = jar_deleted + dll_deleted + jar_bam + dll_bam + exe_bam + jar_lnk_del + dll_lnk_del + userassist_rows
     items = []
     items.extend({**row, "section": "jar"} for row in jar_activity)
     items.extend({**row, "section": "dll"} for row in dll_activity)

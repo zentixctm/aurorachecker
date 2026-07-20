@@ -689,6 +689,19 @@
             <p>pick the checker surface.</p>
           </div>
         </div>
+
+        <div class="panel" style="margin-bottom:16px;background:linear-gradient(135deg, rgba(138,180,248,0.12), rgba(168,199,250,0.05));border:1px solid rgba(138,180,248,0.3)">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+            <div>
+              <h3 style="margin:0;font-size:16px;color:#8ab4f8">⚡ Full Auto Scan (Быстрая проверка в 1 клик)</h3>
+              <p style="margin:4px 0 0 0;font-size:12px;color:var(--muted)">Автоматический комплексный анализ: Моды + История Браузера + USB Флешки + BAM / UserAssist / Prefetch</p>
+            </div>
+            <button class="primary" onclick="runFullAutoScan()" style="height:36px;padding:0 20px;font-weight:700">Запустить быструю проверку</button>
+          </div>
+          <div id="fullAutoSummary" style="display:none;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1)"></div>
+          <div id="homeError" class="error-box"></div>
+        </div>
+
         <div class="home-grid">
           <div class="panel choice">
             <div>
@@ -1197,6 +1210,83 @@
       } finally {
         setLoading(false);
       }
+    }
+
+    async function runFullAutoScan() {
+      showError("homeError", "");
+      setLoading(true, "⚡ [1/4] Scanning Mods folder...");
+      try {
+        const modsPath = document.getElementById("modsPath") ? document.getElementById("modsPath").value : "";
+        let modsPayload = null;
+        if (modsPath) {
+          modsPayload = await api().scan_path(modsPath);
+        }
+        if (cancelScanRequested) return;
+
+        setLoading(true, "⚡ [2/4] Scanning Browser history & downloads...");
+        const browserPayload = await api().scan_browser_history();
+        if (cancelScanRequested) return;
+
+        setLoading(true, "⚡ [3/4] Scanning USB ShellBags & Unplugged drives...");
+        const usbPayload = await api().scan_usb_footprints();
+        if (cancelScanRequested) return;
+
+        setLoading(true, "⚡ [4/4] Scanning BAM / UserAssist / Prefetch executed apps...");
+        const activityPayload = await api().scan_jar_dll_activity();
+        if (cancelScanRequested) return;
+
+        setLoading(false);
+        renderFullAutoSummary(modsPayload, browserPayload, usbPayload, activityPayload);
+      } catch (err) {
+        showError("homeError", String(err));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderFullAutoSummary(mods, browser, usb, activity) {
+      const summaryBox = document.getElementById("fullAutoSummary");
+      summaryBox.style.display = "block";
+
+      let modsCount = mods && mods.items ? mods.items.length : 0;
+      let modsRisks = mods && mods.stats ? (mods.stats.risks + mods.stats.banned) : 0;
+
+      let browserCount = browser && browser.entries ? browser.entries.length : 0;
+      let browserRisks = browser && browser.entries ? browser.entries.filter(e => e.type === "cheat_site" || e.type === "download").length : 0;
+
+      let usbDrives = usb && usb.connected_drives ? usb.connected_drives.length : 0;
+      let usbFootprints = usb && usb.shellbag_footprints ? usb.shellbag_footprints.length : 0;
+
+      let activityItems = activity && activity.items ? activity.items.length : 0;
+      let deletedItems = activity && activity.deleted_rows ? activity.deleted_rows.length : 0;
+
+      const hasThreats = (modsRisks > 0 || browserRisks > 0 || usbFootprints > 0);
+
+      summaryBox.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <strong style="font-size:14px;color:${hasThreats ? 'var(--red)' : 'var(--green)'}">
+            ${hasThreats ? '⚠️ Внимание: найдены подозрительные артефакты!' : '✅ Проверка завершена: критических угроз не найдено'}
+          </strong>
+        </div>
+        <div class="stats" style="grid-template-columns: repeat(4, 1fr); gap: 10px;">
+          <div class="stat">
+            <span class="num">${modsCount}</span>
+            <span class="lbl">Модов (Рисков: ${modsRisks})</span>
+          </div>
+          <div class="stat">
+            <span class="num">${browserCount}</span>
+            <span class="lbl">Записей браузера</span>
+          </div>
+          <div class="stat">
+            <span class="num">${usbDrives} / ${usbFootprints}</span>
+            <span class="lbl">USB / Следов флешек</span>
+          </div>
+          <div class="stat">
+            <span class="num">${deletedItems}</span>
+            <span class="lbl">Удалённых / BAM / UserAssist</span>
+          </div>
+        </div>
+      `;
     }
 
     async function scanMods() {
