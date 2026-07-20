@@ -820,6 +820,21 @@ def high_confidence(entries: list[dict]) -> bool:
     return any((item.get("type") or "").lower() in risky for item in entries)
 
 
+CANCEL_SCAN_REQUESTED = False
+
+
+def cancel_scan() -> dict:
+    global CANCEL_SCAN_REQUESTED
+    CANCEL_SCAN_REQUESTED = True
+    return {"ok": True}
+
+
+def reset_cancel_scan() -> dict:
+    global CANCEL_SCAN_REQUESTED
+    CANCEL_SCAN_REQUESTED = False
+    return {"ok": True}
+
+
 def scan_path(path_text: str) -> dict:
     path = Path(path_text.strip()).expanduser()
     if not path.exists():
@@ -840,6 +855,8 @@ def scan_path(path_text: str) -> dict:
 
     items = []
     for jar in jars:
+        if CANCEL_SCAN_REQUESTED:
+            break
         modrinth = check_modrinth(jar)
         logs = [] if modrinth else heuristic_results(jar)
         items.append(result_item(
@@ -3212,10 +3229,18 @@ class AuroraApi:
         except Exception:
             return []
 
+    def cancel_scan(self) -> dict:
+        return cancel_scan()
+
+    def reset_cancel_scan(self) -> dict:
+        return reset_cancel_scan()
+
     def scan_path(self, path: str) -> dict:
         return scan_path(path)
 
     def scan_jar_jarka(self, jar_path: str) -> dict:
+        if CANCEL_SCAN_REQUESTED:
+            return error("Scan stopped by user")
         try:
             from jarka_scanner.scanner import scan_jar
             path = Path(jar_path.strip().strip('"'))
