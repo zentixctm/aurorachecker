@@ -4176,20 +4176,34 @@ class AuroraApi:
     def self_destruct(self) -> dict:
         try:
             pid = os.getpid()
-            root = APP_ROOT.resolve()
+            exe_path = Path(sys.executable).resolve() if getattr(sys, "frozen", False) else None
+            tools_dir = (APP_ROOT / "tools").resolve()
+            pid_file = (APP_ROOT / "aurorachecker.pid").resolve()
+            
             bat_path = Path(tempfile.gettempdir()) / f"cleanup_{pid}.bat"
-            bat_content = f"""@echo off
-title AuroraChecker Cleanup
-:loop
-tasklist /FI "PID eq {pid}" 2>nul | find "{pid}" >nul
-if not errorlevel 1 (
-    ping -n 2 127.0.0.1 >nul
-    goto loop
-)
-ping -n 1 127.0.0.1 >nul
-rd /s /q "{root}"
-del "%~f0"
-"""
+            
+            lines = [
+                "@echo off",
+                "title AuroraChecker Cleanup",
+                ":loop",
+                f'tasklist /FI "PID eq {pid}" 2>nul | find "{pid}" >nul',
+                "if not errorlevel 1 (",
+                "    ping -n 2 127.0.0.1 >nul",
+                "    goto loop",
+                ")",
+                "ping -n 1 127.0.0.1 >nul",
+            ]
+            
+            if exe_path and exe_path.exists():
+                lines.append(f'if exist "{exe_path}" del /f /q "{exe_path}"')
+            if tools_dir.exists():
+                lines.append(f'if exist "{tools_dir}" rd /s /q "{tools_dir}"')
+            if pid_file.exists():
+                lines.append(f'if exist "{pid_file}" del /f /q "{pid_file}"')
+                
+            lines.append('del "%~f0"')
+            bat_content = "\n".join(lines) + "\n"
+            
             bat_path.write_text(bat_content, encoding="utf-8")
             subprocess.Popen(
                 ["cmd.exe", "/c", str(bat_path)],
