@@ -19,6 +19,13 @@ import tempfile
 import threading
 import time
 import urllib.request
+import ssl
+
+try:
+    ssl._create_default_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+
 import uuid
 from urllib.parse import urlparse
 from ctypes import wintypes
@@ -1723,8 +1730,11 @@ def download_via_softportal(name: str, temp_path: Path, progress=None) -> bool:
     import re
 
     try:
+        ssl_ctx = ssl.create_default_context()
+        ssl_ctx.check_hostname = False
+        ssl_ctx.verify_mode = ssl.CERT_NONE
         cj = http.cookiejar.CookieJar()
-        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj), urllib.request.ProxyHandler({}))
+        opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj), urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=ssl_ctx))
         opener.addheaders = [('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')]
 
         # Step 1: Search SoftPortal
@@ -1872,8 +1882,11 @@ def is_allowed_download_url(url: str) -> bool:
 
 
 def download_file(url: str, destination: Path, progress=None) -> None:
+    ssl_ctx = ssl.create_default_context()
+    ssl_ctx.check_hostname = False
+    ssl_ctx.verify_mode = ssl.CERT_NONE
     request = urllib.request.Request(url, headers={"User-Agent": f"AuroraChecker/{APP_VERSION}"})
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=ssl_ctx))
     with opener.open(request, timeout=45) as response:
         final_host = urlparse(response.geturl()).netloc.lower()
         if final_host not in ALLOWED_DOWNLOAD_HOSTS:
