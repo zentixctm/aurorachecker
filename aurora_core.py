@@ -4178,12 +4178,39 @@ class AuroraApi:
                 "ping -n 1 127.0.0.1 >nul",
             ]
             
-            if exe_path and exe_path.exists():
-                lines.append(f'if exist "{exe_path}" del /f /q "{exe_path}"')
+            if exe_path:
+                lines.extend([
+                    ":del_exe",
+                    f'if exist "{exe_path}" (',
+                    f'    del /f /q "{exe_path}"',
+                    f'    if exist "{exe_path}" (',
+                    "        ping -n 2 127.0.0.1 >nul",
+                    "        goto del_exe",
+                    "    )",
+                    ")"
+                ])
             if tools_dir.exists():
-                lines.append(f'if exist "{tools_dir}" rd /s /q "{tools_dir}"')
+                lines.extend([
+                    ":del_tools",
+                    f'if exist "{tools_dir}" (',
+                    f'    rd /s /q "{tools_dir}"',
+                    f'    if exist "{tools_dir}" (',
+                    "        ping -n 2 127.0.0.1 >nul",
+                    "        goto del_tools",
+                    "    )",
+                    ")"
+                ])
             if pid_file.exists():
-                lines.append(f'if exist "{pid_file}" del /f /q "{pid_file}"')
+                lines.extend([
+                    ":del_pid",
+                    f'if exist "{pid_file}" (',
+                    f'    del /f /q "{pid_file}"',
+                    f'    if exist "{pid_file}" (',
+                    "        ping -n 2 127.0.0.1 >nul",
+                    "        goto del_pid",
+                    "    )",
+                    ")"
+                ])
                 
             lines.append('del "%~f0"')
             bat_content = "\n".join(lines) + "\n"
