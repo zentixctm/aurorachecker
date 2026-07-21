@@ -76,3 +76,31 @@ def read_file_from_jar(jar_path: str, member: str) -> bytes:
     """Прочитать содержимое файла из JAR."""
     with zipfile.ZipFile(jar_path, 'r') as z:
         return z.read(member)
+
+
+def check_zip_encryption(jar_path: str) -> dict:
+    """Проверить JAR/ZIP архив на наличие зашифрованных/пароленных элементов или поврежденных заголовков."""
+    result = {"is_encrypted": False, "encrypted_count": 0, "corrupted_entries": [], "details": []}
+    try:
+        with zipfile.ZipFile(jar_path, 'r') as z:
+            for info in z.infolist():
+                if info.flag_bits & 0x1:
+                    result["is_encrypted"] = True
+                    result["encrypted_count"] += 1
+                    result["details"].append(f"Encrypted entry: {info.filename}")
+                try:
+                    with z.open(info) as f:
+                        f.read(16)
+                except (zipfile.BadZipFile, RuntimeError) as e:
+                    if "password" in str(e).lower() or "encrypted" in str(e).lower():
+                        result["is_encrypted"] = True
+                        result["encrypted_count"] += 1
+                        result["details"].append(f"Password protected: {info.filename}")
+                    else:
+                        result["corrupted_entries"].append(info.filename)
+    except zipfile.BadZipFile:
+        result["is_encrypted"] = True
+        result["details"].append("Bad or Corrupted Zip Header")
+    except Exception as exc:
+        result["details"].append(str(exc))
+    return result

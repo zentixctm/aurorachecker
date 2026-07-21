@@ -867,6 +867,7 @@
             <input id="modsPath" placeholder="Path to mods folder">
             <button onclick="chooseFolder()">folder</button>
             <button class="primary" onclick="scanMods()">scan</button>
+            <button onclick="verifyModsModrinth()">verify modrinth API</button>
           </div>
           <div id="modsError" class="error"></div>
         </div>
@@ -889,8 +890,10 @@
           </div>
         </div>
         <div class="panel scan-panel">
-          <div class="actions">
-            <button class="primary" onclick="scanJarDllActivity()">scan</button>
+          <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="primary" onclick="scanJarDllActivity()">scan USN & BAM</button>
+            <button onclick="scanJvmRam()">scan JVM RAM & DLLs</button>
+            <button onclick="scanMcLogs()">scan .log.gz archives</button>
             <button onclick="clearJarDllTables()">clear</button>
           </div>
           <div id="jardllError" class="error"></div>
@@ -1579,6 +1582,74 @@
         showError("jardllError", String(err));
       } finally {
         stopProgressPolling();
+        setLoading(false);
+      }
+    }
+
+    async function verifyModsModrinth() {
+      showError("modsError", "");
+      setLoading(true, "Checking mods hashes via Modrinth API...");
+      try {
+        const pathVal = document.getElementById("modsPath").value || "";
+        const payload = await api().verify_modrinth_hashes([pathVal]);
+        if (!payload.ok) {
+          showError("modsError", payload.error || "Modrinth verification failed");
+          return;
+        }
+        let msg = `Checked ${payload.mods.length} mod(s):\n\n`;
+        payload.mods.forEach(m => {
+          const icon = m.verified ? "✅" : "⚠️";
+          msg += `${icon} ${m.file} -> ${m.status} (${m.title})\n`;
+        });
+        alert(msg);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function scanMcLogs() {
+      showError("jardllError", "");
+      setLoading(true, "Scanning .minecraft/logs for .log.gz cheat artifacts...");
+      try {
+        const res = await api().scan_mc_log_archives();
+        if (!res.ok) {
+          showError("jardllError", res.error || "Log scan failed");
+          return;
+        }
+        let msg = `Scanned ${res.scanned_files} log file(s), found ${res.total_matches} match(es):\n\n`;
+        if (res.findings.length === 0) {
+          msg += "No cheat signatures found in log archives.";
+        } else {
+          res.findings.slice(0, 25).forEach(f => {
+            msg += `• [${f.file}:${f.line}] Keyword '${f.keyword}': ${f.context}\n`;
+          });
+        }
+        alert(msg);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function scanJvmRam() {
+      showError("jardllError", "");
+      setLoading(true, "Scanning active JVM (javaw.exe) memory & loaded DLL modules...");
+      try {
+        const res = await api().scan_jvm_ram_injections();
+        if (!res.ok) {
+          showError("jardllError", res.error || "JVM scan failed");
+          return;
+        }
+        let msg = `JVM Running: ${res.jvm_running ? "YES" : "NO"}\n`;
+        msg += `Suspicious Loaded DLLs: ${res.suspicious_dlls.length}\n\n`;
+        if (res.suspicious_dlls.length === 0) {
+          msg += "No suspicious DLL modules detected in JVM memory space.";
+        } else {
+          res.suspicious_dlls.forEach(d => {
+            msg += `⚠️ [PID ${d.pid}] Module ${d.module} (${d.path}) -> ${d.reason}\n`;
+          });
+        }
+        alert(msg);
+      } finally {
         setLoading(false);
       }
     }

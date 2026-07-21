@@ -3270,6 +3270,220 @@ def get_system_info_summary() -> dict:
     }
 
 
+def batch_verify_modrinth_hashes(jar_paths: list[str]) -> dict:
+    """Проверить хеши списка .jar файлов через Modrinth API batch endpoint."""
+    hashes_map = {}
+    for p_str in jar_paths:
+        p = Path(p_str)
+        if p.is_file() and p.suffix.lower() == ".jar":
+            try:
+                h = sha1_file(p)
+                hashes_map[h] = str(p)
+            except Exception:
+                pass
+    if not hashes_map:
+        return {"ok": True, "mods": []}
+    
+    try:
+        url = "https://api.modrinth.com/v2/version_files"
+        data = json.dumps({"hashes": list(hashes_map.keys()), "algorithm": "sha1"}).encode("utf-8")
+        req = urllib.request.Request(url, data=data, headers={
+            "User-Agent": f"AuroraChecker/{APP_VERSION}",
+            "Content-Type": "application/json"
+        }, method="POST")
+        with urllib.request.urlopen(req, timeout=5.0) as resp:
+            if resp.status == 200:
+                modrinth_res = json.loads(resp.read().decode("utf-8", "ignore"))
+                mods_data = []
+                for sha1_hash, jar_path_str in hashes_map.items():
+                    name = Path(jar_path_str).name
+                    if sha1_hash in modrinth_res:
+                        ver_info = modrinth_res[sha1_hash]
+                        mods_data.append({
+                            "file": name,
+                            "path": jar_path_str,
+                            "verified": True,
+                            "status": "AUTHENTIC",
+                            "project_id": ver_info.get("project_id"),
+                            "version_number": ver_info.get("version_number"),
+                            "title": ver_info.get("name") or name
+                        })
+                    else:
+                        mods_data.append({
+                            "file": name,
+                            "path": jar_path_str,
+                            "verified": False,
+                            "status": "UNVERIFIED_OR_MODIFIED",
+                            "project_id": None,
+                            "version_number": None,
+                            "title": name
+                        })
+                return {"ok": True, "mods": mods_data}
+    except Exception:
+        pass
+    
+    mods_data = []
+    for sha1_hash, jar_path_str in hashes_map.items():
+        name = Path(jar_path_str).name
+        verified = check_modrinth(Path(jar_path_str))
+        mods_data.append({
+            "file": name,
+            "path": jar_path_str,
+            "verified": verified,
+            "status": "AUTHENTIC" if verified else "UNVERIFIED_OR_MODIFIED",
+            "project_id": None,
+            "version_number": None,
+            "title": name
+        })
+    return {"ok": True, "mods": mods_data}
+
+
+def scan_deleted_files_usn() -> dict:
+    """Сканирование удаленных файлов (.exe, .dll, .jar, .pf, .bat, .ps1) из журнала USN NTFS."""
+    deleted_files = []
+    target_exts = {".exe", ".dll", ".jar", ".pf", ".bat", ".ps1", ".cmd", ".lmr"}
+    try:
+        cmd = ["cmd.exe", "/d", "/c", "fsutil usn readjournal C: csv 2>&1"]
+        proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=60, **hidden_subprocess_options())
+        for line in proc.stdout.splitlines():
+            if not line.strip() or line.startswith("FileRef"):
+                continue
+            parts = [p.strip('" ') for p in line.split(",")]
+            if len(parts) >= 4:
+                fname = parts[0]
+                reason = parts[3] if len(parts) > 3 else ""
+                ext = Path(fname).suffix.lower()
+                if ext in target_exts or "DELETE" in reason.upper() or "0x00000200" in reason:
+                    if ext in target_exts:
+                        timestamp = parts[1] if len(parts) > 1 else "-"
+                        deleted_files.append({
+                            "filename": fname,
+                            "ext": ext,
+                            "timestamp": timestamp,
+                            "reason": reason or "FILE_DELETE",
+                            "raw": line[:150]
+                        })
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "files": []}
+    return {"ok": True, "files": deleted_files[:300], "count": len(deleted_files)}
+
+
+def scan_mc_log_archives() -> dict:
+    """Авто-сканирование файлов логов .log и архивированных .log.gz в папочке .minecraft/logs."""
+    import gzip
+    mc_dir = get_minecraft_dir()
+    logs_dir = mc_dir / "logs"
+    if not logs_dir.exists():
+        return {"ok": True, "findings": [], "scanned_files": 0}
+    
+    cheat_keywords = [
+        ".bind", ".fly", ".killaur", ".killaura", ".esp", ".viamcp", ".nursultan",
+        ".expensive", ".celestial", ".akrien", "[Baritone]", "Baritone",
+        "/reg ", "/register ", "/l ", "/login ", "dqrkis", "skid", "doomsday",
+        "neoware", "wexside", "zamorozka", "richclient"
+    ]
+    
+    findings = []
+    scanned_files = 0
+    
+    log_files = list(logs_dir.glob("*.log")) + list(logs_dir.glob("*.log.gz"))
+    for log_path in log_files:
+        scanned_files += 1
+        lines = []
+        try:
+            if log_path.suffix.lower() == ".gz":
+                with gzip.open(log_path, "rt", encoding="utf-8", errors="ignore") as gz:
+                    lines = gz.readlines()
+            else:
+                lines = log_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+        except Exception:
+            continue
+            
+        for idx, line in enumerate(lines, 1):
+            line_lower = line.lower()
+            for kw in cheat_keywords:
+                if kw.lower() in line_lower:
+                    findings.append({
+                        "file": log_path.name,
+                        "line": idx,
+                        "keyword": kw,
+                        "context": line.strip()[:160]
+                    })
+                    break
+    
+    return {"ok": True, "findings": findings, "scanned_files": scanned_files, "total_matches": len(findings)}
+
+
+def scan_jvm_ram_injections() -> dict:
+    """Сканирование запущенных процессов javaw.exe / java.exe на внедренные DLL и модуль InjGen."""
+    jvm_processes = []
+    suspicious_dlls = []
+    
+    try:
+        cmd = ["powershell", "-NoProfile", "-NonInteractive", "-Command",
+               "Get-Process -Name javaw,java -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,Path | ConvertTo-Json"]
+        proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=15, **hidden_subprocess_options())
+        if proc.returncode == 0 and proc.stdout.strip():
+            try:
+                data = json.loads(proc.stdout)
+                if isinstance(data, dict):
+                    data = [data]
+                jvm_processes = data
+            except Exception:
+                pass
+    except Exception:
+        pass
+        
+    for jvm in jvm_processes:
+        pid = jvm.get("Id")
+        if not pid:
+            continue
+        try:
+            cmd_mod = ["powershell", "-NoProfile", "-NonInteractive", "-Command",
+                       f"Get-Process -Id {pid} | Select-Object -ExpandProperty Modules | Select-Object ModuleName,FileName | ConvertTo-Json"]
+            mod_proc = subprocess.run(cmd_mod, capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=15, **hidden_subprocess_options())
+            if mod_proc.returncode == 0 and mod_proc.stdout.strip():
+                modules = json.loads(mod_proc.stdout)
+                if isinstance(modules, dict):
+                    modules = [modules]
+                for m in modules:
+                    fname = (m.get("FileName") or "").lower()
+                    if not fname:
+                        continue
+                    if any(x in fname for x in ["temp", "appdata\\local\\temp", "downloads", "injgen", "vec.dll", "liminar"]):
+                        suspicious_dlls.append({
+                            "pid": pid,
+                            "module": m.get("ModuleName"),
+                            "path": m.get("FileName"),
+                            "reason": "Loaded from temp/user folder or matches cheat DLL name"
+                        })
+        except Exception:
+            pass
+            
+    return {
+        "ok": True,
+        "jvm_running": len(jvm_processes) > 0,
+        "jvm_processes": jvm_processes,
+        "suspicious_dlls": suspicious_dlls
+    }
+
+
+def check_authenticode_signature(file_path: str) -> dict:
+    """Проверка Authenticode цифровой подписи через PowerShell Get-AuthenticodeSignature."""
+    try:
+        p = Path(file_path)
+        if not p.is_file():
+            return {"ok": False, "signed": False, "status": "FILE_NOT_FOUND"}
+        cmd = ["powershell", "-NoProfile", "-NonInteractive", "-Command",
+               f"(Get-AuthenticodeSignature '{str(p)}').Status.ToString()"]
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=10, **hidden_subprocess_options())
+        status = proc.stdout.strip()
+        is_signed = status in ("Valid", "Signed")
+        return {"ok": True, "signed": is_signed, "status": status}
+    except Exception as exc:
+        return {"ok": False, "signed": False, "status": str(exc)}
+
+
 class AuroraApi:
     __slots__ = ("_window", "_injgen_lock", "_injgen_process", "_injgen_output", "_download_lock", "_downloads")
 
@@ -4108,6 +4322,36 @@ class AuroraApi:
     def scan_jar_dll_activity(self) -> dict:
         try:
             return scan_jar_dll_activity()
+        except Exception as exc:
+            return error(str(exc))
+
+    def verify_modrinth_hashes(self, jar_paths: list[str]) -> dict:
+        try:
+            return batch_verify_modrinth_hashes(jar_paths)
+        except Exception as exc:
+            return error(str(exc))
+
+    def scan_deleted_files_usn(self) -> dict:
+        try:
+            return scan_deleted_files_usn()
+        except Exception as exc:
+            return error(str(exc))
+
+    def scan_mc_log_archives(self) -> dict:
+        try:
+            return scan_mc_log_archives()
+        except Exception as exc:
+            return error(str(exc))
+
+    def scan_jvm_ram_injections(self) -> dict:
+        try:
+            return scan_jvm_ram_injections()
+        except Exception as exc:
+            return error(str(exc))
+
+    def check_authenticode_signature(self, file_path: str) -> dict:
+        try:
+            return check_authenticode_signature(file_path)
         except Exception as exc:
             return error(str(exc))
 

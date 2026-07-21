@@ -5,7 +5,7 @@ import tempfile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from .jar_extractor import list_extractable_paths, list_native_paths, list_nested_jars, read_file_from_jar
+from .jar_extractor import list_extractable_paths, list_native_paths, list_nested_jars, read_file_from_jar, check_zip_encryption
 from .string_extractor import extract_strings_from_jar_file
 from .detectors import stealer_detector
 from .detectors import cheat_detector
@@ -131,6 +131,14 @@ def scan_jar(jar_path: str, file_size: int) -> dict:
                     pass
 
     results = run_detectors(jar_path, file_paths, all_strings, native_paths)
+    encryption_info = check_zip_encryption(jar_path)
+    results['encryption_info'] = encryption_info
+    if encryption_info.get('is_encrypted'):
+        results.setdefault('evidence', []).append({
+            'file': os.path.basename(jar_path),
+            'matched': 'Encrypted/Protected Archive',
+            'context': f"Archive contains {encryption_info.get('encrypted_count', 0)} encrypted entries or corrupted zip headers. Details: {', '.join(encryption_info.get('details', [])[:3])}"
+        })
     results['nested_jars'] = nested_used
     results['nested_jars_skipped'] = nested_skipped
     results['locations'] = find_finding_locations(all_strings, file_paths, results)
