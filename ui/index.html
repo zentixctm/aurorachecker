@@ -799,7 +799,13 @@
             <h2>system info & forensics</h2>
             <p>recycle bin clear timestamp, system uptime, identity & windows security status.</p>
           </div>
-          <button class="primary" onclick="loadSystemInfo()" style="height:34px;padding:0 16px">refresh info</button>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="primary" onclick="generateVerificationReport()" style="height:34px;padding:0 14px">generate report</button>
+            <button onclick="scanOpenSaveMru()" style="height:34px;padding:0 12px">OpenSave MRU</button>
+            <button onclick="scanDnsNetstat()" style="height:34px;padding:0 12px">DNS & Netstat</button>
+            <button onclick="scanPrefetchRunCount()" style="height:34px;padding:0 12px">Prefetch RunCount</button>
+            <button onclick="loadSystemInfo()" style="height:34px;padding:0 12px">refresh info</button>
+          </div>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:16px;margin-bottom:16px">
@@ -1624,6 +1630,79 @@
             msg += `• [${f.file}:${f.line}] Keyword '${f.keyword}': ${f.context}\n`;
           });
         }
+        alert(msg);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function generateVerificationReport() {
+      setLoading(true, "Generating full verification report...");
+      try {
+        const res = await api().generate_report();
+        if (!res.ok) {
+          alert("Failed to generate report: " + res.error);
+          return;
+        }
+        alert(res.report);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function scanOpenSaveMru() {
+      setLoading(true, "Extracting OpenSavePidlMRU & RecentDocs history...");
+      try {
+        const res = await api().scan_opensave_mru();
+        if (!res.ok) {
+          alert("OpenSave MRU scan failed: " + res.error);
+          return;
+        }
+        let msg = `Found ${res.count} record(s) from OpenSave Dialog & RecentDocs:\n\n`;
+        res.items.slice(0, 20).forEach(i => {
+          msg += `• [${i.source}] ${i.file}\n`;
+        });
+        alert(msg);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function scanDnsNetstat() {
+      setLoading(true, "Inspecting DNS cache & netstat active connections...");
+      try {
+        const res = await api().scan_dns_netstat();
+        if (!res.ok) {
+          alert("DNS/Netstat scan failed: " + res.error);
+          return;
+        }
+        let msg = `Suspicious DNS Domains: ${res.dns_suspicious_count}\n`;
+        res.dns_findings.forEach(d => {
+          msg += `⚠️ ${d.domain} -> ${d.ip}\n`;
+        });
+        msg += `\nActive Network Connections: ${res.netstat_active.length}\n`;
+        res.netstat_active.slice(0, 10).forEach(n => {
+          msg += `• ${n.proto} Local: ${n.local} -> Remote: ${n.foreign} (PID: ${n.pid})\n`;
+        });
+        alert(msg);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function scanPrefetchRunCount() {
+      setLoading(true, "Analyzing C:\\Windows\\Prefetch files & execution counts...");
+      try {
+        const res = await api().scan_prefetch_advanced();
+        if (!res.ok) {
+          alert("Prefetch scan failed: " + res.error);
+          return;
+        }
+        let msg = `Analyzed ${res.total_count} Prefetch file(s):\n\n`;
+        res.files.slice(0, 20).forEach(f => {
+          const icon = f.suspicious ? "⚠️" : "•";
+          msg += `${icon} [${f.last_run}] ${f.file} (${f.size_kb} KB)\n`;
+        });
         alert(msg);
       } finally {
         setLoading(false);

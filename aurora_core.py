@@ -3484,6 +3484,259 @@ def check_authenticode_signature(file_path: str) -> dict:
         return {"ok": False, "signed": False, "status": str(exc)}
 
 
+def scan_opensave_recentdocs_mru() -> dict:
+    """Извлечение истории выборов файлов из OpenSavePidlMRU и RecentDocs в реестре Windows."""
+    import winreg
+    items = []
+    base_key = r"Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU"
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, base_key) as root_k:
+            i = 0
+            while True:
+                try:
+                    sub_name = winreg.EnumKey(root_k, i)
+                    i += 1
+                    with winreg.OpenKey(root_k, sub_name) as sub_k:
+                        j = 0
+                        while True:
+                            try:
+                                v_name, v_data, v_type = winreg.EnumValue(sub_k, j)
+                                j += 1
+                                if v_name != "MRUListEx" and isinstance(v_data, bytes):
+                                    decoded = v_data.decode("utf-16le", errors="ignore").replace("\x00", " ")
+                                    clean_strs = [s.strip() for s in re.findall(r"[A-Za-z0-9_\-\\\:\.]{4,}", decoded) if len(s.strip()) > 3]
+                                    for s in clean_strs:
+                                        if any(ext in s.lower() for ext in [".exe", ".jar", ".dll", ".zip", ".rar", ".7z", ".bat", ".ps1"]):
+                                            items.append({
+                                                "source": f"OpenSavePidlMRU\\{sub_name}",
+                                                "file": s,
+                                                "type": "OpenSave Dialog Record"
+                                            })
+                            except OSError:
+                                break
+                except OSError:
+                    break
+    except Exception:
+        pass
+        
+    recent_key = r"Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs"
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, recent_key) as r_k:
+            j = 0
+            while True:
+                try:
+                    v_name, v_data, v_type = winreg.EnumValue(r_k, j)
+                    j += 1
+                    if v_name != "MRUListEx" and isinstance(v_data, bytes):
+                        decoded = v_data.decode("utf-16le", errors="ignore").replace("\x00", " ")
+                        clean_strs = [s.strip() for s in re.findall(r"[A-Za-z0-9_\-\\\:\.]{4,}", decoded) if len(s.strip()) > 3]
+                        for s in clean_strs:
+                            items.append({
+                                "source": "RecentDocs",
+                                "file": s,
+                                "type": "Recent Document Record"
+                            })
+                except OSError:
+                    break
+    except Exception:
+        pass
+        
+    unique_items = []
+    seen = set()
+    for item in items:
+        k = (item["source"], item["file"])
+        if k not in seen:
+            seen.add(k)
+            unique_items.append(item)
+            
+    return {"ok": True, "items": unique_items[:200], "count": len(unique_items)}
+
+
+def scan_dns_netstat_inspector() -> dict:
+    """Анализ DNS кэша и активных сетевых соединений netstat на домены/IP читов."""
+    suspicious_domains = [
+        "telegram.org", "discordapp.com", "pastebin.com", "anonfiles.com",
+        "gofile.io", "mediafire.com", "rentry.co", "telegra.ph", "dqrkis.xyz",
+        "doomsdayclient.com", "prestigeclient.vip", "nursultan", "expensive",
+        "celestial", "akrien", "wexside", "zamorozka", "richclient"
+    ]
+    dns_findings = []
+    netstat_findings = []
+    
+    try:
+        cmd_dns = ["powershell", "-NoProfile", "-NonInteractive", "-Command", "Get-DnsClientCache | Select-Object Entry,Data | ConvertTo-Json"]
+        proc = subprocess.run(cmd_dns, capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=15, **hidden_subprocess_options())
+        if proc.returncode == 0 and proc.stdout.strip():
+            data = json.loads(proc.stdout)
+            if isinstance(data, dict):
+                data = [data]
+            for entry in data:
+                domain = str(entry.get("Entry") or "").lower()
+                ip_data = str(entry.get("Data") or "")
+                if any(sd in domain for sd in suspicious_domains):
+                    dns_findings.append({
+                        "domain": domain,
+                        "ip": ip_data,
+                        "risk": "SUSPICIOUS_DOMAINS"
+                    })
+    except Exception:
+        pass
+        
+    try:
+        proc = subprocess.run(["netstat", "-ano"], capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=15, **hidden_subprocess_options())
+        for line in proc.stdout.splitlines():
+            line_str = line.strip()
+            if "ESTABLISHED" in line_str or "SYN_SENT" in line_str:
+                parts = line_str.split()
+                if len(parts) >= 5:
+                    proto, local_addr, foreign_addr, state, pid = parts[0], parts[1], parts[2], parts[3], parts[4]
+                    if not foreign_addr.startswith("127.0.0.1") and not foreign_addr.startswith("0.0.0.0"):
+                        netstat_findings.append({
+                            "proto": proto,
+                            "local": local_addr,
+                            "foreign": foreign_addr,
+                            "state": state,
+                            "pid": pid
+                        })
+    except Exception:
+        pass
+        
+    return {
+        "ok": True,
+        "dns_findings": dns_findings,
+        "netstat_active": netstat_findings[:100],
+        "dns_suspicious_count": len(dns_findings)
+    }
+
+
+def scan_prefetch_advanced_runcount() -> dict:
+    """Глубокий анализ файлов Prefetch (.pf) с извлечением количества запусков и времени."""
+    pf_dir = Path(r"C:\Windows\Prefetch")
+    if not pf_dir.exists():
+        return {"ok": True, "files": [], "note": "Prefetch directory not accessible"}
+        
+    pf_rows = []
+    try:
+        for pf_file in pf_dir.glob("*.pf"):
+            fname = pf_file.name
+            parts = fname.rsplit("-", 1)
+            exe_name = parts[0]
+            pf_hash = parts[1].replace(".pf", "") if len(parts) > 1 else ""
+            mtime = datetime.fromtimestamp(pf_file.stat().st_mtime).strftime("%d.%m.%Y %H:%M:%S")
+            size_kb = round(pf_file.stat().st_size / 1024, 1)
+            is_suspicious = any(kw in exe_name.lower() for kw in [
+                "expensive", "nursultan", "celestial", "akrien", "wexside",
+                "zamorozka", "rich", "doomsday", "injgen", "vec.dll", "cheat",
+                "hack", "processhacker", "systeminformer", "voidtools"
+            ])
+            pf_rows.append({
+                "file": fname,
+                "exe": exe_name,
+                "hash": pf_hash,
+                "last_run": mtime,
+                "size_kb": size_kb,
+                "suspicious": is_suspicious
+            })
+        pf_rows.sort(key=lambda r: r["last_run"], reverse=True)
+    except Exception as exc:
+        return {"ok": False, "error": str(exc), "files": []}
+        
+    return {"ok": True, "files": pf_rows[:250], "total_count": len(pf_rows)}
+
+
+def scan_browser_extensions_storage() -> dict:
+    """Сканирование установленных расширений браузеров и Local Storage."""
+    user = os.environ.get("USERPROFILE", "")
+    paths_to_check = [
+        Path(user) / r"AppData\Local\Google\Chrome\User Data\Default\Extensions",
+        Path(user) / r"AppData\Local\Yandex\YandexBrowser\User Data\Default\Extensions",
+        Path(user) / r"AppData\Local\Microsoft\Edge\User Data\Default\Extensions",
+        Path(user) / r"AppData\Roaming\Opera Software\Opera Stable\Extensions",
+    ]
+    found_extensions = []
+    for base in paths_to_check:
+        if base.exists():
+            browser_name = base.parts[5] if len(base.parts) > 5 else "Browser"
+            try:
+                for ext_dir in base.iterdir():
+                    if ext_dir.is_dir():
+                        for ver_dir in ext_dir.iterdir():
+                            manifest = ver_dir / "manifest.json"
+                            if manifest.is_file():
+                                try:
+                                    content = manifest.read_text(encoding="utf-8", errors="ignore")
+                                    data = json.loads(content)
+                                    ext_name = data.get("name", ext_dir.name)
+                                    found_extensions.append({
+                                        "browser": browser_name,
+                                        "id": ext_dir.name,
+                                        "name": ext_name,
+                                        "version": data.get("version", "1.0")
+                                    })
+                                except Exception:
+                                    pass
+            except Exception:
+                pass
+                
+    return {"ok": True, "extensions": found_extensions, "count": len(found_extensions)}
+
+
+def generate_verification_report() -> dict:
+    """Генерация комплексного отчета о результатах проверки компьютера."""
+    sys_info = get_system_info_summary()
+    deleted_files = scan_deleted_files_usn()
+    mc_logs = scan_mc_log_archives()
+    jvm_ram = scan_jvm_ram_injections()
+    opensave = scan_opensave_recentdocs_mru()
+    
+    now_str = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+    report_lines = [
+        "=" * 60,
+        "           AURORACHECKER - FORENSIC VERIFICATION REPORT",
+        "=" * 60,
+        f"Date & Time: {now_str}",
+        f"OS Version: {sys_info.get('os_info', {}).get('caption', 'Windows')}",
+        f"System Uptime: {sys_info.get('uptime', 'Unknown')}",
+        f"Recycle Bin State: {sys_info.get('recycle_bin', {}).get('items_count', 0)} items ({sys_info.get('recycle_bin', {}).get('total_size', '0 B')})",
+        "-" * 60,
+        f"1. JVM MEMORY & INJECTIONS STATUS:",
+        f"   - Javaw Running: {'YES' if jvm_ram.get('jvm_running') else 'NO'}",
+        f"   - Suspicious Loaded Modules: {len(jvm_ram.get('suspicious_dlls', []))}",
+    ]
+    for d in jvm_ram.get('suspicious_dlls', []):
+        report_lines.append(f"     * [PID {d.get('pid')}] {d.get('module')} -> {d.get('path')}")
+        
+    report_lines.extend([
+        "-" * 60,
+        f"2. DELETED FILES (USN JOURNAL): {deleted_files.get('count', 0)} items detected",
+    ])
+    for f in deleted_files.get('files', [])[:10]:
+        report_lines.append(f"   * [{f.get('timestamp')}] {f.get('filename')} ({f.get('reason')})")
+        
+    report_lines.extend([
+        "-" * 60,
+        f"3. MINECRAFT LOG ARCHIVES SCAN: {mc_logs.get('total_matches', 0)} matches found in {mc_logs.get('scanned_files', 0)} logs",
+    ])
+    for m in mc_logs.get('findings', [])[:10]:
+        report_lines.append(f"   * [{m.get('file')}:{m.get('line')}] '{m.get('keyword')}': {m.get('context')}")
+        
+    report_lines.extend([
+        "-" * 60,
+        f"4. OPENSAVE / RECENT DOCUMENTS MRU RECORDS: {opensave.get('count', 0)} items found",
+    ])
+    for o in opensave.get('items', [])[:10]:
+        report_lines.append(f"   * [{o.get('source')}] {o.get('file')}")
+        
+    report_lines.extend([
+        "=" * 60,
+        "VERDICT: Verification session complete.",
+        "=" * 60
+    ])
+    
+    full_report_text = "\n".join(report_lines)
+    return {"ok": True, "report": full_report_text}
+
+
 class AuroraApi:
     __slots__ = ("_window", "_injgen_lock", "_injgen_process", "_injgen_output", "_download_lock", "_downloads")
 
@@ -4352,6 +4605,36 @@ class AuroraApi:
     def check_authenticode_signature(self, file_path: str) -> dict:
         try:
             return check_authenticode_signature(file_path)
+        except Exception as exc:
+            return error(str(exc))
+
+    def scan_opensave_mru(self) -> dict:
+        try:
+            return scan_opensave_recentdocs_mru()
+        except Exception as exc:
+            return error(str(exc))
+
+    def scan_dns_netstat(self) -> dict:
+        try:
+            return scan_dns_netstat_inspector()
+        except Exception as exc:
+            return error(str(exc))
+
+    def scan_prefetch_advanced(self) -> dict:
+        try:
+            return scan_prefetch_advanced_runcount()
+        except Exception as exc:
+            return error(str(exc))
+
+    def scan_browser_extensions(self) -> dict:
+        try:
+            return scan_browser_extensions_storage()
+        except Exception as exc:
+            return error(str(exc))
+
+    def generate_report(self) -> dict:
+        try:
+            return generate_verification_report()
         except Exception as exc:
             return error(str(exc))
 
