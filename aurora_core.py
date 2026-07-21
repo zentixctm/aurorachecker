@@ -1881,29 +1881,45 @@ def is_allowed_download_url(url: str) -> bool:
     return parsed.scheme == "https" and parsed.netloc.lower() in ALLOWED_DOWNLOAD_HOSTS
 
 
+def download_via_powershell(url: str, destination: Path, progress=None) -> bool:
+    """Fallback download method using PowerShell WebClient (HolyChecker method)."""
+    try:
+        ps_script = f"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls13; $web = New-Object System.Net.WebClient; $web.Headers.Add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'); $web.DownloadFile('{url}', '{str(destination)}')"
+        cmd = ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps_script]
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120, **hidden_subprocess_options())
+        return proc.returncode == 0 and destination.exists() and destination.stat().st_size > 0
+    except Exception:
+        return False
+
+
 def download_file(url: str, destination: Path, progress=None) -> None:
-    ssl_ctx = ssl.create_default_context()
-    ssl_ctx.check_hostname = False
-    ssl_ctx.verify_mode = ssl.CERT_NONE
-    request = urllib.request.Request(url, headers={"User-Agent": f"AuroraChecker/{APP_VERSION}"})
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=ssl_ctx))
-    with opener.open(request, timeout=45) as response:
-        final_host = urlparse(response.geturl()).netloc.lower()
-        if final_host not in ALLOWED_DOWNLOAD_HOSTS:
-            raise RuntimeError(f"Redirected to non-official host: {final_host}")
-        total = int(response.headers.get("Content-Length", "0") or 0)
-        received = 0
-        if progress:
-            progress(0, total)
-        with destination.open("wb") as out:
-            while True:
-                chunk = response.read(1024 * 256)
-                if not chunk:
-                    break
-                out.write(chunk)
-                received += len(chunk)
-                if progress:
-                    progress(received, total)
+    try:
+        ssl_ctx = ssl.create_default_context()
+        ssl_ctx.check_hostname = False
+        ssl_ctx.verify_mode = ssl.CERT_NONE
+        request = urllib.request.Request(url, headers={"User-Agent": f"AuroraChecker/{APP_VERSION}"})
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=ssl_ctx))
+        with opener.open(request, timeout=45) as response:
+            final_host = urlparse(response.geturl()).netloc.lower()
+            if final_host not in ALLOWED_DOWNLOAD_HOSTS:
+                raise RuntimeError(f"Redirected to non-official host: {final_host}")
+            total = int(response.headers.get("Content-Length", "0") or 0)
+            received = 0
+            if progress:
+                progress(0, total)
+            with destination.open("wb") as out:
+                while True:
+                    chunk = response.read(1024 * 256)
+                    if not chunk:
+                        break
+                    out.write(chunk)
+                    received += len(chunk)
+                    if progress:
+                        progress(received, total)
+    except Exception as primary_exc:
+        # Fallback to PowerShell WebClient method (HolyChecker method)
+        if not download_via_powershell(url, destination, progress):
+            raise primary_exc
 
 
 def extract_zip_safe(zip_path: Path, target_dir: Path) -> None:
