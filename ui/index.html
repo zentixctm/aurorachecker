@@ -954,7 +954,12 @@
         <div class="header">
           <div class="title">
             <h2>texts</h2>
-            <p>predefined everything search queries — click to copy.</p>
+            <p>predefined queries for everything & win + r — click to copy.</p>
+          </div>
+          <div class="actions" style="display:flex;gap:6px">
+            <button class="small active" id="textCatAll" onclick="filterTextsCategory('all')">all</button>
+            <button class="small" id="textCatEverything" onclick="filterTextsCategory('everything')">everything</button>
+            <button class="small" id="textCatWinr" onclick="filterTextsCategory('winr')">win + r</button>
           </div>
         </div>
         <div style="flex:1;min-height:0;overflow:auto;margin-top:4px">
@@ -1712,35 +1717,66 @@
       }
     }
 
+    let currentTextCategory = 'all';
+
     const textsData = [
-      { name: "size by name", text: "wild | expensive | baritone | killaura | ventos | neoware | viafriend | viaforge | blackberry | viamcp | viaversion | neat | pivo | sight | itemscroller | external | sigma | violetta | jigsaw | autofish | rasty | niobiom | liquidbounce | legion | kamiblue | matix | salhack | aristois | rockstar | autobuy | hitbox | sevenmyst | bloodymyst | boberware | legacylauncher | ezz | nursultan | aura | velocity | cheatengine | exloader | elysium | silentclient | voxelmap | celestial | celka | nur | akrien | akr | plusinv | armorhotswap | winstore | elytra | fabritone | ponos | nova | nextgen | moonhack | forgehax | expa | wexside | zeta | topka | freecam | sigma | future | hack | wurst | minced | inertia | pyro | bleach | deadcode | meteor | basefinder | flux | shit | kion | rich | wisend | blazehack | nightmare | sonar | wintware | delta | aboba | fluger | nullhack | develor | tools | excellent | sapwhire | kazah | bypass | recode | avalone |  miner | neverhook | zamorozka | stardust | norule | oxygen | aimbot | dreampool | impact | topkamods | keaz | konas  | goprone | airplace | gishcode | eternity | noslow | caballeta | clowdy | cetramoon | duper | extra | scritps | nodus | gothaj | easyfrags | easyanticheat | celestialrecode | wex | autotool | newlauncher | deltaloader" },
-      { name: "size by name 2", text: "impact | wurst | bleachhack | aristois | huzuni | skillclient | inertia | ares | sigma | meteor | liquidbounce | nurik | nursultan | celestial | calestial | celka | expensive | neverhook | excellent | wexside | wildclient | minced | deadcode | akrien | jigsaw | future | jessica | dreampool | norules | konas | richclient | rusherhack | thunderhack | moonhack | doomsday | nightware | ricardo | extazyy | troxill | antileak | arbuz | .akr | .wex | dauntiblyat | rename_me_please | editme | takker | fuzeclient | wisefolder| flauncher | vec.dll | usboblivion.exe | feather | delta | venus | baritone | spambot | cleancut | spam_bot | inventory_walk | player_highlighter | aimbot | freecam | bedrock_breaker_mode | viaversion | double_hotbar | elytra_swap | armor_hotswap | smart_moving | chest | savesearcher | topkautobuy | topkaautobuy | tweakeroo | mob_hitbox | librarian_trade_finder | sacurachorusfind | autoattack | entity_outliner | invmove | viabackwards | viarewind | viafabric | viaforge | viaproxy | vialoader | viamcp | hitbox | elytrahack | diamondsim | forgehax | clientcommands | control-tweaks | swingthroughgrass | cutthrough | haruka |  newlauncher | blade | hachclient | inertia | fluger | exloader | catlean" },
-      { name: "size by weight", text: "size:9951744|size:24536064|size:15438336|size:6229504|size:6573056|size:7187456|size:7969792|size:1562249|size:1672329|size:1677449|size:1680521|size:147329|size:138351|size:202720|size:7788032|size:22885|size:23810|size:138351|size:147329|size:7988736|size:3711166|size:3697285|size:3712014|size:5641728|size:4413440|size:114974|size:111866|size:274865|size:1820884|size:5007380|size:6944256|size:5934592|size:2545664|size:2108662|size:1961742|size:3684385|size:5143837|size:4413440|size:116689|size:1968128|size:8011776|size:1883602|size:5918208|size:1897269|size:31445308|size:24390144|size:25158656|size:2023236|size:16836288|size:88065933|size:197933122|size:2258533|size:2305645|size:2372788|size:18764384|size:9400174|size:2363704|size:15445581|size:2373676|size:138351|size:7788032|size:22885|size:23810|size:7988736|size:3711166|size:3697285|size:3712014|size:5641728|size:4413440|size:111866|size:1820884|size:5007380|size:6944256|size:5934592|size:2545664|size:2108662|size:1961742|size:3684385|size:5143837|size:1968128|size:8011776|size:1883602|size:6533121|size:16629226|size:28107997|size:8249687|size:5524900|size:140200|size:132133|size:110439|size:6244043|size:6867367|size:43883|size:514855|size:479296|size:9530356|size:355527744|size:1819289|size:1897269|size:16855568|size:16964112|size:2023236|size:5918208|ssize:31445308|size:24390144|size:10657176|size:460288|size:19521024|size:15076480|size:7204864|size:1613824|size:1499136|size:1488896|size:9332326|size:9400174|size:10071288|size:9400174|size:10071288|baritone|nursultan" },
-      { name: "jar sizes", text: "size:2263|size:5266|size:6515|size:6770|size:6778|size:7016|size:7218|size:7803|size:7891|size:9327|size:10283|size:10605|size:10958|size:11554|size:16541|size:17308|size:17339|size:18180|size:18527|size:18587|size:18734|size:19266|size:20578|size:20583|size:20639|size:20883|size:21161|size:21234|size:21664|size:22036|size:22861|size:26247|size:27546|size:27809|size:28084|size:28439|size:29304|size:29567|size:30279|size:31549|size:31607|size:34449|size:34669|size:35971|size:35993|size:38149|size:39017|size:39321|size:40142|size:42782|size:47159|size:48242|size:50828|size:51212|size:52426|size:54088|size:59381|size:62782|size:65316|size:65486|size:65765|size:66659|size:67491|size:68794|size:69757|size:72334|size:74105|size:80751|size:88896|size:95530|size:98811|size:100523|size:100799|size:101297|size:101571|size:101703|size:102297|size:102733|size:103761|size:104954|size:105623|size:105672|size:112386|size:120640|size:138417|size:143006|size:143597|size:143600|size:147329|size:147873|size:151762|size:153937|size:156722|size:156779|size:166677|size:169718|size:173698|size:183634|size:183651|size:192156|size:202720|size:257482|size:263070|size:267746|size:274865|size:300286|size:334588|size:343169|size:350629|size:409616|size:410358|size:517248|size:519731|size:532826|size:539151|size:556494|size:597406|size:636621|size:640838|size:878781|size:925493|size:1077149|size:1165063|size:1181556|size:1444714|size:1471429|size:1569093|size:1822841|size:3113569|size:3425801|size:3541075|size:3541138|size:3642292|size:3684385|size:4642998|size:5630483|size:7052171|size:7059952|size:22258750|size:25704986|size:26179274|size:26691896 *.jar" },
-      { name: "size vec.dll", text: "size:30720 utf8content:net/minecraft/client/entity/player/clientplayerentity|net/minecraft/util/math/axisalignedbb" },
-      { name: "size by doomsday", text: "ext:jar size:21kb-10mb content:\"l.png\" content:\"mcmod.info\" everything ext:txt;cmd;bat  content:\"java -jar\"" },
-      { name: "size .exe", text: ".exe size:12mb-25mb" },
-      { name: "doomsday setup size", text: "ext:txt;cmd;bat  content:\"java -jar\"" },
-      { name: "mods size", text: "*.jar size:10mb..15mb" },
-      { name: "troxill size", text: "size:25158025bytes" },
-      { name: "flow client size", text: "size:68397056bytes" },
-      { name: "doomsday log (win+r)", text: "%USERLOCALAPPDATA%\\Temp\\JavaLauncher.log" },
-      { name: "liminar setup size", text: "ext:txt;cmd;bat;ps1 content:\"ExecutionPolicy Bypass -Command\" content:\"ProcessStartInfo\" content:\"UseShellExecute\"" },
-      { name: "size by liminar inj", text: "ext:lmr;bin;dat;tmp;cache;pak;res;cfg;dll;scr;drv;lib;node;addon;plugin;client;x64;upd;exe;bat;cmd size:17.5mb..20mb" },
-      { name: "size by liminar 2", text: "ext:jar size:15mb..18mb" },
-      { name: "liminar free cfg (win+r)", text: "%LOCALAPPDATA%\\uTorrent\\configs" },
+      { category: "everything", name: "size by name", text: "wild | expensive | baritone | killaura | ventos | neoware | viafriend | viaforge | blackberry | viamcp | viaversion | neat | pivo | sight | itemscroller | external | sigma | violetta | jigsaw | autofish | rasty | niobiom | liquidbounce | legion | kamiblue | matix | salhack | aristois | rockstar | autobuy | hitbox | sevenmyst | bloodymyst | boberware | legacylauncher | ezz | nursultan | aura | velocity | cheatengine | exloader | elysium | silentclient | voxelmap | celestial | celka | nur | akrien | akr | plusinv | armorhotswap | winstore | elytra | fabritone | ponos | nova | nextgen | moonhack | forgehax | expa | wexside | zeta | topka | freecam | sigma | future | hack | wurst | minced | inertia | pyro | bleach | deadcode | meteor | basefinder | flux | shit | kion | rich | wisend | blazehack | nightmare | sonar | wintware | delta | aboba | fluger | nullhack | develor | tools | excellent | sapwhire | kazah | bypass | recode | avalone |  miner | neverhook | zamorozka | stardust | norule | oxygen | aimbot | dreampool | impact | topkamods | keaz | konas  | goprone | airplace | gishcode | eternity | noslow | caballeta | clowdy | cetramoon | duper | extra | scritps | nodus | gothaj | easyfrags | easyanticheat | celestialrecode | wex | autotool | newlauncher | deltaloader" },
+      { category: "everything", name: "size by name 2", text: "impact | wurst | bleachhack | aristois | huzuni | skillclient | inertia | ares | sigma | meteor | liquidbounce | nurik | nursultan | celestial | calestial | celka | expensive | neverhook | excellent | wexside | wildclient | minced | deadcode | akrien | jigsaw | future | jessica | dreampool | norules | konas | richclient | rusherhack | thunderhack | moonhack | doomsday | nightware | ricardo | extazyy | troxill | antileak | arbuz | .akr | .wex | dauntiblyat | rename_me_please | editme | takker | fuzeclient | wisefolder| flauncher | vec.dll | usboblivion.exe | feather | delta | venus | baritone | spambot | cleancut | spam_bot | inventory_walk | player_highlighter | aimbot | freecam | bedrock_breaker_mode | viaversion | double_hotbar | elytra_swap | armor_hotswap | smart_moving | chest | savesearcher | topkautobuy | topkaautobuy | tweakeroo | mob_hitbox | librarian_trade_finder | sacurachorusfind | autoattack | entity_outliner | invmove | viabackwards | viarewind | viafabric | viaforge | viaproxy | vialoader | viamcp | hitbox | elytrahack | diamondsim | forgehax | clientcommands | control-tweaks | swingthroughgrass | cutthrough | haruka |  newlauncher | blade | hachclient | inertia | fluger | exloader | catlean" },
+      { category: "everything", name: "size by weight", text: "size:9951744|size:24536064|size:15438336|size:6229504|size:6573056|size:7187456|size:7969792|size:1562249|size:1672329|size:1677449|size:1680521|size:147329|size:138351|size:202720|size:7788032|size:22885|size:23810|size:138351|size:147329|size:7988736|size:3711166|size:3697285|size:3712014|size:5641728|size:4413440|size:114974|size:111866|size:274865|size:1820884|size:5007380|size:6944256|size:5934592|size:2545664|size:2108662|size:1961742|size:3684385|size:5143837|size:4413440|size:116689|size:1968128|size:8011776|size:1883602|size:5918208|size:1897269|size:31445308|size:24390144|size:25158656|size:2023236|size:16836288|size:88065933|size:197933122|size:2258533|size:2305645|size:2372788|size:18764384|size:9400174|size:2363704|size:15445581|size:2373676|size:138351|size:7788032|size:22885|size:23810|size:7988736|size:3711166|size:3697285|size:3712014|size:5641728|size:4413440|size:111866|size:1820884|size:5007380|size:6944256|size:5934592|size:2545664|size:2108662|size:1961742|size:3684385|size:5143837|size:1968128|size:8011776|size:1883602|size:6533121|size:16629226|size:28107997|size:8249687|size:5524900|size:140200|size:132133|size:110439|size:6244043|size:6867367|size:43883|size:514855|size:479296|size:9530356|size:355527744|size:1819289|size:1897269|size:16855568|size:16964112|size:2023236|size:5918208|ssize:31445308|size:24390144|size:10657176|size:460288|size:19521024|size:15076480|size:7204864|size:1613824|size:1499136|size:1488896|size:9332326|size:9400174|size:10071288|size:9400174|size:10071288|baritone|nursultan" },
+      { category: "everything", name: "jar sizes", text: "size:2263|size:5266|size:6515|size:6770|size:6778|size:7016|size:7218|size:7803|size:7891|size:9327|size:10283|size:10605|size:10958|size:11554|size:16541|size:17308|size:17339|size:18180|size:18527|size:18587|size:18734|size:19266|size:20578|size:20583|size:20639|size:20883|size:21161|size:21234|size:21664|size:22036|size:22861|size:26247|size:27546|size:27809|size:28084|size:28439|size:29304|size:29567|size:30279|size:31549|size:31607|size:34449|size:34669|size:35971|size:35993|size:38149|size:39017|size:39321|size:40142|size:42782|size:47159|size:48242|size:50828|size:51212|size:52426|size:54088|size:59381|size:62782|size:65316|size:65486|size:65765|size:66659|size:67491|size:68794|size:69757|size:72334|size:74105|size:80751|size:88896|size:95530|size:98811|size:100523|size:100799|size:101297|size:101571|size:101703|size:102297|size:102733|size:103761|size:104954|size:105623|size:105672|size:112386|size:120640|size:138417|size:143006|size:143597|size:143600|size:147329|size:147873|size:151762|size:153937|size:156722|size:156779|size:166677|size:169718|size:173698|size:183634|size:183651|size:192156|size:202720|size:257482|size:263070|size:267746|size:274865|size:300286|size:334588|size:343169|size:350629|size:409616|size:410358|size:517248|size:519731|size:532826|size:539151|size:556494|size:597406|size:636621|size:640838|size:878781|size:925493|size:1077149|size:1165063|size:1181556|size:1444714|size:1471429|size:1569093|size:1822841|size:3113569|size:3425801|size:3541075|size:3541138|size:3642292|size:3684385|size:4642998|size:5630483|size:7052171|size:7059952|size:22258750|size:25704986|size:26179274|size:26691896 *.jar" },
+      { category: "everything", name: "size vec.dll", text: "size:30720 utf8content:net/minecraft/client/entity/player/clientplayerentity|net/minecraft/util/math/axisalignedbb" },
+      { category: "everything", name: "size by doomsday", text: "ext:jar size:21kb-10mb content:\"l.png\" content:\"mcmod.info\" everything ext:txt;cmd;bat  content:\"java -jar\"" },
+      { category: "everything", name: "size .exe", text: ".exe size:12mb-25mb" },
+      { category: "everything", name: "doomsday setup size", text: "ext:txt;cmd;bat  content:\"java -jar\"" },
+      { category: "everything", name: "mods size", text: "*.jar size:10mb..15mb" },
+      { category: "everything", name: "troxill size", text: "size:25158025bytes" },
+      { category: "everything", name: "flow client size", text: "size:68397056bytes" },
+      { category: "winr", name: "doomsday log (win+r)", text: "%USERLOCALAPPDATA%\\Temp\\JavaLauncher.log" },
+      { category: "everything", name: "liminar setup size", text: "ext:txt;cmd;bat;ps1 content:\"ExecutionPolicy Bypass -Command\" content:\"ProcessStartInfo\" content:\"UseShellExecute\"" },
+      { category: "everything", name: "size by liminar inj", text: "ext:lmr;bin;dat;tmp;cache;pak;res;cfg;dll;scr;drv;lib;node;addon;plugin;client;x64;upd;exe;bat;cmd size:17.5mb..20mb" },
+      { category: "everything", name: "size by liminar 2", text: "ext:jar size:15mb..18mb" },
+      { category: "winr", name: "liminar free cfg (win+r)", text: "%LOCALAPPDATA%\\uTorrent\\configs" },
+      { category: "winr", name: "minecraft dir (win+r)", text: "%appdata%\\.minecraft" },
+      { category: "winr", name: "temp folder (win+r)", text: "%temp%" },
+      { category: "winr", name: "prefetch (win+r)", text: "prefetch" },
+      { category: "winr", name: "recent (win+r)", text: "recent" }
     ];
+
+    function filterTextsCategory(cat) {
+      currentTextCategory = cat;
+      ['all', 'everything', 'winr'].forEach(c => {
+        const btnId = 'textCat' + c.charAt(0).toUpperCase() + c.slice(1);
+        const btn = document.getElementById(btnId);
+        if (btn) btn.classList.toggle('active', c === cat);
+      });
+      renderTextsGrid();
+    }
+
+    function renderTextsGrid() {
+      const grid = document.getElementById("textsGrid");
+      const filtered = textsData.filter(item => currentTextCategory === 'all' || item.category === currentTextCategory);
+      grid.innerHTML = filtered.map((entry) => {
+        const realIdx = textsData.indexOf(entry);
+        const isWinr = entry.category === 'winr';
+        const catLabel = isWinr ? 'WIN + R' : 'EVERYTHING';
+        const catBg = isWinr ? 'rgba(78,205,196,0.15)' : 'rgba(212,64,112,0.15)';
+        const catColor = isWinr ? 'var(--green)' : 'var(--accent)';
+        return `
+          <div class="panel" style="padding:16px;cursor:pointer;transition:border-color .3s;border-color:rgba(212,64,112,.12);position:relative" onclick="copyText(${realIdx})" title="Click to copy">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div class="preserve-case" style="font-size:14px;font-weight:800;color:var(--cyan)">${escapeHtml(entry.name)}</div>
+              <span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:${catBg};color:${catColor};text-transform:uppercase">${catLabel}</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);word-break:break-all;line-height:1.5;max-height:60px;overflow:hidden">${escapeHtml(entry.text)}</div>
+          </div>
+        `;
+      }).join("");
+    }
 
     function loadTexts() {
       showError("textsError", "");
       showView("texts");
-      const grid = document.getElementById("textsGrid");
-      grid.innerHTML = textsData.map((entry, idx) => `
-        <div class="panel" style="padding:16px;cursor:pointer;transition:border-color .3s;border-color:rgba(212,64,112,.12)" onclick="copyText(${idx})" title="Click to copy">
-          <div class="preserve-case" style="font-size:14px;font-weight:800;margin-bottom:8px;color:var(--cyan)">${escapeHtml(entry.name)}</div>
-          <div style="font-size:11px;color:var(--muted);word-break:break-all;line-height:1.5;max-height:60px;overflow:hidden">${escapeHtml(entry.text)}</div>
-        </div>
-      `).join("");
+      filterTextsCategory(currentTextCategory || 'all');
     }
 
     function copyText(idx) {
