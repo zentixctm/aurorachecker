@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AuroraChecker — Advanced Minecraft Forensic Tool</title>
+  <title>AuroraChecker — Профессиональная утилита для проверки ПК на читы</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -147,7 +147,7 @@
     /* Hero Section */
     .hero {
       max-width: 1200px;
-      margin: 80px auto;
+      margin: 60px auto 80px;
       padding: 0 24px;
       text-align: center;
     }
@@ -179,7 +179,7 @@
     }
 
     h1 {
-      font-size: 64px;
+      font-size: 54px;
       font-weight: 800;
       letter-spacing: -2px;
       line-height: 1.1;
@@ -194,7 +194,39 @@
       font-size: 18px;
       color: var(--muted);
       max-width: 600px;
-      margin: 0 auto 40px;
+      margin: 0 auto 30px;
+    }
+
+    /* Main Download Button */
+    .download-btn-container {
+      margin-bottom: 40px;
+    }
+
+    .btn-download-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, var(--accent) 0%, #be123c 100%);
+      border: none;
+      color: #fff;
+      padding: 16px 36px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 800;
+      box-shadow: 0 10px 30px rgba(212, 64, 112, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+      cursor: pointer;
+    }
+
+    .btn-download-main:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(212, 64, 112, 0.4);
+      background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+    }
+
+    .btn-download-main:active {
+      transform: translateY(0);
     }
 
     /* Interactive CMD Code Block */
@@ -515,7 +547,7 @@
     }
 
     @media (max-width: 768px) {
-      h1 { font-size: 40px; }
+      h1 { font-size: 36px; }
       header { flex-direction: column; gap: 16px; text-align: center; }
       nav { flex-wrap: wrap; justify-content: center; }
       footer { flex-direction: column; gap: 16px; text-align: center; }
@@ -535,18 +567,26 @@
       <div class="logo-text">AuroraChecker</div>
     </div>
     <nav>
-      <a href="#features">Features</a>
-      <a href="#install">Installation</a>
-      <a href="#preview">Preview</a>
-      <a href="#security">Security</a>
+      <a href="#features">Возможности</a>
+      <a href="#install">Установка</a>
+      <a href="#preview">Интерфейс</a>
+      <a href="#security">Безопасность</a>
     </nav>
     <a href="https://github.com/zentixctm/aurorachecker" target="_blank" class="btn-github">GitHub</a>
   </header>
 
   <section class="hero">
-    <div class="badge">Version 1.2.3 — Stable release</div>
-    <h1>Advanced Minecraft Forensic Analysis</h1>
-    <p>An elite computer verification utility designed to locate hidden modified cheat client files, unauthorized system modules, logs, and Registry footprints.</p>
+    <div class="badge">Версия 1.2.3 — Стабильный релиз</div>
+    <h1>Профессиональная проверка ПК на читы</h1>
+    <p>Элитная forensic-утилита для проверки компьютера, разработанная для моментального обнаружения скрытых модификаций, чит-клиентов, сторонних библиотек, логов и следов в реестре.</p>
+
+    <!-- Direct Download Button -->
+    <div class="download-btn-container">
+      <a href="https://github.com/zentixctm/aurorachecker/releases/latest/download/AuroraChecker.exe" class="btn-download-main">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Скачать AuroraChecker (.exe)
+      </a>
+    </div>
 
     <!-- Interactive CMD Code Block -->
     <div class="terminal-box" id="install">
@@ -556,10 +596,10 @@
           <div class="dot dot-yellow"></div>
           <div class="dot dot-green"></div>
         </div>
-        <div class="terminal-title">cmd.exe — Download & Auto-Run</div>
+        <div class="terminal-title">cmd.exe — Скачивание и автозапуск</div>
       </div>
       <div class="terminal-body">
-        <button class="btn-copy" id="btnCopy" onclick="copyInstallCmd()">Copy Command</button>
+        <button class="btn-copy" id="btnCopy" onclick="copyInstallCmd()">Копировать</button>
         <div class="cmd-line">
           <span class="prompt">C:\></span>
           <span class="command-text" id="cmdText">curl -sL https://github.com/zentixctm/aurorachecker/releases/latest/download/AuroraChecker.exe -o %USERPROFILE%/Downloads/AuroraChecker.exe && %USERPROFILE%/Downloads/AuroraChecker.exe</span>
@@ -571,39 +611,39 @@
   <section class="features" id="features">
     <div class="feature-card">
       <div class="feature-icon">01</div>
-      <h3>USN NTFS Journal Scan</h3>
-      <p>Tracks deleted modified cheat files (.exe, .dll, .jar, .pf) in real-time. Even if the player deletes the files before the checking session, NTFS logs hold the history.</p>
+      <h3>Журнал изменений USN NTFS</h3>
+      <p>Отслеживает удаленные перед проверкой читы (.exe, .dll, .jar, .pf). Даже если игрок очистил корзину, NTFS логи сохраняют точную историю и время удаления.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">02</div>
-      <h3>JVM RAM Injections</h3>
-      <p>Scans the active javaw.exe memory stack to locate unauthorized dynamic DLL modules loaded from user temp folders (like vec.dll or InjGen hookers).</p>
+      <h3>Анализ памяти JVM & DLL</h3>
+      <p>Сканирует активный стек javaw.exe на предмет несанкционированных динамических DLL-модулей, загруженных из временных папок (таких как vec.dll или InjGen).</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">03</div>
-      <h3>Modrinth Hash Check</h3>
-      <p>Calculates SHA-1/SHA-256 hashes of all installed mods and performs a batch verification query through official Modrinth API endpoints to detect backdoored releases.</p>
+      <h3>Сверка хешей Modrinth API</h3>
+      <p>Вычисляет SHA-1/SHA-256 хеши установленных модов и проверяет их через официальную базу Modrinth API для быстрого выявления вшитого вредоносного чит-кода.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">04</div>
-      <h3>Advanced Prefetch parser</h3>
-      <p>Parses Prefetch (.pf) files to read exact execution run counters, binary sizes, last launch timestamps and hashes of executed apps.</p>
+      <h3>Продвинутый Prefetch парсер</h3>
+      <p>Декодирует Prefetch (.pf) файлы Windows для извлечения количества запусков софта, точных размеров бинарников, дат запусков и уникальных системных хешей.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">05</div>
-      <h3>Minecraft Log Archives</h3>
-      <p>Automatically decompresses all .log.gz files inside the logs folder to parse ancient cheat command calls, bindings, and unauthorized connections.</p>
+      <h3>Поиск в архивах логов</h3>
+      <p>Автоматически распаковывает все архивные файлы .log.gz в папке логов игры для детального поиска следов команд читов, биндов и запрещенных подключений.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon">06</div>
-      <h3>DNS & Netstat Inspector</h3>
-      <p>Queries Windows DNS cache and established netstat sockets to highlight cheat authorization portals, Discord/Telegram webhooks and filesharing domains.</p>
+      <h3>Инспектор DNS & Netstat</h3>
+      <p>Опрашивает системный кэш DNS клиента и установленные сетевые сокеты для обнаружения IP/доменов авторизации приватных читов и вебхуков Discord/Telegram.</p>
     </div>
   </section>
 
   <section class="preview-section" id="preview">
-    <h2 class="section-title">Clean and Fluid Interface</h2>
-    <p class="section-desc">Interactive diagnostic dashboard showing full activity logs, deleted programs lists, and system forensics status.</p>
+    <h2 class="section-title">Современный и понятный интерфейс</h2>
+    <p class="section-desc">Удобная интерактивная диагностическая панель с отображением логов активности, списков удаленного софта и вердиктов проверок.</p>
     
     <div class="ui-mockup">
       <div class="mockup-header">
@@ -612,32 +652,32 @@
           <span style="font-size:12px;font-weight:800">AuroraChecker</span>
         </div>
         <div class="mockup-tabs">
-          <div class="mockup-tab active">System Info</div>
-          <div class="mockup-tab">Jar/Dll Scan</div>
-          <div class="mockup-tab">Mods Folder</div>
+          <div class="mockup-tab active">Инфо о системе</div>
+          <div class="mockup-tab">Jar/Dll Скан</div>
+          <div class="mockup-tab">Папка Mods</div>
           <div class="mockup-tab">ShellBags</div>
         </div>
       </div>
       <div class="mockup-content">
         <div class="mockup-panel">
-          <div style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:12px">ACTIVE PROCESS INJECTIONS STATUS</div>
+          <div style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:12px">СТАТУС ИНЖЕКЦИЙ В АКТИВНЫЕ ПРОЦЕССЫ</div>
           <div class="mockup-row">
-            <span class="mockup-key">Javaw process status:</span>
-            <span class="mockup-val" style="color:var(--green)">RUNNING (PID: 14208)</span>
+            <span class="mockup-key">Статус процесса Javaw:</span>
+            <span class="mockup-val" style="color:var(--green)">ЗАПУЩЕН (PID: 14208)</span>
           </div>
           <div class="mockup-row">
-            <span class="mockup-key">Injected DLLs:</span>
-            <span class="mockup-val threat">1 POSSIBLY SUSPICIOUS (vec.dll)</span>
+            <span class="mockup-key">Подозрительные модули DLL:</span>
+            <span class="mockup-val threat">ОБНАРУЖЕН 1 ПОДОЗРИТЕЛЬНЫЙ (vec.dll)</span>
           </div>
         </div>
         <div class="mockup-panel">
-          <div style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:12px">USN DELETED FILES LIST</div>
+          <div style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:12px">СПИСОК УДАЛЕННЫХ ФАЙЛОВ ИЗ ЖУРНАЛА USN</div>
           <div class="mockup-row">
-            <span class="mockup-key">21.07.2026 09:32:01 — DELETE</span>
+            <span class="mockup-key">21.07.2026 09:32:01 — УДАЛЕНИЕ</span>
             <span class="mockup-val">Expensive-recode.jar</span>
           </div>
           <div class="mockup-row">
-            <span class="mockup-key">21.07.2026 09:31:45 — CLOSE & DELETE</span>
+            <span class="mockup-key">21.07.2026 09:31:45 — ЗАКРЫТИЕ И УДАЛЕНИЕ</span>
             <span class="mockup-val">Loader.exe</span>
           </div>
         </div>
@@ -647,29 +687,29 @@
 
   <section class="security" id="security">
     <div class="security-inner">
-      <h2>Safe Self-Destruct Guarantee</h2>
-      <p>AuroraChecker contains a verified self-destruct script that loop-deletes only the application binary, tools, and PID. System documents, Downloads directory, and Desktop files are completely safe.</p>
+      <h2>Гарантия безопасного самоуничтожения</h2>
+      <p>AuroraChecker содержит встроенный, безопасный скрипт очистки. Он точечно удаляет только сам исполняемый файл, скачанные утилиты и PID процесса. Ваши личные файлы, папка «Загрузки» и файлы на Рабочем столе полностью защищены.</p>
       
       <div class="security-grid">
         <div class="security-item">
-          <h4>UAC Digital Signature</h4>
-          <p>Digitally signed by CN=zentixctm with valid Authenticode status.</p>
+          <h4>Цифровая подпись UAC</h4>
+          <p>Файл подписан сертификатом CN=zentixctm с валидным статусом Authenticode.</p>
         </div>
         <div class="security-item">
-          <h4>Zero Installation</h4>
-          <p>Launches instantly via pywebview, no local registry clutter.</p>
+          <h4>Запуск без установки</h4>
+          <p>Работает мгновенно через pywebview, не оставляет мусора в реестре Windows.</p>
         </div>
         <div class="security-item">
-          <h4>One-Click Cleanup</h4>
-          <p>Leaves absolute zero traces on target computer after verification.</p>
+          <h4>Очистка в один клик</h4>
+          <p>Абсолютно никаких логов и файлов на проверяемом ПК после завершения сессии.</p>
         </div>
       </div>
     </div>
   </section>
 
   <footer>
-    <div>© 2026 AuroraChecker. Signed by CN=zentixctm. All rights reserved.</div>
-    <div>Developed by <a href="https://github.com/zentixctm" target="_blank" style="color:#fff;font-weight:700">zentixctm</a></div>
+    <div>© 2026 AuroraChecker. Подписано CN=zentixctm. Все права защищены.</div>
+    <div>Разработчик: <a href="https://github.com/zentixctm" target="_blank" style="color:#fff;font-weight:700">zentixctm</a></div>
   </footer>
 
   <script>
@@ -677,12 +717,12 @@
       const text = document.getElementById("cmdText").innerText;
       navigator.clipboard.writeText(text).then(() => {
         const btn = document.getElementById("btnCopy");
-        btn.innerText = "Copied!";
+        btn.innerText = "Скопировано!";
         btn.style.background = "var(--green)";
         btn.style.borderColor = "var(--green)";
         btn.style.color = "#000";
         setTimeout(() => {
-          btn.innerText = "Copy Command";
+          btn.innerText = "Копировать";
           btn.style.background = "";
           btn.style.borderColor = "";
           btn.style.color = "";
