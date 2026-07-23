@@ -713,30 +713,6 @@
       </div>
     </div>
   </div>
-  <div id="licenseModal" style="display:none;position:fixed;inset:0;background:rgba(5,8,15,0.92);backdrop-filter:blur(12px);z-index:99999;align-items:center;justify-content:center">
-    <div class="panel" style="width:420px;padding:28px;border:1px solid var(--border);box-shadow:0 0 30px rgba(56,189,248,0.25);border-radius:12px;text-align:center">
-      <h2 style="color:var(--cyan);font-size:20px;margin-bottom:6px">🔑 Активация Ключа Доступа</h2>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:20px">Введите ваш ключ доступа и данные модератора для входа в AuroraChecker.</p>
-      
-      <div style="display:flex;flex-direction:column;gap:12px;text-align:left">
-        <div>
-          <label style="font-size:11px;color:var(--muted)">Ключ доступа (Access Key):</label>
-          <input id="licKeyInput" placeholder="AURORA-XXXX-XXXX-XXXX" value="AURORA-VIP-2026" style="width:100%;margin-top:4px;font-family:monospace;font-weight:700">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--muted)">Никнейм Модератора:</label>
-          <input id="licModInput" placeholder="например, Alex_Moder" style="width:100%;margin-top:4px">
-        </div>
-        <div>
-          <label style="font-size:11px;color:var(--muted)">Название Проекта / Сервера:</label>
-          <input id="licServerInput" placeholder="например, ReallyWorld" style="width:100%;margin-top:4px">
-        </div>
-        <button class="primary" onclick="submitLicenseKey()" style="height:40px;font-weight:700;margin-top:8px">Активировать Ключ</button>
-        <div id="licStatusMsg" style="font-size:12px;text-align:center;margin-top:4px"></div>
-      </div>
-    </div>
-  </div>
-
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
@@ -756,9 +732,6 @@
         <button data-nav="moderation">reports & ban</button>
       </nav>
       <div class="footer">
-        <div id="licenseBadge" onclick="openLicenseModal()" style="padding:6px;border-radius:6px;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.3);font-size:11px;color:var(--cyan);cursor:pointer;margin-bottom:8px;text-align:center">
-          🔑 Key: Not Activated
-        </div>
         <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);font-size:12px">self destruct</button>
       </div>
     </aside>
@@ -1380,69 +1353,6 @@
       }
     }
 
-    async function checkLicenseOnStart() {
-      try {
-        if (!api()) return;
-        const res = await api().get_license_info();
-        const badge = document.getElementById("licenseBadge");
-        if (res.ok && res.active && res.data) {
-          const d = res.data;
-          if (badge) {
-            badge.innerText = `🔑 ${d.moderator} [${d.server}]`;
-            badge.style.borderColor = "var(--green)";
-            badge.style.color = "var(--green)";
-          }
-          const modNickEl = document.getElementById("reportPlayerNick");
-          if (modNickEl && !modNickEl.dataset.modSet) {
-            // keep player nick empty, but store mod info
-          }
-        } else {
-          openLicenseModal();
-        }
-      } catch (e) {}
-    }
-
-    function openLicenseModal() {
-      const el = document.getElementById("licenseModal");
-      if (el) el.style.display = "flex";
-    }
-
-    function closeLicenseModal() {
-      const el = document.getElementById("licenseModal");
-      if (el) el.style.display = "none";
-    }
-
-    async function submitLicenseKey() {
-      const key = document.getElementById("licKeyInput").value || "";
-      const mod = document.getElementById("licModInput").value || "";
-      const srv = document.getElementById("licServerInput").value || "";
-      const msgEl = document.getElementById("licStatusMsg");
-
-      if (!key) {
-        msgEl.innerText = "Введите ключ доступа!";
-        msgEl.style.color = "var(--rose)";
-        return;
-      }
-
-      setLoading(true, "Проверка и активация ключа...");
-      try {
-        const res = await api().activate_license_key(key, mod, srv);
-        if (!res.ok) {
-          msgEl.innerText = res.error;
-          msgEl.style.color = "var(--rose)";
-        } else {
-          msgEl.innerText = res.message;
-          msgEl.style.color = "var(--green)";
-          setTimeout(() => {
-            closeLicenseModal();
-            checkLicenseOnStart();
-          }, 1000);
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
     async function init() {
       if (!api()) {
         showError("modsError", "pywebview API is not available. Start this app through main.py.");
@@ -1457,7 +1367,6 @@
         else if (btn.dataset.nav === "browser") { showView("browser"); loadBrowserData(); }
         else showView(btn.dataset.nav);
       }));
-      await checkLicenseOnStart();
       setTimeout(hideSplashScreen, 1200);
     }
 
