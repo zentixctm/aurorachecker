@@ -2265,7 +2265,18 @@ def _read_usn_raw(timeout: int = 120) -> str:
         return ""
 
 
-def _activity_line(date: str, action: str, name: str, path: str = "") -> dict:
+def _activity_line(date: str, action: str, name: str, path: str = "", size: str = "-") -> dict:
+    if size == "-" and path and os.path.exists(path):
+        try:
+            sz = os.path.getsize(path)
+            if sz < 1024:
+                size = f"{sz} B"
+            elif sz < 1024 * 1024:
+                size = f"{sz / 1024:.1f} KB"
+            else:
+                size = f"{sz / (1024 * 1024):.1f} MB"
+        except Exception:
+            pass
     detail = f"{date} | {action} | {name}"
     if path:
         detail += f" | {path}"
@@ -2278,11 +2289,10 @@ def _activity_line(date: str, action: str, name: str, path: str = "") -> dict:
         "action": action,
         "name": name,
         "path": path,
-        "size": "-",
+        "size": size,
         "source": "Journal",
         "verdict": "Risk" if risk else "Info",
         "suspicious": risk,
-        "analysisResults": [entry(name or "activity", action, detail)],
     }
 
 
@@ -3091,6 +3101,16 @@ def scan_jar_dll_activity() -> dict:
     }
 
 
+def _service_status(srv_name: str) -> str:
+    try:
+        proc = subprocess.run(['sc.exe', 'query', srv_name], capture_output=True, text=True, errors='ignore', **hidden_subprocess_options())
+        out = proc.stdout or ''
+        if 'RUNNING' in out: return 'Running'
+        if 'STOPPED' in out: return 'Stopped'
+        return 'Not Found'
+    except Exception:
+        return 'Unknown'
+
 def get_system_info_summary() -> dict:
     class SHQUERYRBINFO(ctypes.Structure):
         _fields_ = [('cbSize', wintypes.DWORD), ('i64Size', ctypes.c_int64), ('i64NumItems', ctypes.c_int64)]
@@ -3625,6 +3645,19 @@ class AuroraApi:
             for fp in drive_footprints:
                 if fp["path"] not in seen_paths:
                     seen_paths.add(fp["path"])
+                    p_str = fp.get("path", "")
+                    fp["size"] = "-"
+                    if p_str and os.path.exists(p_str):
+                        try:
+                            if os.path.isfile(p_str):
+                                sz = os.path.getsize(p_str)
+                                if sz < 1024: fp["size"] = f"{sz} B"
+                                elif sz < 1024*1024: fp["size"] = f"{sz/1024:.1f} KB"
+                                else: fp["size"] = f"{sz/(1024*1024):.1f} MB"
+                            elif os.path.isdir(p_str):
+                                fp["size"] = "Папка"
+                        except Exception:
+                            pass
                     unique_footprints.append(fp)
 
             return {

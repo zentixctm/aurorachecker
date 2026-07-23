@@ -171,7 +171,7 @@
       z-index: 2;
       height: 100vh;
       display: grid;
-      grid-template-columns: 240px 1fr;
+      grid-template-columns: 250px 1fr;
       animation: appIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
@@ -208,9 +208,10 @@
 
     .brand h1 {
       margin: 0;
-      font-size: 23px;
+      font-size: 19px;
       font-weight: 900;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
       background: linear-gradient(135deg, #ffffff 0%, #f472b6 50%, #c084fc 100%);
       -webkit-background-clip: text;
       background-clip: text;
@@ -910,15 +911,6 @@
           <div style="font-size:12px;color:var(--muted);margin-top:6px">или кликните для выбора (сканирует моды / вычисляет хеши)</div>
         </div>
         <div id="jarkaResult" style="margin-top:14px;display:none;text-align:left;width:100%;max-height:calc(100vh - 380px);overflow-y:auto;padding-right:8px"></div>
-
-        <div class="panel" style="padding:18px;margin-top:16px">
-          <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
-            <span>🎮 Сканер Лаунчеров и Клиентов Minecraft</span>
-            <button class="primary" onclick="scanLaunchers()">Сканировать лаунчеры</button>
-          </div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Автоматическая проверка TLauncher, Legacy, Lunar Client, Feather, Prism, MultiMC, CurseForge и ATLauncher на наличие запрещенных модов.</p>
-          <div id="launchersResult" style="font-size:12px;color:var(--cyan);white-space:pre-wrap">Нажмите Сканировать для проверки папок лаунчеров</div>
-        </div>
       </section>
 
       <section id="jardll" class="view">
@@ -935,22 +927,22 @@
           </div>
           <div id="jardllError" class="error"></div>
         </div>
-        <div class="table-wrap">
+        <div class="table-wrap" style="max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:8px">
           <table>
-            <thead><tr><th colspan="4">Активность JAR (Журнал USN + директории)</th></tr><tr><th style="width:170px">Дата</th><th style="width:150px">Действие</th><th style="width:240px">Файл</th><th>Путь</th></tr></thead>
-            <tbody id="jarActivityRows"><tr><td colspan="4" class="unknown">Нажмите Сканировать</td></tr></tbody>
+            <thead><tr><th colspan="5">Активность JAR (Журнал USN + директории)</th></tr><tr><th style="width:160px">Дата</th><th style="width:140px">Действие</th><th style="width:200px">Файл</th><th style="width:100px">Размер</th><th>Путь</th></tr></thead>
+            <tbody id="jarActivityRows"><tr><td colspan="5" class="unknown">Нажмите Сканировать</td></tr></tbody>
           </table>
         </div>
-        <div class="table-wrap">
+        <div class="table-wrap" style="max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;margin-top:12px">
           <table>
-            <thead><tr><th colspan="4">Активность DLL (Журнал USN + директории)</th></tr><tr><th style="width:170px">Дата</th><th style="width:150px">Действие</th><th style="width:240px">Файл</th><th>Путь</th></tr></thead>
-            <tbody id="dllActivityRows"><tr><td colspan="4" class="unknown">Нажмите Сканировать</td></tr></tbody>
+            <thead><tr><th colspan="5">Активность DLL (Журнал USN + директории)</th></tr><tr><th style="width:160px">Дата</th><th style="width:140px">Действие</th><th style="width:200px">Файл</th><th style="width:100px">Размер</th><th>Путь</th></tr></thead>
+            <tbody id="dllActivityRows"><tr><td colspan="5" class="unknown">Нажмите Сканировать</td></tr></tbody>
           </table>
         </div>
-        <div class="table-wrap">
+        <div class="table-wrap" style="max-height:220px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;margin-top:12px">
           <table>
-            <thead><tr><th colspan="4" style="color:var(--red)">Удаленные JAR / DLL (Журнал USN)</th></tr><tr><th style="width:170px">Дата</th><th style="width:150px">Действие</th><th style="width:240px">Файл</th><th>Путь</th></tr></thead>
-            <tbody id="deletedRows"><tr><td colspan="4" class="unknown">Нажмите Сканировать</td></tr></tbody>
+            <thead><tr><th colspan="5" style="color:var(--red)">Удаленные JAR / DLL (Журнал USN)</th></tr><tr><th style="width:160px">Дата</th><th style="width:140px">Действие</th><th style="width:200px">Файл</th><th style="width:100px">Размер</th><th>Путь</th></tr></thead>
+            <tbody id="deletedRows"><tr><td colspan="5" class="unknown">Нажмите Сканировать</td></tr></tbody>
           </table>
         </div>
 
@@ -978,8 +970,8 @@
             <button onclick="loadProgramTools()">Обновить списки</button>
           </div>
           <div class="tabs" style="margin-top:8px">
-            <button class="active-tab" data-tab="beta" onclick="switchToolTab('beta')">Основные</button>
-            <button data-tab="alpha" onclick="switchToolTab('alpha')">Дополнительные</button>
+            <button class="active-tab" data-tab="beta" onclick="switchToolTab('beta')">Beta</button>
+            <button data-tab="alpha" onclick="switchToolTab('alpha')">Alpha</button>
             <button data-tab="other" onclick="switchToolTab('other')">Другое</button>
           </div>
           <div id="programsError" class="error"></div>
@@ -1059,14 +1051,15 @@
             <table>
               <thead>
                 <tr>
-                  <th style="width: 25%;">Название</th>
-                  <th style="width: 40%;">Восстановленный путь</th>
-                  <th style="width: 20%;">Последнее открытие</th>
-                  <th style="width: 15%;">Статус</th>
+                  <th style="width: 20%;">Название</th>
+                  <th style="width: 35%;">Восстановленный путь</th>
+                  <th style="width: 15%;">Размер</th>
+                  <th style="width: 18%;">Последнее открытие</th>
+                  <th style="width: 12%;">Статус</th>
                 </tr>
               </thead>
               <tbody id="footprintRows">
-                <tr><td colspan="4" class="unknown">Нажмите Сканировать для загрузки</td></tr>
+                <tr><td colspan="5" class="unknown">Нажмите Сканировать для загрузки</td></tr>
               </tbody>
             </table>
           </div>
@@ -1419,10 +1412,11 @@
         return `<tr style="${rowStyle}">
           <td class="preserve-case" style="font-weight:700">${escapeHtml(f.name)}</td>
           <td class="mono preserve-case" style="${pathStyle}" title="${escapeHtml(f.path)}">${escapeHtml(f.path)}</td>
+          <td class="mono" style="font-size:11px;color:var(--purple);font-weight:600">${escapeHtml(f.size || "-")}</td>
           <td class="mono" style="font-size:11px;color:var(--muted)">${escapeHtml(f.time || "-")}</td>
           <td style="font-size:11px"><span style="${badgeStyle}">${escapeHtml(f.status)}</span></td>
         </tr>`;
-      }).join("") || `<tr><td colspan="4" class="unknown">No open folder footprints found matching the filter</td></tr>`;
+      }).join("") || `<tr><td colspan="5" class="unknown">Нет данных по следам папок</td></tr>`;
     }
 
     async function loadBrowserData() {
@@ -1635,9 +1629,9 @@
     }
 
     function clearJarDllTables() {
-      document.getElementById("jarActivityRows").innerHTML = `<tr><td colspan="4" class="unknown">Press Scan</td></tr>`;
-      document.getElementById("dllActivityRows").innerHTML = `<tr><td colspan="4" class="unknown">Press Scan</td></tr>`;
-      document.getElementById("deletedRows").innerHTML = `<tr><td colspan="4" class="unknown">Press Scan</td></tr>`;
+      document.getElementById("jarActivityRows").innerHTML = `<tr><td colspan="5" class="unknown">Нажмите Сканировать</td></tr>`;
+      document.getElementById("dllActivityRows").innerHTML = `<tr><td colspan="5" class="unknown">Нажмите Сканировать</td></tr>`;
+      document.getElementById("deletedRows").innerHTML = `<tr><td colspan="5" class="unknown">Нажмите Сканировать</td></tr>`;
       showError("jardllError", "");
     }
 
@@ -1647,12 +1641,13 @@
         const cls = isDeleted || String(row.action || "").includes("unsigned") || String(row.action || "").includes("deleted") ? "risk" : "unknown";
         return `
         <tr>
-          <td class="mono">${escapeHtml(row.date || "-")}</td>
-          <td class="${cls}">${escapeHtml(row.action || "activity")}</td>
-          <td>${escapeHtml(row.name || row.className || "-")}</td>
-          <td class="mono preserve-case">${escapeHtml(row.path || row.detail || "")}</td>
+          <td class="mono" style="font-size:11px">${escapeHtml(row.date || "-")}</td>
+          <td class="${cls}" style="font-size:11px">${escapeHtml(row.action || "activity")}</td>
+          <td style="font-weight:600">${escapeHtml(row.name || row.className || "-")}</td>
+          <td class="mono" style="color:var(--purple);font-size:11px">${escapeHtml(row.size || "-")}</td>
+          <td class="mono preserve-case" style="font-size:11px">${escapeHtml(row.path || row.detail || "")}</td>
         </tr>`;
-      }).join("") || `<tr><td colspan="4" class="unknown">No rows</td></tr>`;
+      }).join("") || `<tr><td colspan="5" class="unknown">Нет данных</td></tr>`;
     }
 
     async function loadProgramTools() {
@@ -1935,21 +1930,17 @@
       { category: "everything", name: "size by weight", text: "size:9951744|size:24536064|size:15438336|size:6229504|size:6573056|size:7187456|size:7969792|size:1562249|size:1672329|size:1677449|size:1680521|size:147329|size:138351|size:202720|size:7788032|size:22885|size:23810|size:138351|size:147329|size:7988736|size:3711166|size:3697285|size:3712014|size:5641728|size:4413440|size:114974|size:111866|size:274865|size:1820884|size:5007380|size:6944256|size:5934592|size:2545664|size:2108662|size:1961742|size:3684385|size:5143837|size:4413440|size:116689|size:1968128|size:8011776|size:1883602|size:5918208|size:1897269|size:31445308|size:24390144|size:25158656|size:2023236|size:16836288|size:88065933|size:197933122|size:2258533|size:2305645|size:2372788|size:18764384|size:9400174|size:2363704|size:15445581|size:2373676|size:138351|size:7788032|size:22885|size:23810|size:7988736|size:3711166|size:3697285|size:3712014|size:5641728|size:4413440|size:111866|size:1820884|size:5007380|size:6944256|size:5934592|size:2545664|size:2108662|size:1961742|size:3684385|size:5143837|size:1968128|size:8011776|size:1883602|size:6533121|size:16629226|size:28107997|size:8249687|size:5524900|size:140200|size:132133|size:110439|size:6244043|size:6867367|size:43883|size:514855|size:479296|size:9530356|size:355527744|size:1819289|size:1897269|size:16855568|size:16964112|size:2023236|size:5918208|ssize:31445308|size:24390144|size:10657176|size:460288|size:19521024|size:15076480|size:7204864|size:1613824|size:1499136|size:1488896|size:9332326|size:9400174|size:10071288|size:9400174|size:10071288|baritone|nursultan" },
       { category: "everything", name: "jar sizes", text: "size:2263|size:5266|size:6515|size:6770|size:6778|size:7016|size:7218|size:7803|size:7891|size:9327|size:10283|size:10605|size:10958|size:11554|size:16541|size:17308|size:17339|size:18180|size:18527|size:18587|size:18734|size:19266|size:20578|size:20583|size:20639|size:20883|size:21161|size:21234|size:21664|size:22036|size:22861|size:26247|size:27546|size:27809|size:28084|size:28439|size:29304|size:29567|size:30279|size:31549|size:31607|size:34449|size:34669|size:35971|size:35993|size:38149|size:39017|size:39321|size:40142|size:42782|size:47159|size:48242|size:50828|size:51212|size:52426|size:54088|size:59381|size:62782|size:65316|size:65486|size:65765|size:66659|size:67491|size:68794|size:69757|size:72334|size:74105|size:80751|size:88896|size:95530|size:98811|size:100523|size:100799|size:101297|size:101571|size:101703|size:102297|size:102733|size:103761|size:104954|size:105623|size:105672|size:112386|size:120640|size:138417|size:143006|size:143597|size:143600|size:147329|size:147873|size:151762|size:153937|size:156722|size:156779|size:166677|size:169718|size:173698|size:183634|size:183651|size:192156|size:202720|size:257482|size:263070|size:267746|size:274865|size:300286|size:334588|size:343169|size:350629|size:409616|size:410358|size:517248|size:519731|size:532826|size:539151|size:556494|size:597406|size:636621|size:640838|size:878781|size:925493|size:1077149|size:1165063|size:1181556|size:1444714|size:1471429|size:1569093|size:1822841|size:3113569|size:3425801|size:3541075|size:3541138|size:3642292|size:3684385|size:4642998|size:5630483|size:7052171|size:7059952|size:22258750|size:25704986|size:26179274|size:26691896 *.jar" },
       { category: "everything", name: "size vec.dll", text: "size:30720 utf8content:net/minecraft/client/entity/player/clientplayerentity|net/minecraft/util/math/axisalignedbb" },
-      { category: "everything", name: "size by doomsday", text: "ext:jar size:21kb-10mb content:\"l.png\" content:\"mcmod.info\" everything ext:txt;cmd;bat  content:\"java -jar\"" },
+      { category: "everything", name: "size by doomsday", text: "ext:jar size:21kb-10mb content:\"l.png\" content:\"mcmod.info\"" },
       { category: "everything", name: "size .exe", text: ".exe size:12mb-25mb" },
       { category: "everything", name: "doomsday setup size", text: "ext:txt;cmd;bat  content:\"java -jar\"" },
       { category: "everything", name: "mods size", text: "*.jar size:10mb..15mb" },
       { category: "everything", name: "troxill size", text: "size:25158025bytes" },
       { category: "everything", name: "flow client size", text: "size:68397056bytes" },
-      { category: "winr", name: "doomsday log (win+r)", text: "%USERLOCALAPPDATA%\\Temp\\JavaLauncher.log" },
+      { category: "winr", name: "doomsday log (win+r)", text: "%LOCALAPPDATA%\\Temp\\JavaLauncher.log" },
       { category: "everything", name: "liminar setup size", text: "ext:txt;cmd;bat;ps1 content:\"ExecutionPolicy Bypass -Command\" content:\"ProcessStartInfo\" content:\"UseShellExecute\"" },
       { category: "everything", name: "size by liminar inj", text: "ext:lmr;bin;dat;tmp;cache;pak;res;cfg;dll;scr;drv;lib;node;addon;plugin;client;x64;upd;exe;bat;cmd size:17.5mb..20mb" },
       { category: "everything", name: "size by liminar 2", text: "ext:jar size:15mb..18mb" },
-      { category: "winr", name: "liminar free cfg (win+r)", text: "%LOCALAPPDATA%\\uTorrent\\configs" },
-      { category: "winr", name: "minecraft dir (win+r)", text: "%appdata%\\.minecraft" },
-      { category: "winr", name: "temp folder (win+r)", text: "%temp%" },
-      { category: "winr", name: "prefetch (win+r)", text: "prefetch" },
-      { category: "winr", name: "recent (win+r)", text: "recent" }
+      { category: "winr", name: "liminar free cfg (win+r)", text: "%LOCALAPPDATA%\\uTorrent\\configs" }
     ];
 
     function filterTextsCategory(cat) {
