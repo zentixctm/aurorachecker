@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AuroraChecker</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
     
     :root {
       color-scheme: dark;
@@ -34,7 +34,11 @@
       
       --shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.85);
       --shadow-lg: 0 24px 48px -16px rgba(0, 0, 0, 0.98);
-      font-family: 'Outfit', -apple-system, system-ui, sans-serif;
+      font-family: 'Manrope', -apple-system, system-ui, sans-serif;
+    }
+
+    h1, h2, h3, .brand h1 {
+      font-family: 'Unbounded', sans-serif !important;
     }
 
     /* Sleek Custom Scrollbar */
@@ -720,18 +724,18 @@
         <span onclick="openRepo()" class="repo-link" title="Open GitHub Repository">by zentixctm</span>
       </div>
       <nav class="nav">
-        <button data-nav="home" class="active">главная</button>
-        <button data-nav="sysinfo">информация о пк</button>
-        <button data-nav="mods">папка модов</button>
-        <button data-nav="jardll">сканер jar | dll</button>
-        <button data-nav="programs">утилиты</button>
-        <button data-nav="texts">поисковые запросы</button>
-        <button data-nav="launch">запуск java</button>
-        <button data-nav="usb">shellbags / следы</button>
-        <button data-nav="browser">история браузеров</button>
+        <button data-nav="home" class="active">Главная</button>
+        <button data-nav="sysinfo">Информация о ПК</button>
+        <button data-nav="mods">Папка модов</button>
+        <button data-nav="jardll">Сканер JAR | DLL</button>
+        <button data-nav="programs">Утилиты</button>
+        <button data-nav="texts">Поисковые запросы</button>
+        <button data-nav="launch">Запуск Java</button>
+        <button data-nav="usb">ShellBags / Следы</button>
+        <button data-nav="browser">История браузеров</button>
       </nav>
       <div class="footer">
-        <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);font-size:12px">самоуничтожение</button>
+        <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);font-size:12px">Самоуничтожение</button>
       </div>
     </aside>
 
@@ -739,53 +743,53 @@
       <section id="home" class="view active">
         <div class="header">
           <div class="title">
-            <h2>модули проверки</h2>
-            <p>выберите раздел для анализа системы.</p>
+            <h2>Модули Проверки</h2>
+            <p>Выберите раздел для анализа системы.</p>
           </div>
         </div>
 
         <div class="home-grid">
           <div class="panel choice">
             <div>
-              <h3>информация о пк</h3>
-              <p>дата очистки корзины, время работы пк, сборка windows и статус служб криминалистики.</p>
+              <h3>Информация о ПК</h3>
+              <p>Дата очистки корзины, время работы ПК, сборка Windows и статус служб криминалистики.</p>
             </div>
-            <div><button class="primary" onclick="showView('sysinfo'); loadSystemInfo();">открыть</button></div>
+            <div><button class="primary" onclick="showView('sysinfo'); loadSystemInfo();">Открыть</button></div>
           </div>
           <div class="panel choice">
             <div>
-              <h3>папка модов</h3>
-              <p>анализ модов .jar, хеш-суммы, проверка источника modrinth и эвристика.</p>
+              <h3>Папка Модов</h3>
+              <p>Анализ модов .jar, хеш-суммы, проверка источника Modrinth и эвристика.</p>
             </div>
-            <div><button class="primary" onclick="showView('mods')">открыть</button></div>
+            <div><button class="primary" onclick="showView('mods')">Открыть</button></div>
           </div>
           <div class="panel choice">
             <div>
-              <h3>jar | dll следы</h3>
-              <p>журнал активности usn для .jar/.dll файлов и поиск ram-внедрений.</p>
+              <h3>JAR | DLL Следы</h3>
+              <p>Журнал активности USN для .jar/.dll файлов и поиск RAM-внедрений.</p>
             </div>
-            <div><button class="primary" onclick="showView('jardll')">открыть</button></div>
+            <div><button class="primary" onclick="showView('jardll')">Открыть</button></div>
           </div>
           <div class="panel choice">
             <div>
-              <h3>утилиты</h3>
-              <p>быстрый запуск проверочных программ и утилит в один клик.</p>
+              <h3>Утилиты</h3>
+              <p>Быстрый запуск проверочных программ и утилит в один клик.</p>
             </div>
-            <div><button class="primary" onclick="loadProgramTools()">открыть</button></div>
+            <div><button class="primary" onclick="loadProgramTools()">Открыть</button></div>
           </div>
           <div class="panel choice">
             <div>
-              <h3>shellbags / следы</h3>
-              <p>история открытия папок, следы флешек и удаленных директорий.</p>
+              <h3>ShellBags / Следы</h3>
+              <p>История открытия папок, следы флешек и удаленных директорий.</p>
             </div>
-            <div><button class="primary" onclick="showView('usb'); loadUsbData();">открыть</button></div>
+            <div><button class="primary" onclick="showView('usb'); loadUsbData();">Открыть</button></div>
           </div>
           <div class="panel choice">
             <div>
-              <h3>история браузеров</h3>
-              <p>поиск загрузок и истории читов в chrome, yandex, edge, opera и firefox.</p>
+              <h3>История Браузеров</h3>
+              <p>Поиск загрузок и истории читов в Chrome, Yandex, Edge, Opera и Firefox.</p>
             </div>
-            <div><button class="primary" onclick="showView('browser'); loadBrowserData();">открыть</button></div>
+            <div><button class="primary" onclick="showView('browser'); loadBrowserData();">Открыть</button></div>
           </div>
         </div>
         <div style="margin-top: auto; padding-top: 20px; text-align: center;">
@@ -796,10 +800,10 @@
       <section id="sysinfo" class="view">
         <div class="header">
           <div class="title">
-            <h2>информация о пк и криминалистика</h2>
-            <p>время очистки корзины, аптайм системы, безопасность windows и служба PcaSvc.</p>
+            <h2>Информация о ПК и Криминалистика</h2>
+            <p>Время очистки корзины, аптайм системы, безопасность Windows и служба PcaSvc.</p>
           </div>
-          <button class="primary" onclick="loadSystemInfo()" style="height:34px;padding:0 16px">обновить информацию</button>
+          <button class="primary" onclick="loadSystemInfo()" style="height:34px;padding:0 16px">Обновить информацию</button>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:16px;margin-bottom:16px">
@@ -885,15 +889,15 @@
       <section id="mods" class="view">
         <div class="header">
           <div class="title">
-            <h2>папка модов</h2>
-            <p>сканирование папки модов или отдельного .jar файла.</p>
+            <h2>Папка Модов</h2>
+            <p>Сканирование папки модов или отдельного .jar файла.</p>
           </div>
         </div>
         <div class="panel scan-panel">
           <div class="input-row">
             <input id="modsPath" placeholder="Путь к папке модов">
-            <button onclick="chooseFolder()">папка</button>
-            <button class="primary" onclick="scanMods()">сканировать</button>
+            <button onclick="chooseFolder()">Папка</button>
+            <button class="primary" onclick="scanMods()">Сканировать</button>
           </div>
           <div id="modsError" class="error"></div>
         </div>
@@ -902,7 +906,7 @@
              ondragleave="this.style.borderColor='var(--banned-line)';this.style.background='var(--banned-soft)'"
              ondrop="event.preventDefault();handleJarkaDrop(event)"
              onclick="handleJarkaDrop(event)">
-          <div style="font-size:15px;font-weight:700;color:var(--rose)">перетащите .jar файл(ы) сюда</div>
+          <div style="font-size:15px;font-weight:700;color:var(--rose)">Перетащите .jar файл(ы) сюда</div>
           <div style="font-size:12px;color:var(--muted);margin-top:6px">или кликните для выбора (сканирует моды / вычисляет хеши)</div>
         </div>
         <div id="jarkaResult" style="margin-top:14px;display:none;text-align:left;width:100%;max-height:calc(100vh - 380px);overflow-y:auto;padding-right:8px"></div>
@@ -920,14 +924,14 @@
       <section id="jardll" class="view">
         <div class="header">
           <div class="title">
-            <h2>сканер jar / dll</h2>
-            <p>анализ активности jar/dll файлов из журнала usn и проверка внедрений.</p>
+            <h2>Сканер JAR / DLL</h2>
+            <p>Анализ активности jar/dll файлов из журнала USN и проверка внедрений.</p>
           </div>
         </div>
         <div class="panel scan-panel">
           <div class="actions">
-            <button class="primary" onclick="scanJarDllActivity()">сканировать</button>
-            <button onclick="clearJarDllTables()">очистить</button>
+            <button class="primary" onclick="scanJarDllActivity()">Сканировать</button>
+            <button onclick="clearJarDllTables()">Очистить</button>
           </div>
           <div id="jardllError" class="error"></div>
         </div>
@@ -964,19 +968,19 @@
       <section id="programs" class="view">
         <div class="header">
           <div class="title">
-            <h2>утилиты и программы</h2>
+            <h2>Утилиты и Программы</h2>
           </div>
         </div>
         <div class="panel scan-panel">
           <div class="actions">
-            <button class="primary" onclick="downloadMissingTools()">скачать отсутствующие</button>
-            <button class="danger" onclick="clearDownloadedTools()">очистить скачанные</button>
-            <button onclick="loadProgramTools()">обновить списки</button>
+            <button class="primary" onclick="downloadMissingTools()">Скачать отсутствующие</button>
+            <button class="danger" onclick="clearDownloadedTools()">Очистить скачанные</button>
+            <button onclick="loadProgramTools()">Обновить списки</button>
           </div>
           <div class="tabs" style="margin-top:8px">
-            <button class="active-tab" data-tab="beta" onclick="switchToolTab('beta')">основные</button>
-            <button data-tab="alpha" onclick="switchToolTab('alpha')">дополнительные</button>
-            <button data-tab="other" onclick="switchToolTab('other')">другое</button>
+            <button class="active-tab" data-tab="beta" onclick="switchToolTab('beta')">Основные</button>
+            <button data-tab="alpha" onclick="switchToolTab('alpha')">Дополнительные</button>
+            <button data-tab="other" onclick="switchToolTab('other')">Другое</button>
           </div>
           <div id="programsError" class="error"></div>
         </div>
@@ -999,13 +1003,13 @@
       <section id="texts" class="view">
         <div class="header">
           <div class="title">
-            <h2>поисковые запросы</h2>
-            <p>готовые команды для Everything и Win + R — кликните для копирования.</p>
+            <h2>Поисковые Запросы</h2>
+            <p>Готовые команды для Everything и Win + R — кликните для копирования.</p>
           </div>
           <div class="actions" style="display:flex;gap:6px">
-            <button class="small active" id="textCatAll" onclick="filterTextsCategory('all')">все</button>
-            <button class="small" id="textCatEverything" onclick="filterTextsCategory('everything')">everything</button>
-            <button class="small" id="textCatWinr" onclick="filterTextsCategory('winr')">win + r</button>
+            <button class="small active" id="textCatAll" onclick="filterTextsCategory('all')">Все</button>
+            <button class="small" id="textCatEverything" onclick="filterTextsCategory('everything')">Everything</button>
+            <button class="small" id="textCatWinr" onclick="filterTextsCategory('winr')">Win + R</button>
           </div>
         </div>
         <div style="flex:1;min-height:0;overflow:auto;margin-top:4px">
@@ -1018,15 +1022,15 @@
       <section id="launch" class="view">
         <div class="header">
           <div class="title">
-            <h2>запуск java</h2>
-            <p>выберите .jar файл для запуска через встроенную Java.</p>
+            <h2>Запуск Java</h2>
+            <p>Выберите .jar файл для запуска через встроенную Java.</p>
           </div>
         </div>
         <div class="panel scan-panel">
           <div class="input-row">
             <input id="launchJarPath" placeholder="Путь к .jar файлу">
-            <button onclick="chooseLaunchJar()">обзор</button>
-            <button class="primary" onclick="launchJar()">запустить</button>
+            <button onclick="chooseLaunchJar()">Обзор</button>
+            <button class="primary" onclick="launchJar()">Запустить</button>
           </div>
           <div id="launchError" class="error"></div>
         </div>
@@ -1035,11 +1039,11 @@
       <section id="usb" class="view">
         <div class="header">
           <div class="title">
-            <h2>обозреватель shellbags</h2>
-            <p>анализирует историю открытия директорий и файлы через Explorer и флешки.</p>
+            <h2>Обозреватель ShellBags</h2>
+            <p>Анализирует историю открытия директорий и файлы через Explorer и флешки.</p>
           </div>
           <div class="actions">
-            <button class="primary" onclick="loadUsbData()">сканировать / обновить</button>
+            <button class="primary" onclick="loadUsbData()">Сканировать / Обновить</button>
           </div>
         </div>
         
@@ -1050,15 +1054,15 @@
         </div>
 
         <div class="panel" style="display: flex; flex-direction: column; padding: 18px; flex: 1; min-height: 0;">
-          <h3 style="margin: 0 0 10px; font-size: 16px;">следы папок и файлов (shellbags)</h3>
+          <h3 style="margin: 0 0 10px; font-size: 16px;">Следы папок и файлов (ShellBags)</h3>
           <div class="table-wrap" style="flex: 1; overflow: auto;">
             <table>
               <thead>
                 <tr>
-                  <th style="width: 25%;">название</th>
-                  <th style="width: 40%;">восстановленный путь</th>
-                  <th style="width: 20%;">последнее открытие</th>
-                  <th style="width: 15%;">статус</th>
+                  <th style="width: 25%;">Название</th>
+                  <th style="width: 40%;">Восстановленный путь</th>
+                  <th style="width: 20%;">Последнее открытие</th>
+                  <th style="width: 15%;">Статус</th>
                 </tr>
               </thead>
               <tbody id="footprintRows">
@@ -1073,11 +1077,11 @@
       <section id="browser" class="view">
         <div class="header">
           <div class="title">
-            <h2>сканер браузеров</h2>
-            <p>автоматический поиск загрузок и истории читов в Chrome, Yandex, Edge, Opera и Firefox.</p>
+            <h2>Сканер Браузеров</h2>
+            <p>Автоматический поиск загрузок и истории читов в Chrome, Yandex, Edge, Opera и Firefox.</p>
           </div>
           <div class="actions">
-            <button class="primary" onclick="loadBrowserData()">сканировать / обновить</button>
+            <button class="primary" onclick="loadBrowserData()">Сканировать / Обновить</button>
           </div>
         </div>
         
@@ -1085,11 +1089,11 @@
           <table>
             <thead>
               <tr>
-                <th style="width: 15%;">браузер</th>
-                <th style="width: 10%;">тип</th>
-                <th style="width: 25%;">название / заголовок</th>
-                <th style="width: 35%;">url / путь</th>
-                <th style="width: 15%;">время</th>
+                <th style="width: 15%;">Браузер</th>
+                <th style="width: 10%;">Тип</th>
+                <th style="width: 25%;">Название / Заголовок</th>
+                <th style="width: 35%;">URL / Путь</th>
+                <th style="width: 15%;">Время</th>
               </tr>
             </thead>
             <tbody id="browserRows">
