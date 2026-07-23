@@ -729,6 +729,7 @@
         <button data-nav="launch">java launch</button>
         <button data-nav="usb">shellbags</button>
         <button data-nav="browser">browser scan</button>
+        <button data-nav="moderation">moderation & ban</button>
       </nav>
       <div class="footer">
         <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);font-size:12px">self destruct</button>
@@ -1052,6 +1053,61 @@
           </table>
         </div>
         <div id="browserError" class="error"></div>
+      </section>
+
+      <section id="moderation" class="view">
+        <div class="header">
+          <div class="title">
+            <h2>moderation & verdict center</h2>
+            <p>anti-bypass scan, launcher inspector, auto ban generator, webhook reporting & decompiler.</p>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:16px;margin-bottom:16px">
+          <div class="panel" style="padding:18px">
+            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">1. Anti-Bypass & Cleaners</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Detects USBOblivion, BleachBit, CCleaner, EventLog ID 104 clears and disabled services.</p>
+            <button class="primary" onclick="scanAntiBypass()">Scan Anti-Bypass</button>
+            <div id="antiBypassResult" style="margin-top:10px;font-size:12px;color:var(--cyan)"></div>
+          </div>
+
+          <div class="panel" style="padding:18px">
+            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">2. Launchers & Clients Inspector</div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Scans TLauncher, Legacy, Lunar, Feather, Prism, CurseForge & ATLauncher folders.</p>
+            <button class="primary" onclick="scanLaunchers()">Scan Launchers</button>
+            <div id="launchersResult" style="margin-top:10px;font-size:12px;color:var(--cyan)"></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:16px;margin-bottom:16px">
+          <div class="panel" style="padding:18px">
+            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">3. Auto Ban & Verdict Generator</div>
+            <div class="input-row" style="margin-bottom:10px">
+              <input id="banPlayerName" placeholder="Player Nickname (e.g. Steve)" style="flex:1">
+              <button class="primary" onclick="generateVerdict()">Generate Ban</button>
+            </div>
+            <textarea id="banVerdictCard" style="width:100%;height:100px;background:rgba(5,8,15,.6);border:1px solid var(--border);border-radius:8px;color:var(--fg);padding:8px;font-family:monospace;font-size:11px" readonly placeholder="Generated verdict card will appear here..."></textarea>
+          </div>
+
+          <div class="panel" style="padding:18px">
+            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">4. Webhook Reporter (Discord / Telegram)</div>
+            <div class="input-row" style="margin-bottom:10px">
+              <input id="webhookUrlInput" placeholder="Discord Webhook URL or Telegram Bot Endpoint" style="flex:1">
+              <button class="primary" onclick="sendWebhookReport()">Send Report</button>
+            </div>
+            <div id="webhookStatus" style="font-size:12px;color:var(--green)"></div>
+          </div>
+        </div>
+
+        <div class="panel" style="padding:18px;margin-bottom:16px">
+          <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">5. In-App Jar/Class Bytecode Decompiler</div>
+          <div class="input-row" style="margin-bottom:10px">
+            <input id="decompilerJarPath" placeholder="Path to .jar file" style="flex:1">
+            <input id="decompilerMember" placeholder="Class path (e.g. net/minecraft/Main.class)" style="flex:1">
+            <button class="primary" onclick="decompileClassSource()">Decompile Strings</button>
+          </div>
+          <textarea id="decompilerResult" style="width:100%;height:140px;background:rgba(5,8,15,.6);border:1px solid var(--border);border-radius:8px;color:var(--fg);padding:8px;font-family:monospace;font-size:11px" readonly placeholder="Extracted bytecode constants, strings and class methods will appear here..."></textarea>
+        </div>
       </section>
 
       <section id="results" class="view">
@@ -1692,6 +1748,118 @@
         btn.classList.toggle("active-tab", btn.dataset.tab === tab);
       });
       renderProgramTools();
+    }
+
+    async function scanAntiBypass() {
+      setLoading(true, "Scanning for Anti-Bypass, Cleaners & EventLog ID 104 clears...");
+      try {
+        const res = await api().scan_anti_bypass();
+        const el = document.getElementById("antiBypassResult");
+        if (!res.ok) {
+          el.innerText = "Error: " + res.error;
+          return;
+        }
+        let text = `Detected ${res.cleaners_detected} anti-bypass / cleaner indicator(s):\n`;
+        res.findings.forEach(f => {
+          text += `⚠️ [${f.category}] ${f.detail}\n`;
+        });
+        if (!res.findings.length) text += "No cleaner traces or log clears detected.";
+        el.innerText = text;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function scanLaunchers() {
+      setLoading(true, "Scanning installed Minecraft launchers & client directories...");
+      try {
+        const res = await api().scan_all_launchers();
+        const el = document.getElementById("launchersResult");
+        if (!res.ok) {
+          el.innerText = "Error: " + res.error;
+          return;
+        }
+        let text = `Scanned ${res.launchers.length} launcher directories:\n`;
+        res.launchers.filter(l => l.installed).forEach(l => {
+          text += `• ${l.name}: ${l.jar_count} jar(s) (${l.suspicious_count} suspicious)\n`;
+        });
+        if (res.suspicious_mods.length) {
+          text += `\nSuspicious files found:\n`;
+          res.suspicious_mods.forEach(s => {
+            text += `⚠️ [${s.launcher}] ${s.mod}\n`;
+          });
+        }
+        el.innerText = text;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function generateVerdict() {
+      setLoading(true, "Generating moderation verdict & ban command...");
+      try {
+        const pName = document.getElementById("banPlayerName").value || "Player";
+        const res = await api().generate_ban_verdict(pName);
+        if (!res.ok) {
+          alert("Failed to generate verdict: " + res.error);
+          return;
+        }
+        document.getElementById("banVerdictCard").value = res.verdict_card;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function sendWebhookReport() {
+      const url = document.getElementById("webhookUrlInput").value || "";
+      const text = document.getElementById("banVerdictCard").value || "";
+      if (!url) {
+        alert("Please enter Webhook URL");
+        return;
+      }
+      setLoading(true, "Sending report to Webhook...");
+      try {
+        const res = await api().send_webhook_report(url, text || "AuroraChecker Session Summary");
+        const statusEl = document.getElementById("webhookStatus");
+        if (!res.ok) {
+          statusEl.innerText = "Error: " + res.error;
+          statusEl.style.color = "var(--rose)";
+        } else {
+          statusEl.innerText = res.message;
+          statusEl.style.color = "var(--green)";
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function decompileClassSource() {
+      const jarPath = document.getElementById("decompilerJarPath").value || "";
+      const member = document.getElementById("decompilerMember").value || "";
+      if (!jarPath) {
+        alert("Please enter .jar file path");
+        return;
+      }
+      setLoading(true, "Extracting and decompiling class constants & strings...");
+      try {
+        const res = await api().inspect_jar_class_source(jarPath, member);
+        const el = document.getElementById("decompilerResult");
+        if (!res.ok) {
+          el.value = "Error: " + res.error;
+          return;
+        }
+        if (!member) {
+          let text = `JAR Entries: ${res.total_entries} total (${res.class_count} class files):\n\n`;
+          res.classes.forEach(c => text += c + "\n");
+          el.value = text;
+        } else {
+          let text = `Entry: ${res.entry} (${res.size_bytes} bytes)\nExtracted Constants & Strings (${res.extracted_strings.length}):\n\n`;
+          res.extracted_strings.forEach(s => text += s + "\n");
+          el.value = text;
+        }
+      } finally {
+        setLoading(false);
+      }
     }
 
     async function selfDestruct() {

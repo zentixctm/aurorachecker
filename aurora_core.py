@@ -32,7 +32,7 @@ from ctypes import wintypes
 import zipfile
 
 
-APP_VERSION = "1.0.0-python"
+APP_VERSION = "1.2.4"
 APP_ROOT = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
 BUNDLED_ROOT = Path(getattr(sys, "_MEIPASS", APP_ROOT))
 TOOLS_DIR = APP_ROOT / "tools"
@@ -4301,5 +4301,234 @@ class AuroraApi:
                 if success:
                     return {"ok": True, "message": f"PID {pid} terminated"}
             return error(f"Failed to terminate PID {pid}: Access denied or process not found")
+        except Exception as exc:
+            return error(str(exc))
+
+    def scan_anti_bypass(self) -> dict:
+        try:
+            cleaners_keywords = ["usboblivion", "bleachbit", "ccleaner", "privazer", "regcleaner", "filewipe", "shredder"]
+            findings = []
+            
+            # Check services
+            disabled_services = []
+            for srv_name in ["PcaSvc", "DPS", "SysMain", "EventLog"]:
+                st = _service_status(srv_name)
+                if "stopped" in st.lower() or "disabled" in st.lower() or "not found" in st.lower():
+                    disabled_services.append(f"{srv_name} ({st})")
+            if disabled_services:
+                findings.append({
+                    "category": "Disabled Forensic Services",
+                    "detail": "Disabled/Stopped: " + ", ".join(disabled_services),
+                    "risk": "HIGH"
+                })
+                
+            # Check EventLog Event ID 104 / 1102 (Log Cleared)
+            try:
+                cmd = ["powershell", "-NoProfile", "-NonInteractive", "-Command",
+                       "Get-WinEvent -ListLog System,Security -ErrorAction SilentlyContinue | Get-WinEvent -FilterHashtable @{Id=104,1102} -ErrorAction SilentlyContinue | Select-Object TimeCreated,Id,Message | ConvertTo-Json"]
+                proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=12, **hidden_subprocess_options())
+                if proc.returncode == 0 and proc.stdout.strip():
+                    ev_data = json.loads(proc.stdout)
+                    if isinstance(ev_data, dict): ev_data = [ev_data]
+                    for ev in ev_data:
+                        findings.append({
+                            "category": "System Log Cleared (Event ID 104/1102)",
+                            "detail": f"Log cleared at {ev.get('TimeCreated')} (ID {ev.get('Id')})",
+                            "risk": "CRITICAL"
+                        })
+            except Exception:
+                pass
+
+            # Search cleaner traces in Prefetch / Temp / Downloads
+            user = os.environ.get("USERPROFILE", "")
+            search_paths = [
+                Path(user) / "Downloads",
+                Path(user) / "Desktop",
+                Path(user) / "AppData" / "Local" / "Temp",
+                Path(r"C:\Windows\Prefetch")
+            ]
+            for sp in search_paths:
+                if sp.exists():
+                    try:
+                        for p in sp.iterdir():
+                            name_lower = p.name.lower()
+                            for kw in cleaners_keywords:
+                                if kw in name_lower:
+                                    findings.append({
+                                        "category": "Cleaner / Anti-Forensic Tool Found",
+                                        "detail": f"Trace in {sp.name}: {p.name}",
+                                        "risk": "HIGH"
+                                    })
+                                    break
+                    except Exception:
+                        pass
+
+            return {"ok": True, "findings": findings, "cleaners_detected": len(findings)}
+        except Exception as exc:
+            return error(str(exc))
+
+    def scan_all_launchers(self) -> dict:
+        try:
+            user = Path(os.environ.get("USERPROFILE", ""))
+            appdata = Path(os.environ.get("APPDATA", ""))
+            
+            launcher_dirs = [
+                ("Official / Vanilla", appdata / ".minecraft"),
+                ("TLauncher", appdata / ".tlauncher"),
+                ("Legacy Launcher", appdata / "LegacyLauncher"),
+                ("TLauncher Legacy", appdata / ".tlauncher" / "legacy"),
+                ("Prism Launcher", appdata / "PrismLauncher"),
+                ("PolyMC", appdata / "PolyMC"),
+                ("MultiMC", appdata / "MultiMC"),
+                ("Lunar Client", user / ".lunarclient"),
+                ("Feather Client", user / ".feather"),
+                ("CurseForge", appdata / "CurseForge"),
+                ("ATLauncher", appdata / "ATLauncher")
+            ]
+            
+            scanned_launchers = []
+            found_suspicious_mods = []
+            cheat_keywords = ["expensive", "nursultan", "celestial", "akrien", "wexside", "zamorozka", "rich", "doomsday", "liminar", "vec.dll", "skid", "wild", "minced", "freecam", "killaura"]
+
+            for l_name, l_path in launcher_dirs:
+                if l_path.exists():
+                    mods_count = 0
+                    suspicious_in_launcher = []
+                    try:
+                        for jar_file in l_path.rglob("*.jar"):
+                            mods_count += 1
+                            fname = jar_file.name.lower()
+                            for kw in cheat_keywords:
+                                if kw in fname:
+                                    suspicious_in_launcher.append(jar_file.name)
+                                    found_suspicious_mods.append({
+                                        "launcher": l_name,
+                                        "mod": jar_file.name,
+                                        "path": str(jar_file)
+                                    })
+                                    break
+                    except Exception:
+                        pass
+                        
+                    scanned_launchers.append({
+                        "name": l_name,
+                        "path": str(l_path),
+                        "installed": True,
+                        "jar_count": mods_count,
+                        "suspicious_count": len(suspicious_in_launcher)
+                    })
+                else:
+                    scanned_launchers.append({
+                        "name": l_name,
+                        "path": str(l_path),
+                        "installed": False,
+                        "jar_count": 0,
+                        "suspicious_count": 0
+                    })
+
+            return {
+                "ok": True,
+                "launchers": scanned_launchers,
+                "suspicious_mods": found_suspicious_mods
+            }
+        except Exception as exc:
+            return error(str(exc))
+
+    def generate_ban_verdict(self, player_name: str) -> dict:
+        try:
+            p_name = player_name.strip() or "Player"
+            
+            # Simple check of traces
+            reasons = []
+            # Check USN deleted
+            try:
+                cmd = ["cmd.exe", "/d", "/c", "fsutil usn readjournal C: csv 2>&1"]
+                proc = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="ignore", timeout=15, **hidden_subprocess_options())
+                for line in proc.stdout.splitlines():
+                    if ".jar" in line.lower() or ".dll" in line.lower():
+                        parts = [p.strip('" ') for p in line.split(",")]
+                        if len(parts) >= 4 and ("DELETE" in parts[3].upper() or "0x00000200" in parts[3]):
+                            reasons.append(f"USN Deleted File: {parts[0]}")
+                            break
+            except Exception:
+                pass
+                
+            ban_reason = " | ".join(reasons) if reasons else "Cheat Signatures / Forensic Evidence Found"
+            ban_command = f"/ban {p_name} 30d 2.4 ({ban_reason})"
+            
+            verdict_card = f"""==================================================
+           AURORACHECKER MODERATION VERDICT
+==================================================
+Target Player: {p_name}
+Date & Time: {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}
+Status: {'CHEATS DETECTED ❌' if reasons else 'CLEAN / UNVERIFIED ⚠️'}
+
+REASON DETAILS:
+{chr(10).join('• ' + r for r in reasons) if reasons else '• No high-risk automated detections triggered.'}
+
+COPYABLE BAN COMMAND:
+{ban_command}
+=================================================="""
+
+            return {"ok": True, "ban_command": ban_command, "verdict_card": verdict_card}
+        except Exception as exc:
+            return error(str(exc))
+
+    def send_webhook_report(self, webhook_url: str, content_text: str) -> dict:
+        try:
+            url = webhook_url.strip()
+            if not url:
+                return error("Webhook URL is empty")
+                
+            if "discord.com" in url or "discordapp.com" in url:
+                payload = json.dumps({"content": f"```\n{content_text[:1900]}\n```"}).encode("utf-8")
+                req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+                with urllib.request.urlopen(req, timeout=8.0) as resp:
+                    return {"ok": True, "message": "Report sent to Discord Webhook"}
+            elif "api.telegram.org" in url or "bot" in url:
+                payload = json.dumps({"text": content_text[:4000]}).encode("utf-8")
+                req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+                with urllib.request.urlopen(req, timeout=8.0) as resp:
+                    return {"ok": True, "message": "Report sent to Telegram"}
+            else:
+                payload = json.dumps({"text": content_text}).encode("utf-8")
+                req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+                with urllib.request.urlopen(req, timeout=8.0) as resp:
+                    return {"ok": True, "message": "Report sent to Webhook"}
+        except Exception as exc:
+            return error(str(exc))
+
+    def inspect_jar_class_source(self, jar_path: str, member_name: str = "") -> dict:
+        try:
+            p = Path(jar_path.strip().strip('"'))
+            if not p.is_file() or p.suffix.lower() != ".jar":
+                return error("Invalid .jar file")
+                
+            import zipfile
+            with zipfile.ZipFile(str(p), "r") as z:
+                all_entries = z.namelist()
+                class_entries = [e for e in all_entries if e.endswith(".class")]
+                
+                if not member_name:
+                    return {
+                        "ok": True,
+                        "total_entries": len(all_entries),
+                        "class_count": len(class_entries),
+                        "classes": class_entries[:150]
+                    }
+                    
+                if member_name not in all_entries:
+                    return error(f"Entry {member_name} not found in JAR")
+                    
+                content_bytes = z.read(member_name)
+                printable_strings = re.findall(r"[A-Za-z0-9_\-\.\:\/\@\$\<\>]{4,}", content_bytes.decode("latin-1", errors="ignore"))
+                unique_strings = list(dict.fromkeys(printable_strings))[:200]
+                
+                return {
+                    "ok": True,
+                    "entry": member_name,
+                    "size_bytes": len(content_bytes),
+                    "extracted_strings": unique_strings
+                }
         except Exception as exc:
             return error(str(exc))
