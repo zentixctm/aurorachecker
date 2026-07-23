@@ -4534,6 +4534,18 @@ COPYABLE BAN COMMAND:
             p_dur = duration.strip() or "30 дней"
             p_num = report_num.strip() or str(random.randint(100000, 999999))
             
+            # Read license info
+            lic_mod = "Unknown"
+            lic_srv = "AuroraChecker"
+            lic_file = Path(os.environ.get("LOCALAPPDATA", "")) / "AuroraChecker" / "license.json"
+            if lic_file.exists():
+                try:
+                    lic_d = json.loads(lic_file.read_text(encoding="utf-8"))
+                    lic_mod = lic_d.get("moderator", "Moderator")
+                    lic_srv = lic_d.get("server", "Server")
+                except Exception:
+                    pass
+            
             bot_token = "8932014258:AAErJRhe3qycIhW6ugGyen-zcTrYQ5avHOU"
             img_file = Path(image_path.strip().strip('"')) if image_path else None
             
@@ -4549,9 +4561,11 @@ COPYABLE BAN COMMAND:
                         {"name": "1. Ник нарушителя", "value": f"`{p_name}`", "inline": True},
                         {"name": "2. Причина", "value": f"`{p_reason}`", "inline": True},
                         {"name": "3. Срок наказания", "value": f"`{p_dur}`", "inline": True},
-                        {"name": "4. Номер отчета", "value": f"`#{p_num}`", "inline": True}
+                        {"name": "4. Номер отчета", "value": f"`#{p_num}`", "inline": True},
+                        {"name": "Модератор", "value": f"`{lic_mod}`", "inline": True},
+                        {"name": "Проект / Сервер", "value": f"`{lic_srv}`", "inline": True}
                     ],
-                    "footer": {"text": "AuroraChecker Forensics Moderation"}
+                    "footer": {"text": f"AuroraChecker Forensics • {lic_srv}"}
                 }
                 
                 if img_file and img_file.is_file():
@@ -4617,6 +4631,67 @@ COPYABLE BAN COMMAND:
                         return {"ok": True, "message": f"Отчет №{p_num} отправлен в Telegram!"}
                         
             return error("Некорректный URL вебхука или ID чата")
+        except Exception as exc:
+            return error(str(exc))
+
+    def get_license_info(self) -> dict:
+        try:
+            lic_file = Path(os.environ.get("LOCALAPPDATA", "")) / "AuroraChecker" / "license.json"
+            if lic_file.exists():
+                data = json.loads(lic_file.read_text(encoding="utf-8"))
+                return {"ok": True, "active": True, "data": data}
+            return {"ok": True, "active": False}
+        except Exception as exc:
+            return {"ok": False, "active": False, "error": str(exc)}
+
+    def activate_license_key(self, key: str, mod_name: str, server_name: str) -> dict:
+        try:
+            k = key.strip().upper()
+            m = mod_name.strip() or "Moderator"
+            s = server_name.strip() or "Minecraft Server"
+            
+            if not k:
+                return error("Введите ключ доступа")
+                
+            valid_master = ["AURORA-ADMIN-KEY", "AURORA-VIP-2026", "AURORA-FREE-KEY", "AURORA-MOD-2026"]
+            is_valid_format = k.startswith("AURORA-") and len(k) >= 10
+            
+            if k not in valid_master and not is_valid_format:
+                return error("Недействительный ключ доступа! Формат: AURORA-XXXX-XXXX-XXXX")
+                
+            lic_dir = Path(os.environ.get("LOCALAPPDATA", "")) / "AuroraChecker"
+            lic_dir.mkdir(parents=True, exist_ok=True)
+            lic_file = lic_dir / "license.json"
+            
+            role = "Administrator" if "ADMIN" in k else "Moderator"
+            data = {
+                "key": k,
+                "moderator": m,
+                "server": s,
+                "role": role,
+                "activated_at": datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+            }
+            lic_file.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            return {"ok": True, "message": f"Ключ успешно активирован! Роль: {role}", "data": data}
+        except Exception as exc:
+            return error(str(exc))
+
+    def generate_license_key(self, role: str = "MOD") -> dict:
+        try:
+            import uuid
+            part1 = uuid.uuid4().hex[:4].upper()
+            part2 = uuid.uuid4().hex[:4].upper()
+            new_key = f"AURORA-{role.upper()}-{part1}-{part2}"
+            return {"ok": True, "key": new_key}
+        except Exception as exc:
+            return error(str(exc))
+
+    def deactivate_license(self) -> dict:
+        try:
+            lic_file = Path(os.environ.get("LOCALAPPDATA", "")) / "AuroraChecker" / "license.json"
+            if lic_file.exists():
+                lic_file.unlink()
+            return {"ok": True, "message": "Лицензия деактивирована"}
         except Exception as exc:
             return error(str(exc))
         try:
