@@ -729,7 +729,6 @@
         <button data-nav="launch">java launch</button>
         <button data-nav="usb">shellbags</button>
         <button data-nav="browser">browser scan</button>
-        <button data-nav="moderation">reports & ban</button>
       </nav>
       <div class="footer">
         <button onclick="selfDestruct()" style="width:100%;color:var(--rose);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);font-size:12px">self destruct</button>
@@ -1081,69 +1080,6 @@
           </table>
         </div>
         <div id="browserError" class="error"></div>
-      </section>
-
-      <section id="moderation" class="view">
-        <div class="header">
-          <div class="title">
-            <h2>reports & ban center</h2>
-            <p>send violation reports with screenshots to discord/telegram and auto-generate ban verdicts.</p>
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(340px, 1fr));gap:16px;margin-bottom:16px">
-          <div class="panel" style="padding:18px">
-            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:14px">📸 Отправить отчет с скриншотом (Discord / Telegram)</div>
-            
-            <div style="display:flex;flex-direction:column;gap:10px">
-              <div>
-                <label style="font-size:11px;color:var(--muted)">1. Ник нарушителя:</label>
-                <input id="reportPlayerNick" placeholder="например, Steve_Pro" style="width:100%;margin-top:4px">
-              </div>
-              
-              <div>
-                <label style="font-size:11px;color:var(--muted)">2. Причина наказания:</label>
-                <input id="reportReason" placeholder="например, 2.4 (Использование Expensive/читы)" style="width:100%;margin-top:4px">
-              </div>
-              
-              <div style="display:flex;gap:10px">
-                <div style="flex:1">
-                  <label style="font-size:11px;color:var(--muted)">3. Срок наказания:</label>
-                  <input id="reportDuration" placeholder="30 дней" value="30 дней" style="width:100%;margin-top:4px">
-                </div>
-                <div style="flex:1">
-                  <label style="font-size:11px;color:var(--muted)">4. Номер отчета:</label>
-                  <input id="reportNumber" style="width:100%;margin-top:4px;font-family:monospace" readonly>
-                </div>
-              </div>
-              
-              <div>
-                <label style="font-size:11px;color:var(--muted)">Скриншот нарушения (путь к .png / .jpg):</label>
-                <div class="input-row" style="margin-top:4px">
-                  <input id="reportScreenshotPath" placeholder="Нажмите Выбрать или вставьте путь" style="flex:1">
-                  <button onclick="pickScreenshotFile()">Выбрать</button>
-                </div>
-              </div>
-              
-              <div>
-                <label style="font-size:11px;color:var(--muted)">Discord Webhook URL / Telegram Chat ID:</label>
-                <input id="reportTargetUrl" placeholder="Discord Webhook URL или Telegram Chat ID (-100...)" style="width:100%;margin-top:4px">
-              </div>
-              
-              <button class="primary" onclick="sendFullImageReport()" style="margin-top:6px;height:38px;font-weight:700">📤 Отправить отчет в Discord / Telegram</button>
-              <div id="imageReportStatus" style="font-size:12px;color:var(--green);margin-top:4px"></div>
-            </div>
-          </div>
-
-          <div class="panel" style="padding:18px">
-            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:14px">⚖️ Генератор карточки вердикта и бана</div>
-            <div class="input-row" style="margin-bottom:10px">
-              <input id="banPlayerName" placeholder="Ник игрока" style="flex:1">
-              <button class="primary" onclick="generateVerdict()">Сгенерировать</button>
-            </div>
-            <textarea id="banVerdictCard" style="width:100%;height:220px;background:rgba(5,8,15,.6);border:1px solid var(--border);border-radius:8px;color:var(--fg);padding:10px;font-family:monospace;font-size:11px" readonly placeholder="Сгенерированная карточка вердикта и команда бана появятся здесь..."></textarea>
-          </div>
-        </div>
       </section>
 
       <section id="results" class="view">
