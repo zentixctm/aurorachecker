@@ -4476,25 +4476,40 @@ COPYABLE BAN COMMAND:
 
     def send_webhook_report(self, webhook_url: str, content_text: str) -> dict:
         try:
-            url = webhook_url.strip()
-            if not url:
-                return error("Webhook URL is empty")
+            target = webhook_url.strip()
+            if not target:
+                return error("Webhook / Chat ID is empty")
                 
-            if "discord.com" in url or "discordapp.com" in url:
+            bot_token = "8932014258:AAErJRhe3qycIhW6ugGyen-zcTrYQ5avHOU"
+            
+            # Check if it's a Discord Webhook URL
+            if "discord.com" in target or "discordapp.com" in target:
                 payload = json.dumps({"content": f"```\n{content_text[:1900]}\n```"}).encode("utf-8")
-                req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+                req = urllib.request.Request(target, data=payload, headers={"Content-Type": "application/json"}, method="POST")
                 with urllib.request.urlopen(req, timeout=8.0) as resp:
                     return {"ok": True, "message": "Report sent to Discord Webhook"}
-            elif "api.telegram.org" in url or "bot" in url:
+                    
+            # Check if target is a Telegram Chat ID or Channel (e.g. -100..., @channel, or digits)
+            is_chat_id = target.startswith("-") or target.startswith("@") or target.isdigit()
+            if is_chat_id:
+                tg_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                payload = json.dumps({"chat_id": target, "text": content_text[:4000]}).encode("utf-8")
+                req = urllib.request.Request(tg_url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+                with urllib.request.urlopen(req, timeout=8.0) as resp:
+                    return {"ok": True, "message": f"Report sent to Telegram Chat ({target})"}
+
+            # Check if target is a full Telegram API URL
+            if "api.telegram.org" in target:
                 payload = json.dumps({"text": content_text[:4000]}).encode("utf-8")
-                req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+                req = urllib.request.Request(target, data=payload, headers={"Content-Type": "application/json"}, method="POST")
                 with urllib.request.urlopen(req, timeout=8.0) as resp:
                     return {"ok": True, "message": "Report sent to Telegram"}
-            else:
-                payload = json.dumps({"text": content_text}).encode("utf-8")
-                req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
-                with urllib.request.urlopen(req, timeout=8.0) as resp:
-                    return {"ok": True, "message": "Report sent to Webhook"}
+
+            # Default HTTP POST
+            payload = json.dumps({"text": content_text}).encode("utf-8")
+            req = urllib.request.Request(target, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+            with urllib.request.urlopen(req, timeout=8.0) as resp:
+                return {"ok": True, "message": "Report sent to Webhook"}
         except Exception as exc:
             return error(str(exc))
 
