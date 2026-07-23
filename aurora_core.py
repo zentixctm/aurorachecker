@@ -3832,6 +3832,16 @@ class AuroraApi:
         except Exception:
             return []
 
+    def choose_image(self) -> str:
+        try:
+            import webview
+            if not self._window:
+                return ""
+            result = self._window.create_file_dialog(webview.OPEN_DIALOG, file_types=("Image files (*.png;*.jpg;*.jpeg)", "All files (*.*)"))
+            return result[0] if result else ""
+        except Exception:
+            return ""
+
     def open_url(self, url: str) -> dict:
         import webbrowser
         try:
@@ -4513,7 +4523,102 @@ COPYABLE BAN COMMAND:
         except Exception as exc:
             return error(str(exc))
 
-    def inspect_jar_class_source(self, jar_path: str, member_name: str = "") -> dict:
+    def send_image_report(self, target: str, player: str, reason: str, duration: str, report_num: str, image_path: str = "") -> dict:
+        try:
+            target = target.strip()
+            if not target:
+                return error("Webhook URL or Telegram Chat ID is empty")
+                
+            p_name = player.strip() or "Unknown"
+            p_reason = reason.strip() or "Использование запрещенного ПО / читов"
+            p_dur = duration.strip() or "30 дней"
+            p_num = report_num.strip() or str(random.randint(100000, 999999))
+            
+            bot_token = "8932014258:AAErJRhe3qycIhW6ugGyen-zcTrYQ5avHOU"
+            img_file = Path(image_path.strip().strip('"')) if image_path else None
+            
+            # Send to Discord Webhook
+            if "discord.com" in target or "discordapp.com" in target:
+                import uuid
+                boundary = "----WebKitFormBoundary" + uuid.uuid4().hex
+                
+                embed = {
+                    "title": f"🚨 Отчет о нарушении №{p_num}",
+                    "color": 15158332,
+                    "fields": [
+                        {"name": "1. Ник нарушителя", "value": f"`{p_name}`", "inline": True},
+                        {"name": "2. Причина", "value": f"`{p_reason}`", "inline": True},
+                        {"name": "3. Срок наказания", "value": f"`{p_dur}`", "inline": True},
+                        {"name": "4. Номер отчета", "value": f"`#{p_num}`", "inline": True}
+                    ],
+                    "footer": {"text": "AuroraChecker Forensics Moderation"}
+                }
+                
+                if img_file and img_file.is_file():
+                    embed["image"] = {"url": f"attachment://{img_file.name}"}
+                    
+                payload_json = json.dumps({"embeds": [embed]})
+                
+                body = bytearray()
+                body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"payload_json\"\r\nContent-Type: application/json\r\n\r\n{payload_json}\r\n".encode("utf-8"))
+                
+                if img_file and img_file.is_file():
+                    img_bytes = img_file.read_bytes()
+                    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{img_file.name}\"\r\nContent-Type: image/png\r\n\r\n".encode("utf-8"))
+                    body.extend(img_bytes)
+                    body.extend(b"\r\n")
+                    
+                body.extend(f"--{boundary}--\r\n".encode("utf-8"))
+                
+                req = urllib.request.Request(
+                    target,
+                    data=bytes(body),
+                    headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+                    method="POST"
+                )
+                with urllib.request.urlopen(req, timeout=15.0) as resp:
+                    return {"ok": True, "message": f"Отчет №{p_num} со скриншотом успешно отправлен в Discord!"}
+
+            # Send to Telegram
+            is_chat_id = target.startswith("-") or target.startswith("@") or target.isdigit()
+            if is_chat_id or "api.telegram.org" in target:
+                caption = f"🚨 *Отчет о нарушении №{p_num}*\n\n1. *Ник:* `{p_name}`\n2. *Причина:* `{p_reason}`\n3. *Срок наказания:* `{p_dur}`\n4. *Номер отчета:* `#{p_num}`"
+                
+                if img_file and img_file.is_file():
+                    tg_url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
+                    import uuid
+                    boundary = "----WebKitFormBoundary" + uuid.uuid4().hex
+                    body = bytearray()
+                    
+                    chat_id_val = target if is_chat_id else target.split("chat_id=")[-1]
+                    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"chat_id\"\r\n\r\n{chat_id_val}\r\n".encode("utf-8"))
+                    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"caption\"\r\n\r\n{caption}\r\n".encode("utf-8"))
+                    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"parse_mode\"\r\n\r\nMarkdown\r\n".encode("utf-8"))
+                    
+                    img_bytes = img_file.read_bytes()
+                    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"{img_file.name}\"\r\nContent-Type: image/png\r\n\r\n".encode("utf-8"))
+                    body.extend(img_bytes)
+                    body.extend(b"\r\n")
+                    body.extend(f"--{boundary}--\r\n".encode("utf-8"))
+                    
+                    req = urllib.request.Request(
+                        tg_url,
+                        data=bytes(body),
+                        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+                        method="POST"
+                    )
+                    with urllib.request.urlopen(req, timeout=15.0) as resp:
+                        return {"ok": True, "message": f"Отчет №{p_num} со скриншотом отправлен в Telegram!"}
+                else:
+                    tg_url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+                    payload = json.dumps({"chat_id": target, "text": caption, "parse_mode": "Markdown"}).encode("utf-8")
+                    req = urllib.request.Request(tg_url, data=payload, headers={"Content-Type": "application/json"}, method="POST")
+                    with urllib.request.urlopen(req, timeout=10.0) as resp:
+                        return {"ok": True, "message": f"Отчет №{p_num} отправлен в Telegram!"}
+                        
+            return error("Некорректный URL вебхука или ID чата")
+        except Exception as exc:
+            return error(str(exc))
         try:
             p = Path(jar_path.strip().strip('"'))
             if not p.is_file() or p.suffix.lower() != ".jar":

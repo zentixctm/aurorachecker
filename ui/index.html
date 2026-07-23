@@ -854,6 +854,15 @@
             <div style="color:var(--muted);font-size:12px">Scanning for Minecraft roots...</div>
           </div>
         </div>
+
+        <div class="panel" style="padding:18px;margin-top:16px">
+          <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+            <span>🛡️ Anti-Bypass & Cleaners Detector</span>
+            <button class="primary" onclick="scanAntiBypass()">Scan Anti-Bypass</button>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Checks for USBOblivion, BleachBit, CCleaner, EventLog ID 104 clears, and disabled forensic services.</p>
+          <div id="antiBypassResult" style="font-size:12px;color:var(--cyan);white-space:pre-wrap">Click scan to check anti-bypass indicators</div>
+        </div>
       </section>
 
       <section id="mods" class="view">
@@ -880,6 +889,15 @@
           <div style="font-size:12px;color:var(--muted);margin-top:6px">or click to select files (scans .jar mods / calculates hashes)</div>
         </div>
         <div id="jarkaResult" style="margin-top:14px;display:none;text-align:left;width:100%;max-height:calc(100vh - 380px);overflow-y:auto;padding-right:8px"></div>
+
+        <div class="panel" style="padding:18px;margin-top:16px">
+          <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+            <span>🎮 Minecraft Launchers & Clients Inspector</span>
+            <button class="primary" onclick="scanLaunchers()">Scan All Launchers</button>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Scans TLauncher, Legacy, Lunar Client, Feather, Prism, MultiMC, CurseForge & ATLauncher directories for suspicious cheat files.</p>
+          <div id="launchersResult" style="font-size:12px;color:var(--cyan);white-space:pre-wrap">Click scan to check launchers</div>
+        </div>
       </section>
 
       <section id="jardll" class="view">
@@ -913,6 +931,16 @@
             <thead><tr><th colspan="4" style="color:var(--red)">Deleted JAR / DLL (USN journal)</th></tr><tr><th style="width:170px">Date</th><th style="width:150px">Action</th><th style="width:240px">File</th><th>Path</th></tr></thead>
             <tbody id="deletedRows"><tr><td colspan="4" class="unknown">Press Scan</td></tr></tbody>
           </table>
+        </div>
+
+        <div class="panel" style="padding:18px;margin-top:16px">
+          <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">🔍 In-App Jar / Class Bytecode & String Decompiler</div>
+          <div class="input-row" style="margin-bottom:10px">
+            <input id="decompilerJarPath" placeholder="Path to .jar file" style="flex:1">
+            <input id="decompilerMember" placeholder="Class entry (e.g. net/minecraft/Main.class)" style="flex:1">
+            <button class="primary" onclick="decompileClassSource()">Decompile Strings</button>
+          </div>
+          <textarea id="decompilerResult" style="width:100%;height:140px;background:rgba(5,8,15,.6);border:1px solid var(--border);border-radius:8px;color:var(--fg);padding:8px;font-family:monospace;font-size:11px" readonly placeholder="Extracted bytecode constants, strings and class methods will appear here..."></textarea>
         </div>
       </section>
 
@@ -1058,55 +1086,63 @@
       <section id="moderation" class="view">
         <div class="header">
           <div class="title">
-            <h2>moderation & verdict center</h2>
-            <p>anti-bypass scan, launcher inspector, auto ban generator, webhook reporting & decompiler.</p>
+            <h2>reports & ban center</h2>
+            <p>send violation reports with screenshots to discord/telegram and auto-generate ban verdicts.</p>
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:16px;margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(340px, 1fr));gap:16px;margin-bottom:16px">
           <div class="panel" style="padding:18px">
-            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">1. Anti-Bypass & Cleaners</div>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Detects USBOblivion, BleachBit, CCleaner, EventLog ID 104 clears and disabled services.</p>
-            <button class="primary" onclick="scanAntiBypass()">Scan Anti-Bypass</button>
-            <div id="antiBypassResult" style="margin-top:10px;font-size:12px;color:var(--cyan)"></div>
-          </div>
-
-          <div class="panel" style="padding:18px">
-            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">2. Launchers & Clients Inspector</div>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Scans TLauncher, Legacy, Lunar, Feather, Prism, CurseForge & ATLauncher folders.</p>
-            <button class="primary" onclick="scanLaunchers()">Scan Launchers</button>
-            <div id="launchersResult" style="margin-top:10px;font-size:12px;color:var(--cyan)"></div>
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:16px;margin-bottom:16px">
-          <div class="panel" style="padding:18px">
-            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">3. Auto Ban & Verdict Generator</div>
-            <div class="input-row" style="margin-bottom:10px">
-              <input id="banPlayerName" placeholder="Player Nickname (e.g. Steve)" style="flex:1">
-              <button class="primary" onclick="generateVerdict()">Generate Ban</button>
+            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:14px">📸 Отправить отчет с скриншотом (Discord / Telegram)</div>
+            
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div>
+                <label style="font-size:11px;color:var(--muted)">1. Ник нарушителя:</label>
+                <input id="reportPlayerNick" placeholder="например, Steve_Pro" style="width:100%;margin-top:4px">
+              </div>
+              
+              <div>
+                <label style="font-size:11px;color:var(--muted)">2. Причина наказания:</label>
+                <input id="reportReason" placeholder="например, 2.4 (Использование Expensive/читы)" style="width:100%;margin-top:4px">
+              </div>
+              
+              <div style="display:flex;gap:10px">
+                <div style="flex:1">
+                  <label style="font-size:11px;color:var(--muted)">3. Срок наказания:</label>
+                  <input id="reportDuration" placeholder="30 дней" value="30 дней" style="width:100%;margin-top:4px">
+                </div>
+                <div style="flex:1">
+                  <label style="font-size:11px;color:var(--muted)">4. Номер отчета:</label>
+                  <input id="reportNumber" style="width:100%;margin-top:4px;font-family:monospace" readonly>
+                </div>
+              </div>
+              
+              <div>
+                <label style="font-size:11px;color:var(--muted)">Скриншот нарушения (путь к .png / .jpg):</label>
+                <div class="input-row" style="margin-top:4px">
+                  <input id="reportScreenshotPath" placeholder="Нажмите Выбрать или вставьте путь" style="flex:1">
+                  <button onclick="pickScreenshotFile()">Выбрать</button>
+                </div>
+              </div>
+              
+              <div>
+                <label style="font-size:11px;color:var(--muted)">Discord Webhook URL / Telegram Chat ID:</label>
+                <input id="reportTargetUrl" placeholder="Discord Webhook URL или Telegram Chat ID (-100...)" style="width:100%;margin-top:4px">
+              </div>
+              
+              <button class="primary" onclick="sendFullImageReport()" style="margin-top:6px;height:38px;font-weight:700">📤 Отправить отчет в Discord / Telegram</button>
+              <div id="imageReportStatus" style="font-size:12px;color:var(--green);margin-top:4px"></div>
             </div>
-            <textarea id="banVerdictCard" style="width:100%;height:100px;background:rgba(5,8,15,.6);border:1px solid var(--border);border-radius:8px;color:var(--fg);padding:8px;font-family:monospace;font-size:11px" readonly placeholder="Generated verdict card will appear here..."></textarea>
           </div>
 
           <div class="panel" style="padding:18px">
-            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">4. Webhook Reporter (Discord / Telegram)</div>
+            <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:14px">⚖️ Генератор карточки вердикта и бана</div>
             <div class="input-row" style="margin-bottom:10px">
-              <input id="webhookUrlInput" placeholder="Discord Webhook URL or Telegram Chat ID (e.g. -100..., @channel)" style="flex:1">
-              <button class="primary" onclick="sendWebhookReport()">Send Report</button>
+              <input id="banPlayerName" placeholder="Ник игрока" style="flex:1">
+              <button class="primary" onclick="generateVerdict()">Сгенерировать</button>
             </div>
-            <div id="webhookStatus" style="font-size:12px;color:var(--green)"></div>
+            <textarea id="banVerdictCard" style="width:100%;height:220px;background:rgba(5,8,15,.6);border:1px solid var(--border);border-radius:8px;color:var(--fg);padding:10px;font-family:monospace;font-size:11px" readonly placeholder="Сгенерированная карточка вердикта и команда бана появятся здесь..."></textarea>
           </div>
-        </div>
-
-        <div class="panel" style="padding:18px;margin-bottom:16px">
-          <div style="font-size:14px;font-weight:800;text-transform:uppercase;color:var(--cyan);margin-bottom:12px">5. In-App Jar/Class Bytecode Decompiler</div>
-          <div class="input-row" style="margin-bottom:10px">
-            <input id="decompilerJarPath" placeholder="Path to .jar file" style="flex:1">
-            <input id="decompilerMember" placeholder="Class path (e.g. net/minecraft/Main.class)" style="flex:1">
-            <button class="primary" onclick="decompileClassSource()">Decompile Strings</button>
-          </div>
-          <textarea id="decompilerResult" style="width:100%;height:140px;background:rgba(5,8,15,.6);border:1px solid var(--border);border-radius:8px;color:var(--fg);padding:8px;font-family:monospace;font-size:11px" readonly placeholder="Extracted bytecode constants, strings and class methods will appear here..."></textarea>
         </div>
       </section>
 
@@ -1265,6 +1301,7 @@
       document.querySelectorAll(".view").forEach(view => view.classList.toggle("active", view.id === id));
       document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.nav === id));
       if (id === "sysinfo") loadSystemInfo();
+      if (id === "moderation") initReportNumber();
     }
 
     function setLoading(active, text = "Scanning...", percent = null, detail = "") {
@@ -1805,6 +1842,53 @@
           return;
         }
         document.getElementById("banVerdictCard").value = res.verdict_card;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function initReportNumber() {
+      const el = document.getElementById("reportNumber");
+      if (el && !el.value) {
+        el.value = Math.floor(100000 + Math.random() * 900000);
+      }
+    }
+
+    async function pickScreenshotFile() {
+      try {
+        const file = await api().choose_image();
+        if (file) {
+          document.getElementById("reportScreenshotPath").value = file;
+        }
+      } catch (e) {}
+    }
+
+    async function sendFullImageReport() {
+      const nick = document.getElementById("reportPlayerNick").value || "";
+      const reason = document.getElementById("reportReason").value || "";
+      const dur = document.getElementById("reportDuration").value || "30 дней";
+      const num = document.getElementById("reportNumber").value || Math.floor(100000 + Math.random() * 900000);
+      const imagePath = document.getElementById("reportScreenshotPath").value || "";
+      const target = document.getElementById("reportTargetUrl").value || "";
+
+      if (!target) {
+        alert("Пожалуйста, введите Discord Webhook URL или Telegram Chat ID!");
+        return;
+      }
+
+      setLoading(true, "Отправка отчета с скриншотом...");
+      try {
+        const res = await api().send_image_report(target, nick, reason, dur, num, imagePath);
+        const statusEl = document.getElementById("imageReportStatus");
+        if (!res.ok) {
+          statusEl.innerText = "Ошибка: " + res.error;
+          statusEl.style.color = "var(--rose)";
+        } else {
+          statusEl.innerText = res.message;
+          statusEl.style.color = "var(--green)";
+          // randomize new report number for next report
+          document.getElementById("reportNumber").value = Math.floor(100000 + Math.random() * 900000);
+        }
       } finally {
         setLoading(false);
       }
